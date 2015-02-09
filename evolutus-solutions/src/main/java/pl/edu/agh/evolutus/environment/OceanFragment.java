@@ -1,92 +1,150 @@
 package pl.edu.agh.evolutus.environment;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
-import org.jage.agent.ISimpleAgent;
 import org.jage.agent.SimpleAggregate;
 import org.jage.platform.component.exception.ComponentException;
+import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.config.IConfigService;
+import pl.edu.agh.evolutus.foram.Foram;
 import pl.edu.agh.evolutus.foram.IForam;
-import pl.edu.agh.evolutus.supplier.CoordinatesSupplier;
+import pl.edu.agh.evolutus.service.CoordinatesService;
+import pl.edu.agh.evolutus.service.StatisticsService;
+import pl.edu.agh.evolutus.utils.Vector;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private static final Logger logger = LoggerFactory.getLogger(OceanFragment.class);
+	private final Random random = new Random();
 
-	private IEnvironmentInfo environmentInfo;
+	@Inject
+	private StatisticsService statisticsService;
+
+	@Inject
+	private IConfigService configService;
+
+	private IOceanFragmentProperties oceanFragmentProperties;
+
+	private OceanFragmentContainer oceanFragmentContainer;
 
 	private List<IForam> foramsToAdd = new ArrayList<>();
 
 	private List<IForam> foramsToRemove = new ArrayList<>();
 
-	private Random random = new Random();
-
 	@Inject
-	public OceanFragment(AgentAddressSupplier supplier, CoordinatesSupplier coordinatesSupplier) {
+	public OceanFragment(AgentAddressSupplier supplier, CoordinatesService coordinatesService, IConfigService configService) {
 		super(supplier);
-		Coordinates oceanSize = coordinatesSupplier.getSize();
-		Coordinates position = coordinatesSupplier.createCoordinates();
-		environmentInfo = new EnvironmentInfo(oceanSize, position, 1.0);
+		Vector oceanSize = coordinatesService.getSize();
+		Vector position = coordinatesService.createCoordinates();
+		this.oceanFragmentProperties = new OceanFragmentProperties(oceanSize, position, configService);
 	}
 
 	@Override
-	public IEnvironmentInfo getIEnvironmentInfo() {
-		return environmentInfo;
+	public IOceanFragmentProperties getOceanFragmentProperties() {
+		return oceanFragmentProperties;
 	}
 
 	@Override
-	public void createForam(double energy) {
-		//		IForam foram = instanceProvider.getInstance(IForam.class); FIXME
-		//		foram.setEnergy(energy);
-		//		foram.setOceanFragment(this);
-		//		addForam(foram);
+	public Vector getPosition() {
+		return oceanFragmentProperties.getPosition();
 	}
 
 	@Override
-	public synchronized void addForam(IForam foram) {
-		//		foramsToAdd.add(foram); FIXME
+	public void setOceanFragmentContainer(OceanFragmentContainer oceanFragmentContainer) {
+		this.oceanFragmentContainer = oceanFragmentContainer;
 	}
 
 	@Override
-	public synchronized void removeForam(IForam foram) {
-		//		foramsToRemove.add(foram); FIXME
-	}
-
-	@Override
-	public int takeAlgae(int demand) {
-		return random.nextInt(demand / 2);
+	public Collection<IForam> getForams() {
+		return getAgents().stream().filter(agent -> agent instanceof IForam).map(agent -> (IForam) agent)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public void init() throws ComponentException {
 		super.init();
 
-		logger.debug("Initialized ocean fragment: {} {}", getAddress(), environmentInfo.getPosition());
+		logger.debug("Initialized ocean fragment: {} {}", getAddress(), oceanFragmentProperties.getPosition());
 
-		for (ISimpleAgent foram : temporaryAgentsList) {
-			((IForam) foram).setOceanFragment(this);
+		long initialForamsCount = configService.getInitialForamsCount(getPosition());
+		for (long i = 0; i < initialForamsCount; i++) {
+			IForam foram = instanceProvider.getInstance(IForam.class);
+			foram.setEnergy(Foram.INITIAL_ENERGY);
+			add(foram);
 		}
 	}
+
+	private long steps = 0;
 
 	@Override
 	public void step() {
-		logger.debug("OCEAN_FRAGMENT step: {} {}", getAddress(), environmentInfo.getPosition());
-
 		super.step();
 
-		synchronized (this) {
-			removeAll(foramsToRemove);
-			addAll(foramsToAdd);
-			foramsToRemove.clear();
-			foramsToAdd.clear();
-		}
+		statisticsService.addStatistics(oceanFragmentProperties.getPosition(), steps++, foramsAlive());
+
+		oceanFragmentProperties.regenerateAlgae();
 	}
 
+	@Override
+	public double takeAlgae(double energyDemand) {
+		double algaeNeeded = energyDemand / oceanFragmentProperties.getAlgaeEnergy();
+		double availableAlgae = oceanFragmentProperties.getAlgaeAvailability();
+		double takenAlgae = Math.min(availableAlgae, algaeNeeded);
+		oceanFragmentProperties.decreaseAlgaeAvailability(takenAlgae);
+		return takenAlgae * oceanFragmentProperties.getAlgaeEnergy();
+	}
+
+	@Override
+	public int foramsAlive() {
+		return (int) getAgents().stream().filter(agent -> ((IForam) agent).isAlive()).count();
+	}
+
+	private Map<OceanFragment, Double> migrationTargetsWithProbability = null;
+
+	private Map<OceanFragment, Double> getMigrationTargetsWithProbability() {
+		if (migrationTargetsWithProbability == null) {
+			Vector position = oceanFragmentProperties.getPosition();
+			Vector size = oceanFragmentProperties.getOceanSize();
+			final Map<Vector, Double> targetCoordinateProbabilities = oceanFragmentProperties.getCurrentDirection()
+					.getTargetCoordinateProbabilities(position, size);
+
+			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
+			Collection<OceanFragment> targetOceanFragments = queryParent(query.matching(
+					oceanFragment -> targetCoordinateProbabilities.containsKey(oceanFragment.getPosition())));
+
+			migrationTargetsWithProbability = new LinkedHashMap<>();
+			for (OceanFragment oceanFragment : targetOceanFragments) {
+				migrationTargetsWithProbability
+						.put(oceanFragment, targetCoordinateProbabilities.get(oceanFragment.getPosition()));
+			}
+		}
+		return migrationTargetsWithProbability;
+	}
+
+	@Override
+	public AgentAddress getMigrationTarget() {
+		Map<OceanFragment, Double> migrationTargetsWithProbability = getMigrationTargetsWithProbability();
+		double rand = random.nextDouble();
+		double probability = 0.0;
+		for (OceanFragment migrationTarget : migrationTargetsWithProbability.keySet()) {
+			probability += migrationTargetsWithProbability.get(migrationTarget);
+			if (rand <= probability) {
+				return migrationTarget.getAddress();
+			}
+		}
+		return null;
+	}
 }

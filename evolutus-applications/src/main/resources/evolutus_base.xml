@@ -21,28 +21,20 @@
 
   <!-- eVolutus components -->
 
-  <block name="coordinatesSupplier">
-    <component name="coordinatesSupplier" class="pl.edu.agh.evolutus.supplier.CoordinatesSupplier">
-      <constructor-arg name="sizeX" type="Long" value="50"/>
-      <constructor-arg name="sizeY" type="Long" value="50"/>
-      <constructor-arg name="sizeZ" type="Long" value="5"/>
-    </component>
+  <component name="statisticsService" class="pl.edu.agh.evolutus.service.StatisticsService"/>
+
+  <component name="configService" class="pl.edu.agh.evolutus.config.ConfigService"/>
+
+  <block name="coordinatesService">
+    <component name="coordinatesService" class="pl.edu.agh.evolutus.service.CoordinatesService"/>
   </block>
 
-  <component name="energyConsumptionStrategy" class="pl.edu.agh.evolutus.strategy.NoOpEnergyConsumptionStrategy"/>
-
-  <component name="feedingStrategy" class="pl.edu.agh.evolutus.strategy.NoOpFeedingStrategy"/>
-
-  <block name="forams">
-    <list name="forams">
-      <multiple count="10">
-        <agent class="pl.edu.agh.evolutus.foram.Foram">
-          <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
-            <constructor-arg name="nameTemplate" value="Foram#*"/>
-          </component>
-        </agent>
-      </multiple>
-    </list>
+  <block name="foram">
+    <agent class="pl.edu.agh.evolutus.foram.Foram">
+      <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+        <constructor-arg name="nameTemplate" value="Foram#*"/>
+      </component>
+    </agent>
   </block>
 
   <block name="oceanFragments">
@@ -52,7 +44,6 @@
           <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
             <constructor-arg name="nameTemplate" value="OceanFragment#*"/>
           </component>
-          <property name="agents" ref="forams"/>
         </agent>
       </multiple>
     </list>

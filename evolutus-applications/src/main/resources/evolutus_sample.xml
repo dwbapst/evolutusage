@@ -5,34 +5,25 @@
 
   <include file="classpath:evolutus_base.xml">
 
-    <block name="coordinatesSupplier">
-      <component name="coordinatesSupplier" class="pl.edu.agh.evolutus.supplier.CoordinatesSupplier">
-        <constructor-arg name="sizeX" type="Long" value="10"/>
-        <constructor-arg name="sizeY" type="Long" value="10"/>
-        <constructor-arg name="sizeZ" type="Long" value="2"/>
-      </component>
+    <block name="coordinatesService">
+      <component name="coordinatesService" class="pl.edu.agh.evolutus.service.CoordinatesService"/>
     </block>
 
-    <block name="forams">
-      <list name="forams">
-        <multiple count="10">
-          <agent class="pl.edu.agh.evolutus.foram.Foram">
-            <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
-              <constructor-arg name="nameTemplate" value="Foram#*"/>
-            </component>
-          </agent>
-        </multiple>
-      </list>
+    <block name="foram">
+      <agent class="pl.edu.agh.evolutus.foram.Foram">
+        <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+          <constructor-arg name="nameTemplate" value="Foram#*"/>
+        </component>
+      </agent>
     </block>
 
     <block name="oceanFragments">
       <list name="oceanFragments">
-        <multiple count="6250">
+        <multiple count="200">
           <agent class="pl.edu.agh.evolutus.environment.OceanFragment">
             <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
               <constructor-arg name="nameTemplate" value="OceanFragment#*"/>
             </component>
-            <property name="agents" ref="forams"/>
           </agent>
         </multiple>
       </list>
@@ -40,7 +31,7 @@
 
     <block name="oceanFragmentContainers">
       <list name="oceanFragmentContainers">
-        <multiple count="2">
+        <multiple count="1">
           <agent name="oceanFragmentContainer" class="pl.edu.agh.evolutus.environment.OceanFragmentContainer">
             <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
               <constructor-arg name="nameTemplate" value="OceanFragmentContainer#*"/>

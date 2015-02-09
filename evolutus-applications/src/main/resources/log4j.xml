@@ -12,12 +12,14 @@
 
   <logger name="com.hazelcast">
     <level value="INFO"/>
-    <appender-ref ref="CONSOLE"/>
   </logger>
 
   <logger name="pl.edu.agh.evolutus">
     <level value="INFO"/>
-    <appender-ref ref="CONSOLE"/>
+  </logger>
+
+  <logger name="org.jage">
+    <level value="INFO"/>
   </logger>
 
   <root>

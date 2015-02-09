@@ -10,6 +10,9 @@
 
   <properties>
     <junit.version>4.11</junit.version>
+    <guava.version>18.0</guava.version>
+    <apache.commons.version>3.3.2</apache.commons.version>
+    <apache.commons.io.version>2.4</apache.commons.io.version>
   </properties>
 
   <parent>
@@ -32,6 +35,25 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${apache.commons.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${apache.commons.io.version}</version>
+    </dependency>
+
 
   </dependencies>
 </project>

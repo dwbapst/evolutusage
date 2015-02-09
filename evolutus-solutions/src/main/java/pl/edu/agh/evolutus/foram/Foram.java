@@ -1,16 +1,21 @@
 package pl.edu.agh.evolutus.foram;
 
+import java.util.Collection;
+import java.util.Random;
+
+import javax.inject.Inject;
+
+import org.jage.action.AgentActions;
+import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.SimpleAgent;
 import org.jage.platform.component.exception.ComponentException;
+import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.agh.evolutus.environment.IOceanFragment;
-import pl.edu.agh.evolutus.strategy.IEnergyConsumptionStrategy;
-import pl.edu.agh.evolutus.strategy.IFeedingStrategy;
 
-import javax.inject.Inject;
-import java.util.Random;
+import pl.edu.agh.evolutus.environment.IOceanFragment;
+import pl.edu.agh.evolutus.environment.OceanFragment;
 
 public class Foram extends SimpleAgent implements IForam {
 
@@ -26,21 +31,9 @@ public class Foram extends SimpleAgent implements IForam {
 	public static final int REPRODUCTION_MINIMUM = 10;
 	public static final double REPRODUCTION_PROBABILITY = 0.8;
 
-	private static int instancesCounter = 0;
-
-	private synchronized static int newInstance() {
-		return instancesCounter++;
-	}
-
-	private final int instanceIndex;
-
 	private boolean alive = true;
-	private double energy = 0.0;
+	private double energy;
 	private int chambersCount = 1;
-
-	private IFeedingStrategy feedingStrategy;
-	private IEnergyConsumptionStrategy energyConsumptionStrategy;
-	private IOceanFragment oceanFragment;
 
 	private Random random = new Random();
 
@@ -52,7 +45,6 @@ public class Foram extends SimpleAgent implements IForam {
 	public Foram(AgentAddressSupplier supplier, double energy) {
 		super(supplier);
 		this.energy = energy;
-		this.instanceIndex = newInstance();
 	}
 
 	@Override
@@ -60,21 +52,9 @@ public class Foram extends SimpleAgent implements IForam {
 		this.energy = energy;
 	}
 
-	@Inject
 	@Override
-	public void setFeedingStrategy(IFeedingStrategy feedingStrategy) {
-		this.feedingStrategy = feedingStrategy;
-	}
-
-	@Inject
-	@Override
-	public void setEnergyConsumptionStrategy(IEnergyConsumptionStrategy energyConsumptionStrategy) {
-		this.energyConsumptionStrategy = energyConsumptionStrategy;
-	}
-
-	@Override
-	public void setOceanFragment(IOceanFragment oceanFragment) {
-		this.oceanFragment = oceanFragment;
+	public void init() throws ComponentException {
+		super.init();
 	}
 
 	@Override
@@ -83,32 +63,75 @@ public class Foram extends SimpleAgent implements IForam {
 		return super.finish();
 	}
 
-	private int step = 0;
+	private long steps = 0;
 
 	@Override
 	public void step() {
-		if (instanceIndex == 1 || instanceIndex == instancesCounter - 1) {
-			step++;
-			if (step % 1000 == 0) {
-				logger.info("\tFORAM step #{}: {} from {}", step, getAddress(), Thread.currentThread().getName());
-			}
-		}
-
 		if (!alive) {
 			logger.warn("Called step() on dead foram: {}", getAddress());
 			return;
 		}
-		//		dieIfShould(); FIXME
+		energy -= stepEnergyDemand();
 
-		if (eat() <= 0) {
-			move();
+		if (shouldDie()) {
+			die();
+			return;
 		}
+		eat();
 		if (canReproduce()) {
 			reproduce();
 		}
 		if (canCreateChamber()) {
 			createChamber();
 		}
+
+		if (steps % 5 == 0) {
+			flowWithCurrent();
+		}
+
+		steps++;
+	}
+
+	@Override
+	public boolean isAlive() {
+		return alive;
+	}
+
+	private boolean shouldDie() {
+		return energy <= 0.0;
+	}
+
+	private void die() {
+		alive = false;
+		doAction(AgentActions.death(this));
+	}
+
+	private void eat() {
+		double capacity = energyCapacity();
+		energy += getOceanFragment().takeAlgae(capacity);
+	}
+
+	private AgentAddress lastParentAddress = null;
+	private OceanFragment lastParentReference = null;
+
+	private IOceanFragment getOceanFragment() {
+		if (lastParentAddress == null || !lastParentAddress.equals(getParentAddress())) {
+			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
+			Collection<OceanFragment> result = queryParentEnvironment(
+					query.matching(oceanFragment -> getParentAddress() != null && getParentAddress()
+							.equals(oceanFragment.getAddress())));
+			lastParentReference = result.iterator().next();
+			lastParentAddress = lastParentReference.getAddress();
+		}
+		return lastParentReference;
+	}
+
+	private double energyCapacity() {
+		return chambersCount + CAPACITY_FACTOR;
+	}
+
+	private double stepEnergyDemand() {
+		return (chambersCount + 1) * ENERGY_NEED;
 	}
 
 	private boolean canReproduce() {
@@ -119,7 +142,9 @@ public class Foram extends SimpleAgent implements IForam {
 		int childrenCount = random.nextInt(NEW_BORN_LIMIT);
 		double energy = this.energy / childrenCount * 2;
 		for (int i = 0; i < childrenCount; i++) {
-			oceanFragment.createForam(energy);
+			IForam foram = instanceProvider.getInstance(IForam.class);
+			foram.setEnergy(energy);
+			doAction(AgentActions.addToParent(this, foram));
 		}
 		this.energy = 0; // die
 	}
@@ -133,34 +158,11 @@ public class Foram extends SimpleAgent implements IForam {
 		chambersCount++;
 	}
 
-	private void dieIfShould() {
-		if (energy <= 0.0) {
-			alive = false;
-			oceanFragment.removeForam(this);
+	private void flowWithCurrent() {
+		IOceanFragment oceanFragment = getOceanFragment();
+		AgentAddress migrationTarget = oceanFragment.getMigrationTarget();
+		if (migrationTarget != null) {
+			doAction(AgentActions.migrate(this, migrationTarget));
 		}
-	}
-
-	private double eat() {
-		double initialEnergy = energy;
-		double capacity = energyCapacity();
-		energy += takeAlgae(capacity) - energyDemand();
-		return energy - initialEnergy;
-	}
-
-	private double takeAlgae(double capacity) {
-		int demand = (int) capacity;
-		return oceanFragment.takeAlgae(demand);
-	}
-
-	private double energyCapacity() {
-		return chambersCount + CAPACITY_FACTOR;
-	}
-
-	private double energyDemand() {
-		return (chambersCount + 1) * ENERGY_NEED;
-	}
-
-	private void move() {
-		// TODO: implement
 	}
 }

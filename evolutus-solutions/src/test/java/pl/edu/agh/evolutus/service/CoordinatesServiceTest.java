@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.supplier;
+package pl.edu.agh.evolutus.service;
 
 import static org.junit.Assert.*;
 
@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import pl.edu.agh.evolutus.environment.Coordinates;
+import pl.edu.agh.evolutus.utils.Vector;
 
-public class CoordinatesSupplierTest {
+public class CoordinatesServiceTest {
 
 	@Test
 	public void should_create_all_coordinates_for_given_grid_size() {
@@ -17,8 +17,8 @@ public class CoordinatesSupplierTest {
 		long sizeY = 10;
 		long sizeZ = 10;
 
-		List<Coordinates> coordinatesList = new ArrayList<>();
-		CoordinatesSupplier supplier = new CoordinatesSupplier(sizeX, sizeY, sizeZ);
+		List<Vector> coordinatesList = new ArrayList<>();
+		CoordinatesService supplier = new CoordinatesService(sizeX, sizeY, sizeZ);
 
 		for (int i = 0; i < sizeX * sizeY * sizeZ; i++) {
 			coordinatesList.add(supplier.createCoordinates());
@@ -29,7 +29,7 @@ public class CoordinatesSupplierTest {
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
 				for (int z = 0; z < sizeZ; z++) {
-					assertTrue(coordinatesList.contains(new Coordinates(x, y, z)));
+					assertTrue(coordinatesList.contains(new Vector(x, y, z)));
 				}
 			}
 		}

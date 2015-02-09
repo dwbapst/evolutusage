@@ -1,17 +1,25 @@
 package pl.edu.agh.evolutus.environment;
 
+import java.util.Collection;
+
+import org.jage.address.agent.AgentAddress;
+
 import pl.edu.agh.evolutus.foram.IForam;
+import pl.edu.agh.evolutus.utils.Vector;
 
 public interface IOceanFragment {
 
-	IEnvironmentInfo getIEnvironmentInfo();
+	IOceanFragmentProperties getOceanFragmentProperties();
 
-	void createForam(double energy);
+	Vector getPosition();
 
-	void addForam(IForam foram);
+	void setOceanFragmentContainer(OceanFragmentContainer oceanFragmentContainer);
 
-	void removeForam(IForam foram);
+	Collection<IForam> getForams();
 
-	int takeAlgae(int demand);
+	double takeAlgae(double demand);
 
+	int foramsAlive();
+
+	AgentAddress getMigrationTarget();
 }

@@ -1,41 +1,45 @@
-package pl.edu.agh.evolutus.environment;
+package pl.edu.agh.evolutus.utils;
 
-public class Coordinates {
+public class Vector {
 
 	private long x, y, z;
 
-	public Coordinates() {
+	public Vector() {
 		this(0, 0, 0);
 	}
 
-	public Coordinates(long x, long y, long z) {
+	public Vector(long x, long y, long z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public long getX() {
+	public long x() {
 		return x;
 	}
 
-	public long getY() {
+	public long y() {
 		return y;
 	}
 
-	public long getZ() {
+	public long z() {
 		return z;
 	}
 
-	public void setX(long x) {
-		this.x = x;
+	public Vector add(Vector vector) {
+		return new Vector(x + vector.x(), y + vector.y(), z + vector.z());
 	}
 
-	public void setY(long y) {
-		this.y = y;
+	public Vector sub(Vector vector) {
+		return new Vector(x - vector.x(), y - vector.y(), z - vector.z());
 	}
 
-	public void setZ(long z) {
-		this.z = z;
+	public Vector mul(double factor) {
+		return new Vector(Math.round(x * factor), Math.round(y * factor), Math.round(z * factor));
+	}
+
+	public Vector div(double divisor) {
+		return mul(1.0 / divisor);
 	}
 
 	@Override
@@ -48,11 +52,11 @@ public class Coordinates {
 		if (this == o) {
 			return true;
 		}
-		if (!(o instanceof Coordinates)) {
+		if (!(o instanceof Vector)) {
 			return false;
 		}
 
-		Coordinates that = (Coordinates) o;
+		Vector that = (Vector) o;
 
 		if (x != that.x) {
 			return false;
