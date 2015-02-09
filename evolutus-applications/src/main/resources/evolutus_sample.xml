@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration xmlns="http://age.iisg.agh.edu.pl/schema/age"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://age.iisg.agh.edu.pl/schema/age http://age.iisg.agh.edu.pl/schema/age/age.xsd">
+
+  <include file="classpath:evolutus_base.xml">
+
+    <block name="coordinatesSupplier">
+      <component name="coordinatesSupplier" class="pl.edu.agh.evolutus.supplier.CoordinatesSupplier">
+        <constructor-arg name="sizeX" type="Long" value="10"/>
+        <constructor-arg name="sizeY" type="Long" value="10"/>
+        <constructor-arg name="sizeZ" type="Long" value="2"/>
+      </component>
+    </block>
+
+    <block name="forams">
+      <list name="forams">
+        <multiple count="10">
+          <agent class="pl.edu.agh.evolutus.foram.Foram">
+            <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+              <constructor-arg name="nameTemplate" value="Foram#*"/>
+            </component>
+          </agent>
+        </multiple>
+      </list>
+    </block>
+
+    <block name="oceanFragments">
+      <list name="oceanFragments">
+        <multiple count="6250">
+          <agent class="pl.edu.agh.evolutus.environment.OceanFragment">
+            <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+              <constructor-arg name="nameTemplate" value="OceanFragment#*"/>
+            </component>
+            <property name="agents" ref="forams"/>
+          </agent>
+        </multiple>
+      </list>
+    </block>
+
+    <block name="oceanFragmentContainers">
+      <list name="oceanFragmentContainers">
+        <multiple count="2">
+          <agent name="oceanFragmentContainer" class="pl.edu.agh.evolutus.environment.OceanFragmentContainer">
+            <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+              <constructor-arg name="nameTemplate" value="OceanFragmentContainer#*"/>
+            </component>
+            <property name="agents" ref="oceanFragments"/>
+          </agent>
+        </multiple>
+      </list>
+    </block>
+
+    <block name="stopCondition">
+      <component name="stopCondition" class="org.jage.workplace.FixedStepCountStopCondition">
+        <constructor-arg type="Long" value="500"/>
+      </component>
+    </block>
+
+  </include>
+</configuration>

@@ -4,16 +4,12 @@ import pl.edu.agh.evolutus.environment.Coordinates;
 
 public class CoordinatesSupplier {
 
-	private final long sizeX;
-	private final long sizeY;
-	private final long sizeZ;
+	private final Coordinates size;
 
 	private long coordinatesCreated = 0;
 
 	public CoordinatesSupplier(long sizeX, long sizeY, long sizeZ) {
-		this.sizeX = sizeX;
-		this.sizeY = sizeY;
-		this.sizeZ = sizeZ;
+		this.size = new Coordinates(sizeX, sizeY, sizeZ);
 	}
 
 	private synchronized long newCoordinatesIndex() {
@@ -25,10 +21,14 @@ public class CoordinatesSupplier {
 	}
 
 	public Coordinates createCoordinates(long index) {
-		long x = index % sizeX;
-		long y = (index / sizeX) % sizeY;
-		long z = index / sizeX / sizeY;
+		long x = index % size.getX();
+		long y = (index / size.getX()) % size.getY();
+		long z = index / size.getX() / size.getY();
 		return new Coordinates(x, y, z);
+	}
+
+	public Coordinates getSize() {
+		return size;
 	}
 
 }

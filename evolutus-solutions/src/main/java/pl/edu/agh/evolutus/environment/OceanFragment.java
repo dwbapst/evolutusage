@@ -1,27 +1,24 @@
 package pl.edu.agh.evolutus.environment;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import javax.inject.Inject;
+
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.ISimpleAgent;
 import org.jage.agent.SimpleAggregate;
 import org.jage.platform.component.exception.ComponentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.agh.evolutus.foram.IForam;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import pl.edu.agh.evolutus.foram.IForam;
+import pl.edu.agh.evolutus.supplier.CoordinatesSupplier;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private static final Logger logger = LoggerFactory.getLogger(OceanFragment.class);
-
-	private static int instancesCounter = 0;
-
-	private synchronized static int newInstance() {
-		return instancesCounter++;
-	}
 
 	private IEnvironmentInfo environmentInfo;
 
@@ -32,14 +29,10 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private Random random = new Random();
 
 	@Inject
-	public OceanFragment(AgentAddressSupplier supplier, OceanInfoSupplier oceanInfoSupplier) {
+	public OceanFragment(AgentAddressSupplier supplier, CoordinatesSupplier coordinatesSupplier) {
 		super(supplier);
-		int instanceIndex = newInstance();
-		Coordinates oceanSize = oceanInfoSupplier.getOceanSize();
-		long x = instanceIndex % oceanSize.getX();
-		long y = (instanceIndex / oceanSize.getX()) % oceanSize.getY();
-		long z = instanceIndex / oceanSize.getX() / oceanSize.getY();
-		Coordinates position = new Coordinates(x, y, z);
+		Coordinates oceanSize = coordinatesSupplier.getSize();
+		Coordinates position = coordinatesSupplier.createCoordinates();
 		environmentInfo = new EnvironmentInfo(oceanSize, position, 1.0);
 	}
 
