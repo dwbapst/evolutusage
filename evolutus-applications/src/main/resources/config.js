@@ -1,9 +1,17 @@
 /***************************
- *      ENVIRONMENT        *
+ *       SIMULATION        *
+ ***************************/
+
+function simulationDuration() {
+   return 1000;
+}
+
+/***************************
+ *       ENVIRONMENT       *
  ***************************/
 
 function oceanSize() {
-   return {x: 10, y: 10, z: 2}
+   return {x: 10, y: 10, z: 2};
 }
 
 function algaeEnergy() {
@@ -30,9 +38,53 @@ function insolation(x, y, z) {
 }
 
 function currentDirection(x, y, z) {
-   return {x: 3, y: 2, z: 0}
+   return {x: 3, y: 2, z: 0};
 }
 
 function currentStrength(x, y, z) {
    return 1.0;
+}
+
+/***************************
+ *          FORAM          *
+ ***************************/
+
+function initialEnergy() {
+   return 5.0;
+}
+
+function energyCapacity(chambersCount) {
+   return 1.1 * chambersCount;
+}
+
+function energyDemand(chambersCount) {
+   return 0.2 * chambersCount;
+}
+
+function chamberGrowthEnergyCost(chambersCount) {
+   return 0.5 * energyCapacity(chambersCount);
+}
+
+function energyNeededForGrowth() {
+   return 10.0;
+}
+
+function growthProbability() {
+   return 0.8;
+}
+
+function chambersLimit() {
+   return 20;
+}
+
+function newBornLimit() {
+   return 9;
+}
+
+function energyNeededToReproduce() {
+   return 10.0;
+}
+
+function reproductionProbability() {
+   return 0.8;
 }

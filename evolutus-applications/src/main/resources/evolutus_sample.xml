@@ -43,9 +43,7 @@
     </block>
 
     <block name="stopCondition">
-      <component name="stopCondition" class="org.jage.workplace.FixedStepCountStopCondition">
-        <constructor-arg type="Long" value="500"/>
-      </component>
+      <component name="stopCondition" class="pl.edu.agh.evolutus.simulation.StopCondition"/>
     </block>
 
   </include>

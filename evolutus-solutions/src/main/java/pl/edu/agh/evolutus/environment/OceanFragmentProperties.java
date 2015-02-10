@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.environment;
 
-import pl.edu.agh.evolutus.config.IConfigService;
+import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.Vector;
 
@@ -15,7 +15,7 @@ public class OceanFragmentProperties implements IOceanFragmentProperties {
 	private final CurrentDirection currentDirection;
 	private final double currentStrength;
 
-	public OceanFragmentProperties(Vector oceanSize, Vector position, IConfigService configService) {
+	public OceanFragmentProperties(Vector oceanSize, Vector position, IEnvironmentConfigService configService) {
 		this.oceanSize = oceanSize;
 		this.position = position;
 		this.insolation = configService.getInsolation(position);

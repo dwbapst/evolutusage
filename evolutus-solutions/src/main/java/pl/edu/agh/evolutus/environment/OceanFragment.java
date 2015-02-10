@@ -18,8 +18,7 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.config.IConfigService;
-import pl.edu.agh.evolutus.foram.Foram;
+import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.service.CoordinatesService;
 import pl.edu.agh.evolutus.service.StatisticsService;
@@ -34,7 +33,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private StatisticsService statisticsService;
 
 	@Inject
-	private IConfigService configService;
+	private IEnvironmentConfigService configService;
 
 	private IOceanFragmentProperties oceanFragmentProperties;
 
@@ -45,7 +44,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private List<IForam> foramsToRemove = new ArrayList<>();
 
 	@Inject
-	public OceanFragment(AgentAddressSupplier supplier, CoordinatesService coordinatesService, IConfigService configService) {
+	public OceanFragment(AgentAddressSupplier supplier, CoordinatesService coordinatesService,
+			IEnvironmentConfigService configService) {
 		super(supplier);
 		Vector oceanSize = coordinatesService.getSize();
 		Vector position = coordinatesService.createCoordinates();
@@ -82,7 +82,6 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		long initialForamsCount = configService.getInitialForamsCount(getPosition());
 		for (long i = 0; i < initialForamsCount; i++) {
 			IForam foram = instanceProvider.getInstance(IForam.class);
-			foram.setEnergy(Foram.INITIAL_ENERGY);
 			add(foram);
 		}
 	}

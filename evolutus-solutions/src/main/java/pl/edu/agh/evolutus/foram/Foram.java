@@ -14,37 +14,27 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.config.IForamConfigService;
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
 
 public class Foram extends SimpleAgent implements IForam {
 
 	private static final Logger logger = LoggerFactory.getLogger(Foram.class);
-	public static final double CAPACITY_FACTOR = 1.1;
-	public static final double ENERGY_NEED = 0.2;
-	public static final double GROWTH_COST_FACTOR = 0.5;
-	public static final int GROWTH_MINIMUM = 10;
-	public static final int CHAMBERS_LIMIT = 20;
-	public static final double GROWTH_PROBABILITY = 0.8;
-	public static final int NEW_BORN_LIMIT = 9;
-	public static final int INITIAL_ENERGY = 5;
-	public static final int REPRODUCTION_MINIMUM = 10;
-	public static final double REPRODUCTION_PROBABILITY = 0.8;
 
 	private boolean alive = true;
 	private double energy;
 	private int chambersCount = 1;
 
+	@Inject
+	private IForamConfigService configService;
+
 	private Random random = new Random();
 
 	@Inject
-	public Foram(AgentAddressSupplier supplier) {
-		this(supplier, INITIAL_ENERGY);
-	}
-
-	public Foram(AgentAddressSupplier supplier, double energy) {
+	public Foram(AgentAddressSupplier supplier, IForamConfigService configService) {
 		super(supplier);
-		this.energy = energy;
+		this.energy = configService.getForamInitialEnergy();
 	}
 
 	@Override
@@ -71,7 +61,7 @@ public class Foram extends SimpleAgent implements IForam {
 			logger.warn("Called step() on dead foram: {}", getAddress());
 			return;
 		}
-		energy -= stepEnergyDemand();
+		energy -= configService.getEnergyDemand(chambersCount);
 
 		if (shouldDie()) {
 			die();
@@ -107,7 +97,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void eat() {
-		double capacity = energyCapacity();
+		double capacity = configService.getEnergyCapacity(chambersCount);
 		energy += getOceanFragment().takeAlgae(capacity);
 	}
 
@@ -126,20 +116,14 @@ public class Foram extends SimpleAgent implements IForam {
 		return lastParentReference;
 	}
 
-	private double energyCapacity() {
-		return chambersCount + CAPACITY_FACTOR;
-	}
-
-	private double stepEnergyDemand() {
-		return (chambersCount + 1) * ENERGY_NEED;
-	}
-
 	private boolean canReproduce() {
-		return energy > REPRODUCTION_MINIMUM && random.nextDouble() > REPRODUCTION_PROBABILITY;
+		double energyNeededToReproduce = configService.getEnergyNeededToReproduce();
+		double reproductionProbability = configService.getReproductionProbability();
+		return energy > energyNeededToReproduce && random.nextDouble() > reproductionProbability;
 	}
 
 	private void reproduce() {
-		int childrenCount = random.nextInt(NEW_BORN_LIMIT);
+		int childrenCount = random.nextInt(configService.getNewBornLimit());
 		double energy = this.energy / childrenCount * 2;
 		for (int i = 0; i < childrenCount; i++) {
 			IForam foram = instanceProvider.getInstance(IForam.class);
@@ -150,11 +134,14 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean canCreateChamber() {
-		return energy > GROWTH_MINIMUM && chambersCount < CHAMBERS_LIMIT && random.nextDouble() > GROWTH_PROBABILITY;
+		double energyNeededForGrowth = configService.getEnergyNeededForGrowth();
+		int chambersLimit = configService.getChambersLimit();
+		double growthProbability = configService.getGrowthProbability();
+		return energy > energyNeededForGrowth && chambersCount < chambersLimit && random.nextDouble() > growthProbability;
 	}
 
 	private void createChamber() {
-		energy -= GROWTH_COST_FACTOR * energy;
+		energy -= configService.getChamberGrowthEnergyCost(chambersCount);
 		chambersCount++;
 	}
 

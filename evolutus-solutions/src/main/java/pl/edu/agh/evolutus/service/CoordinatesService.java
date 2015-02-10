@@ -2,7 +2,7 @@ package pl.edu.agh.evolutus.service;
 
 import javax.inject.Inject;
 
-import pl.edu.agh.evolutus.config.IConfigService;
+import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
 import pl.edu.agh.evolutus.utils.Vector;
 
 public class CoordinatesService {
@@ -16,7 +16,7 @@ public class CoordinatesService {
 	}
 
 	@Inject
-	public CoordinatesService(IConfigService configService) {
+	public CoordinatesService(IEnvironmentConfigService configService) {
 		this.size = configService.getOceanSize();
 	}
 

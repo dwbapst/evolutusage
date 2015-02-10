@@ -2,6 +2,8 @@ package pl.edu.agh.evolutus.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -37,13 +39,38 @@ public class ConfigService implements IConfigService {
 		}
 	}
 
+	private Map<String, Object> constantsMap = new HashMap<>();
+
 	private <T> T call(String function, Class<T> returnClass, Object... args) {
 		try {
-			return (T) config.invokeFunction(function, args);
+			if (args.length == 0 && constantsMap.containsKey(function)) {
+				return (T) constantsMap.get(function);
+			}
+
+			T result = (T) config.invokeFunction(function, args);
+
+			if (args.length == 0) {
+				constantsMap.put(function, result);
+			}
+			return result;
 		} catch (ScriptException | NoSuchMethodException e) {
 			throw new ConfigServiceRuntimeException(e.getMessage(), e);
 		}
 	}
+
+
+	/* *********************** *
+	 *        SIMULATION       *
+	 * *********************** */
+
+	@Override
+	public int getSimulationDuration() {
+		return call("simulationDuration", Integer.class);
+	}
+
+	/* *********************** *
+	 *       ENVIRONMENT       *
+	 * *********************** */
 
 	@Override
 	public Vector getOceanSize() {
@@ -86,6 +113,60 @@ public class ConfigService implements IConfigService {
 	@Override
 	public double getCurrentStrength(Vector position) {
 		return call("currentStrength", Double.class, position.x(), position.y(), position.z());
+	}
+
+	/* ************************* *
+	 *           FORAM           *
+	 * ************************* */
+
+	@Override
+	public double getForamInitialEnergy() {
+		return call("initialEnergy", Double.class);
+	}
+
+	@Override
+	public double getEnergyCapacity(int chambersCount) {
+		return call("energyCapacity", Double.class, chambersCount);
+	}
+
+	@Override
+	public double getEnergyDemand(int chambersCount) {
+		return call("energyDemand", Double.class, chambersCount);
+	}
+
+	@Override
+	public double getChamberGrowthEnergyCost(int chambersCount) {
+		return call("chamberGrowthEnergyCost", Double.class, chambersCount);
+	}
+
+	@Override
+	public double getEnergyNeededForGrowth() {
+		return call("energyNeededForGrowth", Double.class);
+	}
+
+	@Override
+	public double getGrowthProbability() {
+		return call("growthProbability", Double.class);
+	}
+
+	@Override
+	public int getChambersLimit() {
+		return call("chambersLimit", Integer.class);
+	}
+
+	@Override
+	public int getNewBornLimit() {
+		return call("newBornLimit", Integer.class);
+	}
+
+	@Override
+	public double getEnergyNeededToReproduce() {
+		return call("energyNeededToReproduce", Double.class);
+	}
+
+	@Override
+	public double getReproductionProbability() {
+		return call("reproductionProbability", Double.class);
 	}
 
 	private Vector scriptObjectToVector(ScriptObjectMirror scriptObject) {

@@ -67,9 +67,7 @@
     <property name="workplaces" ref="oceanFragmentContainers"/>
 
     <block name="stopCondition">
-      <component name="stopCondition" class="org.jage.workplace.FixedStepCountStopCondition">
-        <constructor-arg type="Long" value="1000"/>
-      </component>
+      <component name="stopCondition" class="pl.edu.agh.evolutus.simulation.StopCondition"/>
     </block>
   </component>
 </configuration>
