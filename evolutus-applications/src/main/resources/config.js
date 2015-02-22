@@ -3,7 +3,7 @@
  ***************************/
 
 function simulationDuration() {
-   return 1000;
+   return 100;
 }
 
 /***************************
@@ -87,4 +87,27 @@ function energyNeededToReproduce() {
 
 function reproductionProbability() {
    return 0.8;
+}
+
+function initialGenome(x, y, z) {
+   return {
+      translationFactor: 0.0,
+      growthFactor: {x: 0.0, y: 0.0, z: 0.0},
+      rotationAngle: 0.0,
+      deviationAngle: 0.0,
+
+      ploidy: (Math.random() < 0.5) ? 'haploid' : 'diploid',
+
+      haploidFirstChamberRadius: 0.0,
+      diploidFirstChamberRadius: 0.0,
+      wallThicknessFactor: 0.0,
+      minAdultVolume: 0.0,
+      haploidJuvenileVolumeFactor: 0.0,
+      diploidJuvenileVolumeFactor: 0.0,
+
+      maxEnergy: 0.0,
+      minEnergy: 0.0,
+      metabolicEffectiveness: 0.0,
+      minMetabolicEffectiveness: 0.0
+   }
 }

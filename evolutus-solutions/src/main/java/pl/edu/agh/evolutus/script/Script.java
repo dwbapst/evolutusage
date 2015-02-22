@@ -9,7 +9,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class Script {
 
@@ -19,7 +19,7 @@ public class Script {
 
 		scriptEngine.put("a", 43235.432);
 		scriptEngine.put("b", 1000);
-		scriptEngine.put("c", new Vector(1, 2, 3));
+		scriptEngine.put("c", new VectorL(1, 2, 3));
 
 		try {
 			String script = "" +

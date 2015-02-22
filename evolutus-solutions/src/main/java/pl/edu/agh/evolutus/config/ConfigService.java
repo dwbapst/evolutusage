@@ -13,8 +13,9 @@ import javax.script.ScriptException;
 import org.apache.commons.io.IOUtils;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import pl.edu.agh.evolutus.genome.Genome;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class ConfigService implements IConfigService {
 
@@ -73,9 +74,9 @@ public class ConfigService implements IConfigService {
 	 * *********************** */
 
 	@Override
-	public Vector getOceanSize() {
+	public VectorL getOceanSize() {
 		ScriptObjectMirror result = call("oceanSize", ScriptObjectMirror.class);
-		return scriptObjectToVector(result);
+		return VectorL.fromScriptObject(result);
 	}
 
 	@Override
@@ -84,13 +85,13 @@ public class ConfigService implements IConfigService {
 	}
 
 	@Override
-	public long getInitialForamsCount(Vector position) {
+	public long getInitialForamsCount(VectorL position) {
 		Double result = call("initialForamsCount", Double.class, position.x(), position.y(), position.z());
 		return result.longValue();
 	}
 
 	@Override
-	public double getInitialAlgaeAvailability(Vector position) {
+	public double getInitialAlgaeAvailability(VectorL position) {
 		return call("initialAlgaeAvailability", Double.class, position.x(), position.y(), position.z());
 	}
 
@@ -100,19 +101,25 @@ public class ConfigService implements IConfigService {
 	}
 
 	@Override
-	public double getInsolation(Vector position) {
+	public double getInsolation(VectorL position) {
 		return call("insolation", Double.class, position.x(), position.y(), position.z());
 	}
 
 	@Override
-	public CurrentDirection getCurrentDirection(Vector position) {
+	public CurrentDirection getCurrentDirection(VectorL position) {
 		ScriptObjectMirror result = call("currentDirection", ScriptObjectMirror.class, position.x(), position.y(), position.z());
-		return new CurrentDirection(scriptObjectToVector(result));
+		return new CurrentDirection(VectorL.fromScriptObject(result));
 	}
 
 	@Override
-	public double getCurrentStrength(Vector position) {
+	public double getCurrentStrength(VectorL position) {
 		return call("currentStrength", Double.class, position.x(), position.y(), position.z());
+	}
+
+	@Override
+	public Genome getInitialGenome(VectorL position) {
+		ScriptObjectMirror result = call("initialGenome", ScriptObjectMirror.class, position.x(), position.y(), position.z());
+		return Genome.fromScriptObject(result);
 	}
 
 	/* ************************* *
@@ -167,10 +174,6 @@ public class ConfigService implements IConfigService {
 	@Override
 	public double getReproductionProbability() {
 		return call("reproductionProbability", Double.class);
-	}
-
-	private Vector scriptObjectToVector(ScriptObjectMirror scriptObject) {
-		return new Vector((int) scriptObject.get("x"), (int) scriptObject.get("y"), (int) scriptObject.get("z"));
 	}
 
 	public static class ConfigServiceException extends Exception {

@@ -3,16 +3,16 @@ package pl.edu.agh.evolutus.service;
 import javax.inject.Inject;
 
 import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class CoordinatesService {
 
-	private final Vector size;
+	private final VectorL size;
 
 	private long coordinatesCreated = 0;
 
 	/* package */ CoordinatesService(long x, long y, long z) {
-		this.size = new Vector(x, y, z);
+		this.size = new VectorL(x, y, z);
 	}
 
 	@Inject
@@ -24,18 +24,18 @@ public class CoordinatesService {
 		return coordinatesCreated++;
 	}
 
-	public Vector createCoordinates() {
+	public VectorL createCoordinates() {
 		return createCoordinates(newCoordinatesIndex());
 	}
 
-	public Vector createCoordinates(long index) {
+	public VectorL createCoordinates(long index) {
 		long x = index % size.x();
 		long y = (index / size.x()) % size.y();
 		long z = index / size.x() / size.y();
-		return new Vector(x, y, z);
+		return new VectorL(x, y, z);
 	}
 
-	public Vector getSize() {
+	public VectorL getSize() {
 		return size;
 	}
 

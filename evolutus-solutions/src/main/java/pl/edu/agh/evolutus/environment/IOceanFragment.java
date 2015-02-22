@@ -5,13 +5,13 @@ import java.util.Collection;
 import org.jage.address.agent.AgentAddress;
 
 import pl.edu.agh.evolutus.foram.IForam;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IOceanFragment {
 
 	IOceanFragmentProperties getOceanFragmentProperties();
 
-	Vector getPosition();
+	VectorL getPosition();
 
 	void setOceanFragmentContainer(OceanFragmentContainer oceanFragmentContainer);
 

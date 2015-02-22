@@ -22,7 +22,7 @@ import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.service.CoordinatesService;
 import pl.edu.agh.evolutus.service.StatisticsService;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
@@ -47,8 +47,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	public OceanFragment(AgentAddressSupplier supplier, CoordinatesService coordinatesService,
 			IEnvironmentConfigService configService) {
 		super(supplier);
-		Vector oceanSize = coordinatesService.getSize();
-		Vector position = coordinatesService.createCoordinates();
+		VectorL oceanSize = coordinatesService.getSize();
+		VectorL position = coordinatesService.createCoordinates();
 		this.oceanFragmentProperties = new OceanFragmentProperties(oceanSize, position, configService);
 	}
 
@@ -58,7 +58,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public Vector getPosition() {
+	public VectorL getPosition() {
 		return oceanFragmentProperties.getPosition();
 	}
 
@@ -82,6 +82,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		long initialForamsCount = configService.getInitialForamsCount(getPosition());
 		for (long i = 0; i < initialForamsCount; i++) {
 			IForam foram = instanceProvider.getInstance(IForam.class);
+			foram.setGenome(configService.getInitialGenome(getPosition()));
 			add(foram);
 		}
 	}
@@ -115,9 +116,9 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private Map<OceanFragment, Double> getMigrationTargetsWithProbability() {
 		if (migrationTargetsWithProbability == null) {
-			Vector position = oceanFragmentProperties.getPosition();
-			Vector size = oceanFragmentProperties.getOceanSize();
-			final Map<Vector, Double> targetCoordinateProbabilities = oceanFragmentProperties.getCurrentDirection()
+			VectorL position = oceanFragmentProperties.getPosition();
+			VectorL size = oceanFragmentProperties.getOceanSize();
+			final Map<VectorL, Double> targetCoordinateProbabilities = oceanFragmentProperties.getCurrentDirection()
 					.getTargetCoordinateProbabilities(position, size);
 
 			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class CoordinatesServiceTest {
 
@@ -17,7 +17,7 @@ public class CoordinatesServiceTest {
 		long sizeY = 10;
 		long sizeZ = 10;
 
-		List<Vector> coordinatesList = new ArrayList<>();
+		List<VectorL> coordinatesList = new ArrayList<>();
 		CoordinatesService supplier = new CoordinatesService(sizeX, sizeY, sizeZ);
 
 		for (int i = 0; i < sizeX * sizeY * sizeZ; i++) {
@@ -29,7 +29,7 @@ public class CoordinatesServiceTest {
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
 				for (int z = 0; z < sizeZ; z++) {
-					assertTrue(coordinatesList.contains(new Vector(x, y, z)));
+					assertTrue(coordinatesList.contains(new VectorL(x, y, z)));
 				}
 			}
 		}

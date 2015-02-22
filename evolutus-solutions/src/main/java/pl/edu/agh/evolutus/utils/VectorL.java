@@ -1,14 +1,16 @@
 package pl.edu.agh.evolutus.utils;
 
-public class Vector {
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+
+public class VectorL {
 
 	private long x, y, z;
 
-	public Vector() {
+	public VectorL() {
 		this(0, 0, 0);
 	}
 
-	public Vector(long x, long y, long z) {
+	public VectorL(long x, long y, long z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -26,19 +28,19 @@ public class Vector {
 		return z;
 	}
 
-	public Vector add(Vector vector) {
-		return new Vector(x + vector.x(), y + vector.y(), z + vector.z());
+	public VectorL add(VectorL vector) {
+		return new VectorL(x + vector.x(), y + vector.y(), z + vector.z());
 	}
 
-	public Vector sub(Vector vector) {
-		return new Vector(x - vector.x(), y - vector.y(), z - vector.z());
+	public VectorL sub(VectorL vector) {
+		return new VectorL(x - vector.x(), y - vector.y(), z - vector.z());
 	}
 
-	public Vector mul(double factor) {
-		return new Vector(Math.round(x * factor), Math.round(y * factor), Math.round(z * factor));
+	public VectorL mul(double factor) {
+		return new VectorL(Math.round(x * factor), Math.round(y * factor), Math.round(z * factor));
 	}
 
-	public Vector div(double divisor) {
+	public VectorL div(double divisor) {
 		return mul(1.0 / divisor);
 	}
 
@@ -47,16 +49,20 @@ public class Vector {
 		return String.format("(%d, %d, %d)", x, y, z);
 	}
 
+	public static VectorL fromScriptObject(ScriptObjectMirror scriptObject) {
+		return new VectorL((int) scriptObject.get("x"), (int) scriptObject.get("y"), (int) scriptObject.get("z"));
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		}
-		if (!(o instanceof Vector)) {
+		if (!(o instanceof VectorL)) {
 			return false;
 		}
 
-		Vector that = (Vector) o;
+		VectorL that = (VectorL) o;
 
 		if (x != that.x) {
 			return false;

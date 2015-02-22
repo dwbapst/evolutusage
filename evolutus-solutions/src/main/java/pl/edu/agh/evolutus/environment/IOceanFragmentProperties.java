@@ -1,13 +1,13 @@
 package pl.edu.agh.evolutus.environment;
 
 import pl.edu.agh.evolutus.utils.CurrentDirection;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IOceanFragmentProperties {
 
-	Vector getOceanSize();
+	VectorL getOceanSize();
 
-	Vector getPosition();
+	VectorL getPosition();
 
 	double getInsolation();
 

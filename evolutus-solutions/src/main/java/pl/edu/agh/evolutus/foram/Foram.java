@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.evolutus.config.IForamConfigService;
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
+import pl.edu.agh.evolutus.genome.Genome;
 
 public class Foram extends SimpleAgent implements IForam {
 
@@ -25,6 +26,8 @@ public class Foram extends SimpleAgent implements IForam {
 	private boolean alive = true;
 	private double energy;
 	private int chambersCount = 1;
+
+	private Genome genome = null;
 
 	@Inject
 	private IForamConfigService configService;
@@ -43,6 +46,15 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	@Override
+	public void setGenome(Genome genome) {
+		if (this.genome == null) {
+			this.genome = genome;
+		} else {
+			throw new IllegalStateException("setGenome() called multiple times on foram: " + getAddress());
+		}
+	}
+
+	@Override
 	public void init() throws ComponentException {
 		super.init();
 	}
@@ -57,10 +69,10 @@ public class Foram extends SimpleAgent implements IForam {
 
 	@Override
 	public void step() {
-		if (!alive) {
-			logger.warn("Called step() on dead foram: {}", getAddress());
+		if (!couldForamPerformStep()) {
 			return;
 		}
+
 		energy -= configService.getEnergyDemand(chambersCount);
 
 		if (shouldDie()) {
@@ -80,6 +92,18 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 
 		steps++;
+	}
+
+	private boolean couldForamPerformStep() {
+		if (genome == null) {
+			logger.warn("Called step() on foram with uninitialized genome: {}", getAddress());
+			return false;
+		}
+		if (!alive) {
+			logger.warn("Called step() on dead foram: {}", getAddress());
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -128,6 +152,7 @@ public class Foram extends SimpleAgent implements IForam {
 		for (int i = 0; i < childrenCount; i++) {
 			IForam foram = instanceProvider.getInstance(IForam.class);
 			foram.setEnergy(energy);
+			foram.setGenome(configService.getInitialGenome(getOceanFragment().getPosition()));
 			doAction(AgentActions.addToParent(this, foram));
 		}
 		this.energy = 0; // die

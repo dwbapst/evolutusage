@@ -1,24 +1,27 @@
 package pl.edu.agh.evolutus.config;
 
+import pl.edu.agh.evolutus.genome.Genome;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IEnvironmentConfigService {
 
-	Vector getOceanSize();
+	VectorL getOceanSize();
 
 	double getAlgaeEnergy();
 
-	long getInitialForamsCount(Vector position);
+	long getInitialForamsCount(VectorL position);
 
-	double getInitialAlgaeAvailability(Vector position);
+	double getInitialAlgaeAvailability(VectorL position);
 
 	double getAlgaeGrowth(double insolation);
 
-	double getInsolation(Vector position);
+	double getInsolation(VectorL position);
 
-	CurrentDirection getCurrentDirection(Vector position);
+	CurrentDirection getCurrentDirection(VectorL position);
 
-	double getCurrentStrength(Vector position);
+	double getCurrentStrength(VectorL position);
+
+	Genome getInitialGenome(VectorL position);
 
 }

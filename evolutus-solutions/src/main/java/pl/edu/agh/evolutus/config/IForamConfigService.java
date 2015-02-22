@@ -1,5 +1,8 @@
 package pl.edu.agh.evolutus.config;
 
+import pl.edu.agh.evolutus.genome.Genome;
+import pl.edu.agh.evolutus.utils.VectorL;
+
 public interface IForamConfigService {
 	double getForamInitialEnergy();
 
@@ -20,4 +23,6 @@ public interface IForamConfigService {
 	double getEnergyNeededToReproduce();
 
 	double getReproductionProbability();
+
+	Genome getInitialGenome(VectorL position);
 }

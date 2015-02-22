@@ -2,12 +2,12 @@ package pl.edu.agh.evolutus.environment;
 
 import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragmentProperties implements IOceanFragmentProperties {
 
-	private final Vector oceanSize;
-	private final Vector position;
+	private final VectorL oceanSize;
+	private final VectorL position;
 	private final double insolation;
 	private final double algaeEnergy;
 	private final double algaeGrowth;
@@ -15,7 +15,7 @@ public class OceanFragmentProperties implements IOceanFragmentProperties {
 	private final CurrentDirection currentDirection;
 	private final double currentStrength;
 
-	public OceanFragmentProperties(Vector oceanSize, Vector position, IEnvironmentConfigService configService) {
+	public OceanFragmentProperties(VectorL oceanSize, VectorL position, IEnvironmentConfigService configService) {
 		this.oceanSize = oceanSize;
 		this.position = position;
 		this.insolation = configService.getInsolation(position);
@@ -27,12 +27,12 @@ public class OceanFragmentProperties implements IOceanFragmentProperties {
 	}
 
 	@Override
-	public Vector getOceanSize() {
+	public VectorL getOceanSize() {
 		return oceanSize;
 	}
 
 	@Override
-	public Vector getPosition() {
+	public VectorL getPosition() {
 		return position;
 	}
 

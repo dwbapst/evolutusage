@@ -10,20 +10,20 @@ import org.jage.platform.component.exception.ComponentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.utils.Vector;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class StatisticsService implements IStatefulComponent {
 
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
-	private Map<Vector, Map<Long, Integer>> oceanFragmentStatistics = new HashMap<>();
+	private Map<VectorL, Map<Long, Integer>> oceanFragmentStatistics = new HashMap<>();
 
 	@Override
 	public void init() throws ComponentException {
 		logger.info("{} initialized", StatisticsService.class.getSimpleName());
 	}
 
-	public synchronized void addStatistics(Vector position, long step, int foramsAlive) {
+	public synchronized void addStatistics(VectorL position, long step, int foramsAlive) {
 		if (!oceanFragmentStatistics.containsKey(position)) {
 			oceanFragmentStatistics.put(position, new HashMap<>());
 		}
@@ -34,7 +34,7 @@ public class StatisticsService implements IStatefulComponent {
 	public boolean finish() throws ComponentException {
 		try {
 			PrintWriter out = new PrintWriter("/home/maciek/tmp/stats.csv");
-			for (Vector pos : oceanFragmentStatistics.keySet()) {
+			for (VectorL pos : oceanFragmentStatistics.keySet()) {
 				for (Long step : oceanFragmentStatistics.get(pos).keySet()) {
 					out.println(
 							String.format("%d,%d,%d,%d,%d", pos.x(), pos.y(), pos.z(), step,
