@@ -2,7 +2,7 @@ package pl.edu.agh.evolutus.foram;
 
 import org.jage.agent.ISimpleAgent;
 
-import pl.edu.agh.evolutus.genome.Genome;
+import pl.edu.agh.evolutus.genotype.Genome;
 
 public interface IForam extends ISimpleAgent {
 

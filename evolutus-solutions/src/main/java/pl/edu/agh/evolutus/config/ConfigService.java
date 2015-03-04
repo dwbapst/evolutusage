@@ -13,7 +13,7 @@ import javax.script.ScriptException;
 import org.apache.commons.io.IOUtils;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import pl.edu.agh.evolutus.genome.Genome;
+import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorL;
 

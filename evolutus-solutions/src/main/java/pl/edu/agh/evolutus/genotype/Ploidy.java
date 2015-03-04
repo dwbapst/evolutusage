@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.genome;
+package pl.edu.agh.evolutus.genotype;
 
 public enum Ploidy {
 	HAPLOID, DIPLOID;

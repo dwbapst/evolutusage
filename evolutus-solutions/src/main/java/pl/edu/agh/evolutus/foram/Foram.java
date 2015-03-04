@@ -10,6 +10,7 @@ import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.SimpleAgent;
 import org.jage.platform.component.exception.ComponentException;
+import org.jage.platform.component.provider.IComponentInstanceProvider;
 import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,8 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.evolutus.config.IForamConfigService;
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
-import pl.edu.agh.evolutus.genome.Genome;
+import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.genotype.Genotype;
 
 public class Foram extends SimpleAgent implements IForam {
 
@@ -176,5 +178,10 @@ public class Foram extends SimpleAgent implements IForam {
 		if (migrationTarget != null) {
 			doAction(AgentActions.migrate(this, migrationTarget));
 		}
+	}
+
+	public static IForam getForam(Genotype genotype, IComponentInstanceProvider instanceProvider){
+		// FIXME
+		return null;
 	}
 }

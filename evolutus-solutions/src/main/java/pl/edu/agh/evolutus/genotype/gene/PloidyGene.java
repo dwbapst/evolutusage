@@ -1,19 +1,12 @@
-package pl.edu.agh.evolutus.genome.gene;
+package pl.edu.agh.evolutus.genotype.gene;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import pl.edu.agh.evolutus.genome.Ploidy;
+import pl.edu.agh.evolutus.genotype.Ploidy;
 
-public class PloidyGene implements Gene<Ploidy> {
+public class PloidyGene extends Gene<Ploidy> {
 
-	private Ploidy value;
-
-	public PloidyGene(Ploidy value) {
-		this.value = value;
-	}
-
-	@Override
-	public Ploidy getValue() {
-		return value;
+	private PloidyGene(Ploidy value, boolean isDominant) {
+		super(value, isDominant);
 	}
 
 	public boolean isHaploid() {
@@ -26,6 +19,6 @@ public class PloidyGene implements Gene<Ploidy> {
 
 	public static PloidyGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
 		String ploidy = genomeScriptObject.get("ploidy").toString();
-		return new PloidyGene(Ploidy.fromString(ploidy));
+		return new PloidyGene(Ploidy.fromString(ploidy), RAND.nextDouble() < 0.5);
 	}
 }

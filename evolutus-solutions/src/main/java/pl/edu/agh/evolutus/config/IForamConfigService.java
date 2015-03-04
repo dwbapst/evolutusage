@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.config;
 
-import pl.edu.agh.evolutus.genome.Genome;
+import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IForamConfigService {
