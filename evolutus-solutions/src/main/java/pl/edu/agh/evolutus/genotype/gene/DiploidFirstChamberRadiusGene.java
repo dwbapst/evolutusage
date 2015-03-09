@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class DiploidFirstChamberRadiusGene extends FirstChamberRadiusGene {
 
@@ -8,7 +8,7 @@ public class DiploidFirstChamberRadiusGene extends FirstChamberRadiusGene {
 		super(value, isDominant);
 	}
 
-	public static DiploidFirstChamberRadiusGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static DiploidFirstChamberRadiusGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new DiploidFirstChamberRadiusGene((Double) genomeScriptObject.get("diploidFirstChamberRadius"),
 				RAND.nextDouble() < 0.5);
 	}

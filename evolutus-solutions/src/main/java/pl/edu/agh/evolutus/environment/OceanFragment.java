@@ -2,6 +2,8 @@ package pl.edu.agh.evolutus.environment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +15,19 @@ import javax.inject.Inject;
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.SimpleAggregate;
-import org.jage.platform.component.exception.ComponentException;
 import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
+import pl.edu.agh.evolutus.config.EnvironmentConfig;
+import pl.edu.agh.evolutus.config.IConfigFactory;
 import pl.edu.agh.evolutus.foram.IForam;
-import pl.edu.agh.evolutus.service.CoordinatesService;
+import pl.edu.agh.evolutus.genotype.DiploidGenotype;
+import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
+import pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator;
+import pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator;
+import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -32,24 +39,16 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	@Inject
 	private StatisticsService statisticsService;
 
-	@Inject
-	private IEnvironmentConfigService configService;
+	private EnvironmentConfig config;
 
 	private IOceanFragmentProperties oceanFragmentProperties;
 
-	private OceanFragmentContainer oceanFragmentContainer;
-
-	private List<IForam> foramsToAdd = new ArrayList<>();
-
-	private List<IForam> foramsToRemove = new ArrayList<>();
+	private Map<Genome, Integer> gametes = new HashMap<>();
 
 	@Inject
-	public OceanFragment(AgentAddressSupplier supplier, CoordinatesService coordinatesService,
-			IEnvironmentConfigService configService) {
+	public OceanFragment(AgentAddressSupplier supplier, IConfigFactory configFactory) {
 		super(supplier);
-		VectorL oceanSize = coordinatesService.getSize();
-		VectorL position = coordinatesService.createCoordinates();
-		this.oceanFragmentProperties = new OceanFragmentProperties(oceanSize, position, configService);
+		this.config = configFactory.getEnvironmentConfig();
 	}
 
 	@Override
@@ -63,28 +62,31 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public void setOceanFragmentContainer(OceanFragmentContainer oceanFragmentContainer) {
-		this.oceanFragmentContainer = oceanFragmentContainer;
-	}
-
-	@Override
 	public Collection<IForam> getForams() {
 		return getAgents().stream().filter(agent -> agent instanceof IForam).map(agent -> (IForam) agent)
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public void init() throws ComponentException {
-		super.init();
+	public void addGametes(List<Genome> gametes) {
+		for (Genome gamete : gametes) {
+			this.gametes.put(gamete, 0);
+		}
+	}
 
-		logger.debug("Initialized ocean fragment: {} {}", getAddress(), oceanFragmentProperties.getPosition());
+	@Override
+	public void initialize(VectorL position) {
+		this.oceanFragmentProperties = new OceanFragmentProperties(position, this.config);
 
-		long initialForamsCount = configService.getInitialForamsCount(getPosition());
+		long initialForamsCount = config.initialForamsCount(position);
 		for (long i = 0; i < initialForamsCount; i++) {
 			IForam foram = instanceProvider.getInstance(IForam.class);
-			foram.setGenome(configService.getInitialGenome(getPosition()));
+			foram.setEnergy(config.initialEnergy());
+			Genome initialGenome = config.initialGenome(position, foram.getAddress());
+			foram.setGenotype(new DiploidGenotype(initialGenome, initialGenome, foram.getAddress(), getCrossingOverOperator()));
 			add(foram);
 		}
+		logger.debug("Initialized ocean fragment: {} {}", getAddress(), oceanFragmentProperties.getPosition());
 	}
 
 	private long steps = 0;
@@ -96,6 +98,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		statisticsService.addStatistics(oceanFragmentProperties.getPosition(), steps++, foramsAlive());
 
 		oceanFragmentProperties.regenerateAlgae();
+
+		processGametes();
 	}
 
 	@Override
@@ -146,5 +150,52 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			}
 		}
 		return null;
+	}
+
+	private void processGametes() {
+		List<IForam> foramsToAdd = new ArrayList<>();
+		List<Genome> shuffledGametes = new ArrayList<>(gametes.keySet());
+		Collections.shuffle(shuffledGametes);
+
+		Genome prev = null;
+		for (Genome curr : shuffledGametes) {
+			if (gametes.get(curr) > 4) {
+				gametes.remove(curr); // Remove gametes older than 4 steps
+				continue;
+			} else {
+				gametes.put(curr, gametes.get(curr) + 1);
+			}
+
+			if (prev == null || prev.getForamIdentifier().equals(curr.getForamIdentifier())) {
+				prev = curr;
+			} else {
+				gametes.remove(prev);
+				gametes.remove(curr);
+				foramsToAdd.add(createForam(prev, curr));
+				prev = null;
+			}
+		}
+		addAll(foramsToAdd);
+	}
+
+	private IForam createForam(Genome genomeA, Genome genomeB) {
+		IForam foram = instanceProvider.getInstance(IForam.class);
+		foram.setEnergy(config.initialEnergy());
+		foram.setGenotype(new DiploidGenotype(genomeA, genomeB, foram.getAddress(), getCrossingOverOperator()));
+		return foram;
+	}
+
+	private CrossingOverOperator getCrossingOverOperator() {
+		String operatorName = config.crossingOverOperator();
+		switch (operatorName) {
+		case "OnePointCrossingOverOperator":
+			return instanceProvider.getInstance(OnePointCrossingOverOperator.class);
+		case "TwoPointCrossingOverOperator":
+			return instanceProvider.getInstance(TwoPointCrossingOverOperator.class);
+		case "UniformCrossingOverOperator":
+			return instanceProvider.getInstance(UniformCrossingOverOperator.class);
+		default:
+			throw new IllegalStateException("Unknown crossing-over operator: " + operatorName);
+		}
 	}
 }

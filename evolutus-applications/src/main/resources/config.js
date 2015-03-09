@@ -11,7 +11,7 @@ function simulationDuration() {
  ***************************/
 
 function oceanSize() {
-   return {x: 10, y: 10, z: 2};
+   return {x: 10, y: 10, z: 5};
 }
 
 function algaeEnergy() {
@@ -87,6 +87,20 @@ function energyNeededToReproduce() {
 
 function reproductionProbability() {
    return 0.8;
+}
+
+function gametesProduction(chambersCount) {
+   return 1000 * chambersCount;
+}
+
+function sievingCoefficient() {
+   return 0.999;
+}
+
+function crossingOverOperator() {
+   // return "OnePointCrossingOverOperator";
+   // return "TwoPointCrossingOverOperator";
+   return "UniformCrossingOverOperator";
 }
 
 function initialGenome(x, y, z) {

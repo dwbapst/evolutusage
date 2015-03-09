@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class DiploidJuvenileVolumeFactorGene extends JuvenileVolumeFactorGene {
 
@@ -8,7 +8,7 @@ public class DiploidJuvenileVolumeFactorGene extends JuvenileVolumeFactorGene {
 		super(value, isDominant);
 	}
 
-	public static DiploidJuvenileVolumeFactorGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static DiploidJuvenileVolumeFactorGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new DiploidJuvenileVolumeFactorGene((Double) genomeScriptObject.get("diploidJuvenileVolumeFactor"),
 				RAND.nextDouble() < 0.5);
 	}

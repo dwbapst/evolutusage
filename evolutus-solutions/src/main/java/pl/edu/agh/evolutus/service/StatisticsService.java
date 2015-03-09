@@ -37,7 +37,7 @@ public class StatisticsService implements IStatefulComponent {
 			for (VectorL pos : oceanFragmentStatistics.keySet()) {
 				for (Long step : oceanFragmentStatistics.get(pos).keySet()) {
 					out.println(
-							String.format("%d,%d,%d,%d,%d", pos.x(), pos.y(), pos.z(), step,
+							String.format("%d,%d,%d,%d,%d", pos.x, pos.y, pos.z, step,
 									oceanFragmentStatistics.get(pos).get(step)));
 				}
 			}

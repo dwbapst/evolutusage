@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 
 import pl.edu.agh.evolutus.genotype.Genome;
 
-public class SinglePointCrossingOverOperator extends CrossingOverOperator {
+public class OnePointCrossingOverOperator extends CrossingOverOperator {
 
 	@Override
 	protected Set<Integer> getSwapPoints() {

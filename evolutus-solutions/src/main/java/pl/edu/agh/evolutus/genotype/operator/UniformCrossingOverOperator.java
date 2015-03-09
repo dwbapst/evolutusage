@@ -19,9 +19,4 @@ public class UniformCrossingOverOperator extends CrossingOverOperator {
 		}
 		return swapPoints;
 	}
-
-	@Override
-	public Pair<Genome, Genome> apply(Pair<Genome, Genome> genomeGenomePair) {
-		return null;
-	}
 }

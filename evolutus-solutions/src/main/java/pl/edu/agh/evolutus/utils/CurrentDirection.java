@@ -10,7 +10,7 @@ public class CurrentDirection extends VectorL {
 	private final Map<VectorL, Double> vectorComponents = new LinkedHashMap<>();
 
 	public CurrentDirection(VectorL vector) {
-		this(vector.x(), vector.y(), vector.z());
+		this(vector.x, vector.y, vector.z);
 	}
 
 	public CurrentDirection(long x, long y, long z) {
@@ -45,24 +45,24 @@ public class CurrentDirection extends VectorL {
 		for (VectorL vectorComponent : vectorComponents.keySet()) {
 			VectorL target = cellCoordinates.add(vectorComponent);
 
-			if (target.x() >= poolSize.x()) {
-				target = new VectorL(0, target.y(), target.z());
+			if (target.x >= poolSize.x) {
+				target = new VectorL(0, target.y, target.z);
 			}
-			if (target.y() >= poolSize.y()) {
-				target = new VectorL(target.x(), 0, target.z());
+			if (target.y >= poolSize.y) {
+				target = new VectorL(target.x, 0, target.z);
 			}
-			if (target.z() >= poolSize.z()) {
-				target = new VectorL(target.x(), target.y(), 0);
+			if (target.z >= poolSize.z) {
+				target = new VectorL(target.x, target.y, 0);
 			}
 
-			if (target.x() < 0) {
-				target = new VectorL(poolSize.x() - 1, target.y(), target.z());
+			if (target.x < 0) {
+				target = new VectorL(poolSize.x - 1, target.y, target.z);
 			}
-			if (target.y() < 0) {
-				target = new VectorL(target.x(), poolSize.y() - 1, target.z());
+			if (target.y < 0) {
+				target = new VectorL(target.x, poolSize.y - 1, target.z);
 			}
-			if (target.z() < 0) {
-				target = new VectorL(target.x(), target.y(), poolSize.z() - 1);
+			if (target.z < 0) {
+				target = new VectorL(target.x, target.y, poolSize.z - 1);
 			}
 
 			targetCoordinates.put(target, vectorComponents.get(vectorComponent));

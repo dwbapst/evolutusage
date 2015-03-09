@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class WallThicknessFactorGene extends Gene<Double> {
 
@@ -8,7 +8,7 @@ public class WallThicknessFactorGene extends Gene<Double> {
 		super(value, isDominant);
 	}
 
-	public static WallThicknessFactorGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static WallThicknessFactorGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new WallThicknessFactorGene((Double) genomeScriptObject.get("wallThicknessFactor"), RAND.nextDouble() < 0.5);
 	}
 }

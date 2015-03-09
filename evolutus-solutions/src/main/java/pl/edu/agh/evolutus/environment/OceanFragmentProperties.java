@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.environment;
 
-import pl.edu.agh.evolutus.config.IEnvironmentConfigService;
+import pl.edu.agh.evolutus.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -15,15 +15,15 @@ public class OceanFragmentProperties implements IOceanFragmentProperties {
 	private final CurrentDirection currentDirection;
 	private final double currentStrength;
 
-	public OceanFragmentProperties(VectorL oceanSize, VectorL position, IEnvironmentConfigService configService) {
-		this.oceanSize = oceanSize;
+	public OceanFragmentProperties(VectorL position, EnvironmentConfig configService) {
+		this.oceanSize = configService.oceanSize();
 		this.position = position;
-		this.insolation = configService.getInsolation(position);
-		this.algaeEnergy = configService.getAlgaeEnergy();
-		this.algaeGrowth = configService.getAlgaeGrowth(insolation);
-		this.algaeAvailability = configService.getInitialAlgaeAvailability(position);
-		this.currentDirection = configService.getCurrentDirection(position);
-		this.currentStrength = configService.getCurrentStrength(position);
+		this.insolation = configService.insolation(position);
+		this.algaeEnergy = configService.algaeEnergy();
+		this.algaeGrowth = configService.algaeGrowth(insolation);
+		this.algaeAvailability = configService.initialAlgaeAvailability(position);
+		this.currentDirection = configService.currentDirection(position);
+		this.currentStrength = configService.currentStrength(position);
 	}
 
 	@Override

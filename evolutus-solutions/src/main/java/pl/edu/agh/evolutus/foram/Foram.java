@@ -1,6 +1,7 @@
 package pl.edu.agh.evolutus.foram;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -10,12 +11,12 @@ import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.SimpleAgent;
 import org.jage.platform.component.exception.ComponentException;
-import org.jage.platform.component.provider.IComponentInstanceProvider;
 import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.config.IForamConfigService;
+import pl.edu.agh.evolutus.config.ForamConfig;
+import pl.edu.agh.evolutus.config.IConfigFactory;
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -29,17 +30,17 @@ public class Foram extends SimpleAgent implements IForam {
 	private double energy;
 	private int chambersCount = 1;
 
-	private Genome genome = null;
+	private Genotype genotype = null;
 
-	@Inject
-	private IForamConfigService configService;
+	private ForamConfig config;
 
 	private Random random = new Random();
 
 	@Inject
-	public Foram(AgentAddressSupplier supplier, IForamConfigService configService) {
+	public Foram(AgentAddressSupplier supplier, IConfigFactory configFactory) {
 		super(supplier);
-		this.energy = configService.getForamInitialEnergy();
+		this.config = configFactory.getForamConfig();
+		this.energy = config.initialEnergy();
 	}
 
 	@Override
@@ -48,11 +49,11 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	@Override
-	public void setGenome(Genome genome) {
-		if (this.genome == null) {
-			this.genome = genome;
+	public void setGenotype(Genotype genotype) {
+		if (this.genotype == null) {
+			this.genotype = genotype;
 		} else {
-			throw new IllegalStateException("setGenome() called multiple times on foram: " + getAddress());
+			throw new IllegalStateException("setGenotype() called multiple times on foram: " + getAddress());
 		}
 	}
 
@@ -75,30 +76,33 @@ public class Foram extends SimpleAgent implements IForam {
 			return;
 		}
 
-		energy -= configService.getEnergyDemand(chambersCount);
+		energy -= config.energyDemand(chambersCount);
 
-		if (shouldDie()) {
-			die();
-			return;
-		}
-		eat();
-		if (canReproduce()) {
-			reproduce();
-		}
-		if (canCreateChamber()) {
-			createChamber();
-		}
+		try {
+			if (shouldDie()) {
+				die();
+			}
+			eat();
+			if (canReproduce()) {
+				reproduce();
+			}
+			if (canCreateChamber()) {
+				createChamber();
+			}
 
-		if (steps % 5 == 0) {
-			flowWithCurrent();
-		}
+			if (steps % 5 == 0) {
+				flowWithCurrent();
+			}
 
-		steps++;
+			steps++;
+		} catch (AgentDiedException e) {
+			logger.debug("Foram died: {}", getAddress());
+		}
 	}
 
 	private boolean couldForamPerformStep() {
-		if (genome == null) {
-			logger.warn("Called step() on foram with uninitialized genome: {}", getAddress());
+		if (genotype == null) {
+			logger.warn("Called step() on foram with uninitialized genotype: {}", getAddress());
 			return false;
 		}
 		if (!alive) {
@@ -117,13 +121,16 @@ public class Foram extends SimpleAgent implements IForam {
 		return energy <= 0.0;
 	}
 
-	private void die() {
+	private void die() throws AgentDiedException {
+		energy = 0.0;
 		alive = false;
+		// TODO: persist genotype in virtual fossilization service
 		doAction(AgentActions.death(this));
+		throw new AgentDiedException();
 	}
 
 	private void eat() {
-		double capacity = configService.getEnergyCapacity(chambersCount);
+		double capacity = config.energyCapacity(chambersCount);
 		energy += getOceanFragment().takeAlgae(capacity);
 	}
 
@@ -143,32 +150,27 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean canReproduce() {
-		double energyNeededToReproduce = configService.getEnergyNeededToReproduce();
-		double reproductionProbability = configService.getReproductionProbability();
+		double energyNeededToReproduce = config.energyNeededToReproduce();
+		double reproductionProbability = config.reproductionProbability();
 		return energy > energyNeededToReproduce && random.nextDouble() > reproductionProbability;
 	}
 
-	private void reproduce() {
-		int childrenCount = random.nextInt(configService.getNewBornLimit());
-		double energy = this.energy / childrenCount * 2;
-		for (int i = 0; i < childrenCount; i++) {
-			IForam foram = instanceProvider.getInstance(IForam.class);
-			foram.setEnergy(energy);
-			foram.setGenome(configService.getInitialGenome(getOceanFragment().getPosition()));
-			doAction(AgentActions.addToParent(this, foram));
-		}
-		this.energy = 0; // die
+	private void reproduce() throws AgentDiedException {
+		int gametesProduction = config.gametesProduction(chambersCount);
+		List<Genome> gametes = genotype.createGametes(gametesProduction, config.sievingCoefficient());
+		getOceanFragment().addGametes(gametes);
+		die();
 	}
 
 	private boolean canCreateChamber() {
-		double energyNeededForGrowth = configService.getEnergyNeededForGrowth();
-		int chambersLimit = configService.getChambersLimit();
-		double growthProbability = configService.getGrowthProbability();
+		double energyNeededForGrowth = config.energyNeededForGrowth();
+		int chambersLimit = config.chambersLimit();
+		double growthProbability = config.growthProbability();
 		return energy > energyNeededForGrowth && chambersCount < chambersLimit && random.nextDouble() > growthProbability;
 	}
 
 	private void createChamber() {
-		energy -= configService.getChamberGrowthEnergyCost(chambersCount);
+		energy -= config.chamberGrowthEnergyCost(chambersCount);
 		chambersCount++;
 	}
 
@@ -180,8 +182,7 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 	}
 
-	public static IForam getForam(Genotype genotype, IComponentInstanceProvider instanceProvider){
-		// FIXME
-		return null;
+	private static class AgentDiedException extends Exception {
+
 	}
 }

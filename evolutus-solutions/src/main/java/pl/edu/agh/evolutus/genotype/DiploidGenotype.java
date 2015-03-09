@@ -4,10 +4,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jage.address.agent.AgentAddress;
 
 import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.RecombinationOperator;
-import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
 
 public class DiploidGenotype extends Genotype {
 
@@ -17,11 +17,12 @@ public class DiploidGenotype extends Genotype {
 
 	private final CrossingOverOperator crossingOverOperator;
 
-	public DiploidGenotype(Genome genomeA, Genome genomeB) {
-		this.genomeA = genomeA;
-		this.genomeB = genomeB;
-		this.effectiveGenome = new RecombinationOperator().apply(genomeA, genomeB);
-		this.crossingOverOperator = new UniformCrossingOverOperator();
+	public DiploidGenotype(Genome genomeA, Genome genomeB, AgentAddress agentAddress,
+			CrossingOverOperator crossingOverOperator) {
+		this.genomeA = Genome.forGenome(genomeA, agentAddress.toQualifiedString());
+		this.genomeB = Genome.forGenome(genomeB, agentAddress.toQualifiedString());
+		this.effectiveGenome = new RecombinationOperator().apply(this.genomeA, this.genomeB);
+		this.crossingOverOperator = crossingOverOperator;
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class DiploidGenotype extends Genotype {
 	protected Stream<Genome> createGameteStream(int number) {
 		return IntStream.range(0, number / 2)
 				.mapToObj(i -> Pair.of(genomeA.copy(), genomeB.copy()))
-				.map(crossingOverOperator)
+				.map(crossingOverOperator::apply)
 				.flatMap(pair -> Stream.of(pair.getLeft(), pair.getRight()));
 	}
 }

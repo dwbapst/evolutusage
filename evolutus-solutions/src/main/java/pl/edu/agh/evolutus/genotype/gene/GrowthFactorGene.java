@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.utils.VectorD;
 
 public class GrowthFactorGene extends Gene<VectorD> {
@@ -13,8 +13,8 @@ public class GrowthFactorGene extends Gene<VectorD> {
 		super(value, isDominant);
 	}
 
-	public static GrowthFactorGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
-		VectorD vector = VectorD.fromScriptObject((ScriptObjectMirror) genomeScriptObject.get("growthFactor"));
+	public static GrowthFactorGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
+		VectorD vector = VectorD.fromScriptObject((ScriptObject) genomeScriptObject.get("growthFactor"));
 		return new GrowthFactorGene(vector, RAND.nextDouble() < 0.5);
 	}
 }

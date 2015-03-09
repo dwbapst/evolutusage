@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class MetabolicEffectivenessGene extends Gene<Double> {
 
@@ -8,7 +8,7 @@ public class MetabolicEffectivenessGene extends Gene<Double> {
 		super(value, isDominant);
 	}
 
-	public static MetabolicEffectivenessGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static MetabolicEffectivenessGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new MetabolicEffectivenessGene((Double) genomeScriptObject.get("metabolicEffectiveness"), RAND.nextDouble() < 0.5);
 	}
 }

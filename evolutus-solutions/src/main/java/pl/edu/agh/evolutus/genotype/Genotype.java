@@ -21,22 +21,20 @@ import pl.edu.agh.evolutus.genotype.gene.WallThicknessFactorGene;
 
 public abstract class Genotype {
 
-	private static final double ACCEPTED_GAMETES_FRACTION = 0.1;
-
 	private final Random rand = new Random();
 
 	public abstract Genome getEffectiveGenome();
 
-	public List<Genome> createGametes(int number) {
+	protected abstract Stream<Genome> createGameteStream(int number);
+
+	public List<Genome> createGametes(int number, double sievingCoefficient) {
 		if (number % 2 != 0) {
 			throw new IllegalArgumentException("Number of gametes to create has to be even. Given: " + number);
 		}
 		return createGameteStream(number)
-				.filter(gamete -> rand.nextDouble() < ACCEPTED_GAMETES_FRACTION)
+				.filter(gamete -> rand.nextDouble() > sievingCoefficient)
 				.collect(Collectors.toList());
 	}
-
-	protected abstract Stream<Genome> createGameteStream(int number);
 
 	public TranslationFactorGene getTranslationFactorGene() {
 		return getEffectiveGenome().getTranslationFactorGene();

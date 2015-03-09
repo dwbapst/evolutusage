@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class MaxEnergyGene extends Gene<Double> {
 
@@ -8,7 +8,7 @@ public class MaxEnergyGene extends Gene<Double> {
 		super(value, isDominant);
 	}
 
-	public static MaxEnergyGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static MaxEnergyGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new MaxEnergyGene((Double) genomeScriptObject.get("maxEnergy"), RAND.nextDouble() < 0.5);
 	}
 }

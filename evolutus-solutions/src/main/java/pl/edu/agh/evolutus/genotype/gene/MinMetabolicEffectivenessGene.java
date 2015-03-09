@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class MinMetabolicEffectivenessGene extends Gene<Double> {
 
@@ -8,7 +8,7 @@ public class MinMetabolicEffectivenessGene extends Gene<Double> {
 		super(value, isDominant);
 	}
 
-	public static MinMetabolicEffectivenessGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static MinMetabolicEffectivenessGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new MinMetabolicEffectivenessGene((Double) genomeScriptObject.get("minMetabolicEffectiveness"),
 				RAND.nextDouble() < 0.5);
 	}

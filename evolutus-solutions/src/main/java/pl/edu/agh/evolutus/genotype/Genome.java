@@ -2,7 +2,7 @@ package pl.edu.agh.evolutus.genotype;
 
 import java.util.Iterator;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.genotype.gene.DeviationAngleGene;
 import pl.edu.agh.evolutus.genotype.gene.DiploidFirstChamberRadiusGene;
 import pl.edu.agh.evolutus.genotype.gene.DiploidJuvenileVolumeFactorGene;
@@ -43,15 +43,19 @@ public class Genome implements Iterable<Gene> {
 	private static final int METABOLIC_EFFECTIVENESS_INDEX = 13;
 	private static final int MIN_METABOLIC_EFFECTIVENESS_INDEX = 14;
 
-	public static Genome forGenes(Gene[] genes) {
+	public static Genome forGenome(Genome genome, String foramIdentifier) {
+		return forGenes(genome.genes, foramIdentifier);
+	}
+
+	public static Genome forGenes(Gene[] genes, String foramIdentifier) {
 		if (genes.length != LENGTH) {
 			throw new IllegalArgumentException(String.format("Genes array have to be %d elements long.", LENGTH));
 		}
-		return new Genome(genes);
+		return new Genome(genes, foramIdentifier);
 	}
 
-	public static Genome fromScriptObject(ScriptObjectMirror scriptObject) {
-		Genome genome = new Genome();
+	public static Genome fromScriptObject(ScriptObject scriptObject, String foramIdentifier) {
+		Genome genome = new Genome(foramIdentifier);
 		genome.genes[TRANSLATION_FACTOR_INDEX] = TranslationFactorGene.fromGenomeScriptObject(scriptObject);
 		genome.genes[GROWTH_FACTOR_INDEX] = GrowthFactorGene.fromGenomeScriptObject(scriptObject);
 		genome.genes[ROTATION_ANGLE_INDEX] = RotationAngleGene.fromGenomeScriptObject(scriptObject);
@@ -63,8 +67,8 @@ public class Genome implements Iterable<Gene> {
 		genome.genes[MIN_ADULT_VOLUME_INDEX] = MinAdultVolumeGene.fromGenomeScriptObject(scriptObject);
 		genome.genes[HAPLOID_JUVENILE_VOLUME_FACTOR_INDEX] = HaploidJuvenileVolumeFactorGene.fromGenomeScriptObject(scriptObject);
 		genome.genes[DIPLOID_JUVENILE_VOLUME_FACTOR_INDEX] = DiploidJuvenileVolumeFactorGene.fromGenomeScriptObject(scriptObject);
-		genome.genes[MAX_ENERGY_INDEX] = TranslationFactorGene.fromGenomeScriptObject(scriptObject);
-		genome.genes[MIN_ENERGY_INDEX] = TranslationFactorGene.fromGenomeScriptObject(scriptObject);
+		genome.genes[MAX_ENERGY_INDEX] = MaxEnergyGene.fromGenomeScriptObject(scriptObject);
+		genome.genes[MIN_ENERGY_INDEX] = MinEnergyGene.fromGenomeScriptObject(scriptObject);
 		genome.genes[METABOLIC_EFFECTIVENESS_INDEX] = MetabolicEffectivenessGene.fromGenomeScriptObject(scriptObject);
 		genome.genes[MIN_METABOLIC_EFFECTIVENESS_INDEX] = MinMetabolicEffectivenessGene.fromGenomeScriptObject(scriptObject);
 		return genome;
@@ -72,15 +76,23 @@ public class Genome implements Iterable<Gene> {
 
 	private Gene[] genes = new Gene[LENGTH];
 
-	protected Genome() {
+	private final String foramIdentifier;
+
+	protected Genome(String foramIdentifier) {
+		this.foramIdentifier = foramIdentifier;
 	}
 
-	protected Genome(Gene[] genes) {
-		this.genes = genes;
+	protected Genome(Gene[] genes, String foramIdentifier) {
+		this(foramIdentifier);
+		System.arraycopy(genes, 0, this.genes, 0, genes.length);
 	}
 
 	public Genome copy() {
-		return new Genome(this.genes);
+		return new Genome(this.genes, this.foramIdentifier);
+	}
+
+	public String getForamIdentifier() {
+		return foramIdentifier;
 	}
 
 	public TranslationFactorGene getTranslationFactorGene() {

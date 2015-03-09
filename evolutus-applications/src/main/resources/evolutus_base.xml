@@ -23,11 +23,13 @@
 
   <component name="statisticsService" class="pl.edu.agh.evolutus.service.StatisticsService"/>
 
-  <component name="configService" class="pl.edu.agh.evolutus.config.ConfigService"/>
+  <component name="configFactory" class="pl.edu.agh.evolutus.config.ConfigFactory"/>
 
-  <block name="coordinatesService">
-    <component name="coordinatesService" class="pl.edu.agh.evolutus.service.CoordinatesService"/>
-  </block>
+  <component name="onePointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator"/>
+
+  <component name="twoPointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator"/>
+
+  <component name="uniformCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator"/>
 
   <block name="foram">
     <agent class="pl.edu.agh.evolutus.foram.Foram">
@@ -37,26 +39,21 @@
     </agent>
   </block>
 
-  <block name="oceanFragments">
-    <list name="oceanFragments">
-      <multiple count="6250">
-        <agent class="pl.edu.agh.evolutus.environment.OceanFragment">
-          <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
-            <constructor-arg name="nameTemplate" value="OceanFragment#*"/>
-          </component>
-        </agent>
-      </multiple>
-    </list>
+  <block name="oceanFragment">
+    <agent class="pl.edu.agh.evolutus.environment.OceanFragment">
+      <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+        <constructor-arg name="nameTemplate" value="OceanFragment#*"/>
+      </component>
+    </agent>
   </block>
 
   <block name="oceanFragmentContainers">
     <list name="oceanFragmentContainers">
-      <multiple count="2">
+      <multiple count="1">
         <agent name="oceanFragmentContainer" class="pl.edu.agh.evolutus.environment.OceanFragmentContainer">
           <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
             <constructor-arg name="nameTemplate" value="OceanFragmentContainer#*"/>
           </component>
-          <property name="agents" ref="oceanFragments"/>
         </agent>
       </multiple>
     </list>

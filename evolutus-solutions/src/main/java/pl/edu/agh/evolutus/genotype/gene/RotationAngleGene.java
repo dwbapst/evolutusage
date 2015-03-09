@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class RotationAngleGene extends Gene<Double> {
 
@@ -8,7 +8,7 @@ public class RotationAngleGene extends Gene<Double> {
 		super(value, isDominant);
 	}
 
-	public static RotationAngleGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static RotationAngleGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new RotationAngleGene((Double) genomeScriptObject.get("rotationAngle"), RAND.nextDouble() < 0.5);
 	}
 }

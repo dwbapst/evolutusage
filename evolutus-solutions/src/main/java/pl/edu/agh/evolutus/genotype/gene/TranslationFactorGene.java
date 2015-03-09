@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class TranslationFactorGene extends Gene<Double> {
 
@@ -8,7 +8,7 @@ public class TranslationFactorGene extends Gene<Double> {
 		super(value, isDominant);
 	}
 
-	public static TranslationFactorGene fromGenomeScriptObject(ScriptObjectMirror genomeScriptObject) {
+	public static TranslationFactorGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
 		return new TranslationFactorGene((Double) genomeScriptObject.get("translationFactor"), RAND.nextDouble() < 0.5);
 	}
 }

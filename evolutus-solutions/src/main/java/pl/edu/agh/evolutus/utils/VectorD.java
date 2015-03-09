@@ -1,10 +1,10 @@
 package pl.edu.agh.evolutus.utils;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class VectorD {
 
-	private double x, y, z;
+	public final double x, y, z;
 
 	public VectorD() {
 		this(0, 0, 0);
@@ -16,24 +16,12 @@ public class VectorD {
 		this.z = z;
 	}
 
-	public double x() {
-		return x;
-	}
-
-	public double y() {
-		return y;
-	}
-
-	public double z() {
-		return z;
-	}
-
 	public VectorD add(VectorD vector) {
-		return new VectorD(x + vector.x(), y + vector.y(), z + vector.z());
+		return new VectorD(x + vector.x, y + vector.y, z + vector.z);
 	}
 
 	public VectorD sub(VectorD vector) {
-		return new VectorD(x - vector.x(), y - vector.y(), z - vector.z());
+		return new VectorD(x - vector.x, y - vector.y, z - vector.z);
 	}
 
 	public VectorD mul(double factor) {
@@ -44,7 +32,7 @@ public class VectorD {
 		return mul(1.0 / divisor);
 	}
 
-	public static VectorD fromScriptObject(ScriptObjectMirror scriptObject) {
+	public static VectorD fromScriptObject(ScriptObject scriptObject) {
 		return new VectorD((double) scriptObject.get("x"), (double) scriptObject.get("y"), (double) scriptObject.get("z"));
 	}
 
