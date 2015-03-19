@@ -1,50 +1,126 @@
 package pl.edu.agh.evolutus.service;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
+import org.jooq.Configuration;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DefaultConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.utils.VectorL;
+import pl.edu.agh.evolutus.database.tables.daos.StatsDao;
+import pl.edu.agh.evolutus.database.tables.pojos.Stats;
 
 public class StatisticsService implements IStatefulComponent {
 
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
-	private Map<VectorL, Map<Long, Integer>> oceanFragmentStatistics = new HashMap<>();
+	@Inject
+	private ConnectionProvider connectionProvider;
+
+	@Inject
+	private VisualizationService visualizationService;
+
+	private final List<Stats> statsToAdd = new LinkedList<>();
+	private Thread thread;
+	private Connection connection;
+	private boolean isRunning = true;
+
+	public final Timestamp simulationStart = new Timestamp(System.currentTimeMillis());
 
 	@Override
-	public void init() throws ComponentException {
-		logger.info("{} initialized", StatisticsService.class.getSimpleName());
-	}
-
-	public synchronized void addStatistics(VectorL position, long step, int foramsAlive) {
-		if (!oceanFragmentStatistics.containsKey(position)) {
-			oceanFragmentStatistics.put(position, new HashMap<>());
-		}
-		oceanFragmentStatistics.get(position).put(step, foramsAlive);
-	}
-
-	@Override
-	public boolean finish() throws ComponentException {
+	public void init() throws StatisticsServiceException {
 		try {
-			PrintWriter out = new PrintWriter("/home/maciek/tmp/stats.csv");
-			for (VectorL pos : oceanFragmentStatistics.keySet()) {
-				for (Long step : oceanFragmentStatistics.get(pos).keySet()) {
-					out.println(
-							String.format("%d,%d,%d,%d,%d", pos.x, pos.y, pos.z, step,
-									oceanFragmentStatistics.get(pos).get(step)));
+			connection = connectionProvider.getConnection();
+			thread = createThread(connection);
+			thread.start();
+			logger.info("{} initialized. Thread started.", StatisticsService.class.getSimpleName());
+		} catch (SQLException e) {
+			throw new StatisticsServiceException(e);
+		}
+	}
+
+	public void add(Stats stats) {
+		if (!isRunning) {
+			throw new StatisticsServiceException("Cannot add statistics. Thread is not running.");
+		}
+		synchronized (statsToAdd) {
+			statsToAdd.add(stats);
+		}
+	}
+
+	@Override
+	public boolean finish() throws StatisticsServiceException {
+		isRunning = false;
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			throw new StatisticsServiceException("Exception thrown while waiting for statistics thread to finish.", e);
+		}
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			throw new StatisticsServiceException("Exception thrown while closing database connection.", e);
+		}
+
+		try {
+			visualizationService.visualize(simulationStart);
+		} catch (Exception e) {
+			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
+		}
+
+		logger.info("{} finished.", StatisticsService.class.getSimpleName());
+		return true;
+	}
+
+	private Thread createThread(final Connection connection) {
+		return new Thread() {
+
+			@Override
+			public void run() {
+				Configuration config = new DefaultConfiguration().set(connection).set(SQLDialect.H2);
+				StatsDao statsDao = new StatsDao(config);
+
+				while (isRunning || !statsToAdd.isEmpty()) {
+					try {
+						if (statsToAdd.isEmpty()) {
+							Thread.sleep(1000);
+						}
+					} catch (InterruptedException e) {
+						logger.error("Statistics thread interrupted.", e);
+						isRunning = false;
+					}
+
+					List<Stats> stats;
+					synchronized (statsToAdd) {
+						stats = new LinkedList<>(statsToAdd);
+						statsToAdd.clear();
+					}
+					statsDao.insert(stats);
 				}
 			}
-			out.close();
-		} catch (FileNotFoundException e) {
-			logger.error("Cannot open output file for statistics.", e);
+		};
+	}
+
+	public static class StatisticsServiceException extends ComponentException {
+		public StatisticsServiceException(String message) {
+			super(message);
 		}
-		return true;
+
+		public StatisticsServiceException(Throwable cause) {
+			super(cause);
+		}
+
+		public StatisticsServiceException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

@@ -18,7 +18,7 @@ public interface IConfigJS {
 
 	ScriptObject currentDirection(long x, long y, long z);
 
-	double currentStrength(long x, long y, long z);
+	String boundaryConditions();
 
 	double initialEnergy();
 
@@ -42,7 +42,7 @@ public interface IConfigJS {
 
 	int gametesProduction(int chambersCount);
 
-	double sievingCoefficient();
+	double gametesSievingCoefficient();
 
 	ScriptObject initialGenome(long x, long y, long z);
 

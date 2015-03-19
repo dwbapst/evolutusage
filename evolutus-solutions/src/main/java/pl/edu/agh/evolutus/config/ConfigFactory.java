@@ -1,15 +1,16 @@
 package pl.edu.agh.evolutus.config;
 
-import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class ConfigFactory implements IConfigFactory {
@@ -21,11 +22,13 @@ public class ConfigFactory implements IConfigFactory {
 	private final SimulationConfig simulationConfig;
 
 	public ConfigFactory() throws ConfigServiceException {
+		Reader configReader = null;
 		try {
-			String configScriptString = getConfigAsString();
+			configReader = getConfigReader();
+
 			ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 			ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
-			scriptEngine.eval(configScriptString);
+			scriptEngine.eval(configReader);
 
 			Invocable invocable = (Invocable) scriptEngine;
 			IConfigJS configJS = invocable.getInterface(IConfigJS.class);
@@ -36,19 +39,21 @@ public class ConfigFactory implements IConfigFactory {
 			throw new ConfigServiceException("Cannot read config files", e);
 		} catch (ScriptException e) {
 			throw new ConfigServiceException("Cannot evaluate config script", e);
+		} finally {
+			IOUtils.closeQuietly(configReader);
 		}
 	}
 
-	private String getConfigAsString() throws IOException, ConfigServiceException {
+	private Reader getConfigReader() throws IOException, ConfigServiceException {
 		String configPath = System.getProperty(CONFIG_PROPERTY);
 		if (configPath != null) {
-			return FileUtils.readFileToString(new File(configPath));
+			return new FileReader(configPath);
 		} else {
 			InputStream configStream = getClass().getClassLoader().getResourceAsStream(CONFIG_CLASSPATH_LOCATION);
 			if (configStream == null) {
 				throw new ConfigServiceException("Cannot find config.js file in the classpath root directory.");
 			}
-			return IOUtils.toString(configStream);
+			return new InputStreamReader(configStream);
 		}
 	}
 

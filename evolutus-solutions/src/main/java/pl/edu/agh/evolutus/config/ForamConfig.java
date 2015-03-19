@@ -57,8 +57,8 @@ public class ForamConfig {
 		return configJS.gametesProduction(chambersCount);
 	}
 
-	public double sievingCoefficient() {
-		return configJS.sievingCoefficient();
+	public double gametesSievingCoefficient() {
+		return configJS.gametesSievingCoefficient();
 	}
 
 	public Genome initialGenome(VectorL position, AgentAddress foramIdentifier) {

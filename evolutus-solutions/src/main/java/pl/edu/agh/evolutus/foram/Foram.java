@@ -157,7 +157,7 @@ public class Foram extends SimpleAgent implements IForam {
 
 	private void reproduce() throws AgentDiedException {
 		int gametesProduction = config.gametesProduction(chambersCount);
-		List<Genome> gametes = genotype.createGametes(gametesProduction, config.sievingCoefficient());
+		List<Genome> gametes = genotype.createGametes(gametesProduction, config.gametesSievingCoefficient());
 		getOceanFragment().addGametes(gametes);
 		die();
 	}
@@ -177,7 +177,7 @@ public class Foram extends SimpleAgent implements IForam {
 	private void flowWithCurrent() {
 		IOceanFragment oceanFragment = getOceanFragment();
 		AgentAddress migrationTarget = oceanFragment.getMigrationTarget();
-		if (migrationTarget != null) {
+		if (migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
 			doAction(AgentActions.migrate(this, migrationTarget));
 		}
 	}

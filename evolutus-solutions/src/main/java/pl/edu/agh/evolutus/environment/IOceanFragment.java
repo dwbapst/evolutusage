@@ -12,7 +12,7 @@ import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IOceanFragment extends ISimpleAggregate {
 
-	IOceanFragmentProperties getOceanFragmentProperties();
+	OceanFragmentProperties getOceanFragmentProperties();
 
 	VectorL getPosition();
 

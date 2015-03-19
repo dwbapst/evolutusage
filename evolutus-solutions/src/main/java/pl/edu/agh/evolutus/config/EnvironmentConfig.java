@@ -2,8 +2,8 @@ package pl.edu.agh.evolutus.config;
 
 import org.jage.address.agent.AgentAddress;
 
+import pl.edu.agh.evolutus.environment.BoundaryConditions;
 import pl.edu.agh.evolutus.genotype.Genome;
-import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -47,8 +47,8 @@ public class EnvironmentConfig {
 		return new CurrentDirection(VectorL.fromScriptObject(configJS.currentDirection(position.x, position.y, position.z)));
 	}
 
-	public double currentStrength(VectorL position) {
-		return configJS.currentStrength(position.x, position.y, position.z);
+	public BoundaryConditions boundaryConditions() {
+		return BoundaryConditions.fromString(configJS.boundaryConditions());
 	}
 
 	public Genome initialGenome(VectorL position, AgentAddress foramIdentifier) {
@@ -56,7 +56,7 @@ public class EnvironmentConfig {
 				foramIdentifier.toQualifiedString());
 	}
 
-	public String crossingOverOperator(){
+	public String crossingOverOperator() {
 		return configJS.crossingOverOperator();
 	}
 

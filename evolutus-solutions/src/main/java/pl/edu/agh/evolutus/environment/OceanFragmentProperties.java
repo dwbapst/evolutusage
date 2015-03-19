@@ -4,7 +4,7 @@ import pl.edu.agh.evolutus.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorL;
 
-public class OceanFragmentProperties implements IOceanFragmentProperties {
+public class OceanFragmentProperties {
 
 	private final VectorL oceanSize;
 	private final VectorL position;
@@ -13,72 +13,60 @@ public class OceanFragmentProperties implements IOceanFragmentProperties {
 	private final double algaeGrowth;
 	private double algaeAvailability;
 	private final CurrentDirection currentDirection;
-	private final double currentStrength;
+	private final BoundaryConditions boundaryConditions;
 
-	public OceanFragmentProperties(VectorL position, EnvironmentConfig configService) {
-		this.oceanSize = configService.oceanSize();
+	public OceanFragmentProperties(VectorL position, EnvironmentConfig config) {
+		this.oceanSize = config.oceanSize();
 		this.position = position;
-		this.insolation = configService.insolation(position);
-		this.algaeEnergy = configService.algaeEnergy();
-		this.algaeGrowth = configService.algaeGrowth(insolation);
-		this.algaeAvailability = configService.initialAlgaeAvailability(position);
-		this.currentDirection = configService.currentDirection(position);
-		this.currentStrength = configService.currentStrength(position);
+		this.insolation = config.insolation(position);
+		this.algaeEnergy = config.algaeEnergy();
+		this.algaeGrowth = config.algaeGrowth(insolation);
+		this.algaeAvailability = config.initialAlgaeAvailability(position);
+		this.currentDirection = config.currentDirection(position);
+		this.boundaryConditions = config.boundaryConditions();
 	}
 
-	@Override
 	public VectorL getOceanSize() {
 		return oceanSize;
 	}
 
-	@Override
 	public VectorL getPosition() {
 		return position;
 	}
 
-	@Override
 	public double getInsolation() {
 		return insolation;
 	}
 
-	@Override
 	public double getAlgaeEnergy() {
 		return algaeEnergy;
 	}
 
-	@Override
 	public double getAlgaeGrowth() {
 		return algaeGrowth;
 	}
 
-	@Override
 	public double getAlgaeAvailability() {
 		return algaeAvailability;
 	}
 
-	@Override
 	public void regenerateAlgae() {
 		increaseAlgaeAvailability(algaeGrowth);
 	}
 
-	@Override
 	public void increaseAlgaeAvailability(double amount) {
 		this.algaeAvailability += amount;
 	}
 
-	@Override
 	public void decreaseAlgaeAvailability(double amount) {
 		this.algaeAvailability -= amount;
 	}
 
-	@Override
 	public CurrentDirection getCurrentDirection() {
 		return currentDirection;
 	}
 
-	@Override
-	public double getCurrentStrength() {
-		return currentStrength;
+	public BoundaryConditions getBoundaryConditions() {
+		return boundaryConditions;
 	}
-
 }

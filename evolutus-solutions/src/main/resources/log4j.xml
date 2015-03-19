@@ -14,18 +14,6 @@
     <level value="WARN"/>
   </logger>
 
-  <logger name="com.hazelcast">
-    <level value="INFO"/>
-  </logger>
-
-  <logger name="pl.edu.agh.evolutus">
-    <level value="INFO"/>
-  </logger>
-
-  <logger name="org.jage">
-    <level value="INFO"/>
-  </logger>
-
   <root>
     <priority value="INFO"/>
     <appender-ref ref="CONSOLE"/>

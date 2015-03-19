@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,6 +13,7 @@ import javax.inject.Inject;
 
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
+import org.jage.agent.AbstractAgent;
 import org.jage.agent.SimpleAggregate;
 import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.config.IConfigFactory;
+import pl.edu.agh.evolutus.database.tables.pojos.Stats;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.DiploidGenotype;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -41,7 +42,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private EnvironmentConfig config;
 
-	private IOceanFragmentProperties oceanFragmentProperties;
+	private OceanFragmentProperties oceanFragmentProperties;
 
 	private Map<Genome, Integer> gametes = new HashMap<>();
 
@@ -52,7 +53,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public IOceanFragmentProperties getOceanFragmentProperties() {
+	public OceanFragmentProperties getOceanFragmentProperties() {
 		return oceanFragmentProperties;
 	}
 
@@ -95,7 +96,11 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	public void step() {
 		super.step();
 
-		statisticsService.addStatistics(oceanFragmentProperties.getPosition(), steps++, foramsAlive());
+		long x = oceanFragmentProperties.getPosition().x;
+		long y = oceanFragmentProperties.getPosition().y;
+		double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
+		Stats stats = new Stats(null, statisticsService.simulationStart, steps++, x, y, foramsAlive(), algaeAvailability);
+		statisticsService.add(stats);
 
 		oceanFragmentProperties.regenerateAlgae();
 
@@ -116,40 +121,21 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		return (int) getAgents().stream().filter(agent -> ((IForam) agent).isAlive()).count();
 	}
 
-	private Map<OceanFragment, Double> migrationTargetsWithProbability = null;
-
-	private Map<OceanFragment, Double> getMigrationTargetsWithProbability() {
-		if (migrationTargetsWithProbability == null) {
-			VectorL position = oceanFragmentProperties.getPosition();
-			VectorL size = oceanFragmentProperties.getOceanSize();
-			final Map<VectorL, Double> targetCoordinateProbabilities = oceanFragmentProperties.getCurrentDirection()
-					.getTargetCoordinateProbabilities(position, size);
-
-			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
-			Collection<OceanFragment> targetOceanFragments = queryParent(query.matching(
-					oceanFragment -> targetCoordinateProbabilities.containsKey(oceanFragment.getPosition())));
-
-			migrationTargetsWithProbability = new LinkedHashMap<>();
-			for (OceanFragment oceanFragment : targetOceanFragments) {
-				migrationTargetsWithProbability
-						.put(oceanFragment, targetCoordinateProbabilities.get(oceanFragment.getPosition()));
-			}
-		}
-		return migrationTargetsWithProbability;
-	}
-
 	@Override
 	public AgentAddress getMigrationTarget() {
-		Map<OceanFragment, Double> migrationTargetsWithProbability = getMigrationTargetsWithProbability();
-		double rand = random.nextDouble();
-		double probability = 0.0;
-		for (OceanFragment migrationTarget : migrationTargetsWithProbability.keySet()) {
-			probability += migrationTargetsWithProbability.get(migrationTarget);
-			if (rand <= probability) {
-				return migrationTarget.getAddress();
-			}
-		}
-		return null;
+		VectorL position = oceanFragmentProperties.getPosition();
+		VectorL size = oceanFragmentProperties.getOceanSize();
+		BoundaryConditions boundaryConditions = oceanFragmentProperties.getBoundaryConditions();
+		VectorL targetCoordinates = oceanFragmentProperties.getCurrentDirection()
+				.getTargetCoordinates(position, size, boundaryConditions);
+
+		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
+		return queryParent(
+				query.matching(oceanFragment -> targetCoordinates.equals(oceanFragment.getPosition())))
+				.stream()
+				.map(AbstractAgent::getAddress)
+				.findAny()
+				.orElse(null);
 	}
 
 	private void processGametes() {
