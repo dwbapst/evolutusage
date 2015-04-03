@@ -49,6 +49,11 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	@Override
+	public double getEnergy() {
+		return energy;
+	}
+
+	@Override
 	public void setGenotype(Genotype genotype) {
 		if (this.genotype == null) {
 			this.genotype = genotype;

@@ -53,12 +53,15 @@ public class ConnectionProvider implements IStatefulComponent {
 				DSLContext create = new DefaultDSLContext(connection, SQLDialect.H2);
 				create.createTable(STATS)
 						.column(STATS.ID, SQLDataType.INTEGER)
-						.column(STATS.SIMULATION_TIME, SQLDataType.TIMESTAMP)
+						.column(STATS.SIMULATION_START, SQLDataType.TIMESTAMP)
 						.column(STATS.STEP_NO, SQLDataType.BIGINT)
 						.column(STATS.X, SQLDataType.BIGINT)
 						.column(STATS.Y, SQLDataType.BIGINT)
+						.column(STATS.Z, SQLDataType.BIGINT)
 						.column(STATS.FORAMS_COUNT, SQLDataType.INTEGER)
 						.column(STATS.ALGAE_AVAILABILITY, SQLDataType.DOUBLE)
+						.column(STATS.TOTAL_ENERGY, SQLDataType.DOUBLE)
+						.column(STATS.INSOLATION, SQLDataType.DOUBLE)
 						.execute();
 			}
 		}

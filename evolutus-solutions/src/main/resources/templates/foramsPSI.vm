@@ -1,0 +1,26 @@
+# PSI Format 1.0
+#
+# column[0] = "x"
+# column[1] = "y"
+# column[2] = "z"
+# column[3] = "Forams"
+# column[4] = "Algae"
+# column[5] = "Insolation"
+# column[6] = "Total energy"
+# symbol[3] = "F"
+# symbol[4] = "A"
+# symbol[5] = "I"
+# symbol[6] = "E"
+# type[3] = int
+# type[4] = float
+# type[5] = float
+# type[6] = float
+
+$rowsCount 2694 115001
+1.00 0.00 0.00
+0.00 1.00 0.00
+0.00 0.00 1.00
+
+#foreach($stat in $stats)
+$stat.x $stat.y $stat.z $stat.foramsCount $stat.algaeAvailability $stat.insolation $stat.totalEnergy
+#end

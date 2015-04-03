@@ -9,6 +9,8 @@ public interface IForam extends ISimpleAgent {
 
 	void setEnergy(double energy);
 
+	double getEnergy();
+
 	void setGenotype(Genotype genotype);
 
 	boolean isAlive();

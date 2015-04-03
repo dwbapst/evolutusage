@@ -1,5 +1,6 @@
 package pl.edu.agh.evolutus.service;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.database.tables.daos.StatsDao;
 import pl.edu.agh.evolutus.database.tables.pojos.Stats;
+import pl.edu.agh.evolutus.utils.Utils;
 
 public class StatisticsService implements IStatefulComponent {
 
@@ -28,6 +30,9 @@ public class StatisticsService implements IStatefulComponent {
 
 	@Inject
 	private VisualizationService visualizationService;
+
+	@Inject
+	private PsiFileGenerator psiFileGenerator;
 
 	private final List<Stats> statsToAdd = new LinkedList<>();
 	private Thread thread;
@@ -71,8 +76,17 @@ public class StatisticsService implements IStatefulComponent {
 			throw new StatisticsServiceException("Exception thrown while closing database connection.", e);
 		}
 
+		File outputDirectory;
+		if (System.getProperty("evolutus.output.dir") != null) {
+			outputDirectory = new File(System.getProperty("evolutus.output.dir"));
+		} else {
+			outputDirectory = new File(System.getProperty("java.io.tmpdir"));
+		}
+		outputDirectory = new File(outputDirectory, Utils.getTimestampAsString(simulationStart));
+
 		try {
-			visualizationService.visualize(simulationStart);
+//			visualizationService.visualize(simulationStart, outputDirectory);
+			psiFileGenerator.generate(simulationStart, outputDirectory);
 		} catch (Exception e) {
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
 		}

@@ -26,5 +26,7 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	int foramsAlive();
 
+	double totalEnergy();
+
 	AgentAddress getMigrationTarget();
 }
