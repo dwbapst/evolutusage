@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,6 +68,7 @@ public class PsiFileGenerator {
 	private Map<Long, List<Stats>> getStats(DSLContext create, Timestamp simulationStart) {
 		List<Stats> statsList = create.selectFrom(STATS)
 				.where(STATS.SIMULATION_START.eq(simulationStart))
+				.and(STATS.STEP_NO.greaterThan(0L))
 				.orderBy(STATS.STEP_NO, STATS.X, STATS.Y, STATS.Z)
 				.fetchInto(Stats.class);
 
