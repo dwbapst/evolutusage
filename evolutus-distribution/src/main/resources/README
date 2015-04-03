@@ -1,0 +1,4 @@
+In ./conf directory, there is an example config.js file.
+
+Start simulation by executing:
+./evolutus.sh <output-directory> conf/config.js
