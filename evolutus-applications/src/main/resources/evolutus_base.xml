@@ -22,17 +22,14 @@
   <!-- eVolutus components -->
 
   <component name="statisticsService" class="pl.edu.agh.evolutus.service.StatisticsService"/>
-
   <component name="visualizationService" class="pl.edu.agh.evolutus.service.VisualizationService"/>
-
   <component name="connectionProvider" class="pl.edu.agh.evolutus.service.ConnectionProvider"/>
-
+  <component name="templateRenderer" class="pl.edu.agh.evolutus.service.TemplateRenderer"/>
+  <component name="psiFileGenerator" class="pl.edu.agh.evolutus.service.PsiFileGenerator"/>
   <component name="configFactory" class="pl.edu.agh.evolutus.config.ConfigFactory"/>
 
   <component name="onePointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator"/>
-
   <component name="twoPointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator"/>
-
   <component name="uniformCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator"/>
 
   <block name="foram">

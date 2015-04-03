@@ -98,8 +98,11 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 		long x = oceanFragmentProperties.getPosition().x;
 		long y = oceanFragmentProperties.getPosition().y;
+		long z = oceanFragmentProperties.getPosition().z;
 		double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
-		Stats stats = new Stats(null, statisticsService.simulationStart, steps++, x, y, foramsAlive(), algaeAvailability);
+		double insolation = oceanFragmentProperties.getInsolation();
+		Stats stats = new Stats(null, statisticsService.simulationStart, steps++, x, y, z, foramsAlive(), algaeAvailability,
+				totalEnergy(), insolation);
 		statisticsService.add(stats);
 
 		oceanFragmentProperties.regenerateAlgae();
@@ -119,6 +122,16 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	@Override
 	public int foramsAlive() {
 		return (int) getAgents().stream().filter(agent -> ((IForam) agent).isAlive()).count();
+	}
+
+	@Override
+	public double totalEnergy() {
+		return getAgents()
+				.stream()
+				.map(agent -> (IForam) agent)
+				.filter(IForam::isAlive)
+				.mapToDouble(IForam::getEnergy)
+				.sum();
 	}
 
 	@Override
