@@ -73,8 +73,8 @@
             bubbleChartData.setCell(i, 4, bubbleChartUpdates[index][i]);
           }
           for (var i = 0; i < lineChartCompleteData.length; i++) {
-            var foramsCount = (i <= index) ? lineChartCompleteData[i][1] : 0;
-            var algaeAvailability = (i <= index) ? lineChartCompleteData[i][2] : 0;
+            var foramsCount = (index == 0 || i <= index) ? lineChartCompleteData[i][1] : 0;
+            var algaeAvailability = (index == 0 || i <= index) ? lineChartCompleteData[i][2] : 0;
             lineChartData.setCell(i, 1, foramsCount);
             lineChartData.setCell(i, 2, algaeAvailability);
           }
@@ -119,6 +119,8 @@
           playing = false;
           refreshCharts();
         });
+
+        refreshCharts();
       }
     </script>
   </head>

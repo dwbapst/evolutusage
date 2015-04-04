@@ -1,8 +1,10 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-public abstract class FirstChamberRadiusGene extends Gene<Double> {
+import jdk.nashorn.internal.runtime.ScriptObject;
 
-	protected FirstChamberRadiusGene(Double value, boolean isDominant) {
-		super(value, isDominant);
+public abstract class FirstChamberRadiusGene extends MutableGene<Double> {
+
+	public FirstChamberRadiusGene(ScriptObject geneScriptObject) {
+		super(geneScriptObject);
 	}
 }

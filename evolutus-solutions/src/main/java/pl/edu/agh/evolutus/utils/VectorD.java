@@ -10,10 +10,10 @@ public class VectorD {
 		this(0, 0, 0);
 	}
 
-	public VectorD(double x, double y, double z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	public VectorD(Number x, Number y, Number z) {
+		this.x = x.doubleValue();
+		this.y = y.doubleValue();
+		this.z = z.doubleValue();
 	}
 
 	public VectorD add(VectorD vector) {
@@ -33,7 +33,7 @@ public class VectorD {
 	}
 
 	public static VectorD fromScriptObject(ScriptObject scriptObject) {
-		return new VectorD((double) scriptObject.get("x"), (double) scriptObject.get("y"), (double) scriptObject.get("z"));
+		return new VectorD((Number) scriptObject.get("x"), (Number) scriptObject.get("y"), (Number) scriptObject.get("z"));
 	}
 
 	@Override

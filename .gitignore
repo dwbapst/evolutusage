@@ -3,3 +3,6 @@ target
 *.iml
 
 evolutus-solutions/src/gen/
+examples
+bin
+tmp

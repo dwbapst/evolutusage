@@ -5,6 +5,7 @@ import org.jage.address.agent.AgentAddress;
 import pl.edu.agh.evolutus.environment.BoundaryConditions;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
+import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class EnvironmentConfig {
@@ -44,16 +45,15 @@ public class EnvironmentConfig {
 	}
 
 	public CurrentDirection currentDirection(VectorL position) {
-		return new CurrentDirection(VectorL.fromScriptObject(configJS.currentDirection(position.x, position.y, position.z)));
+		return new CurrentDirection(VectorD.fromScriptObject(configJS.currentDirection(position.x, position.y, position.z)));
 	}
 
 	public BoundaryConditions boundaryConditions() {
 		return BoundaryConditions.fromString(configJS.boundaryConditions());
 	}
 
-	public Genome initialGenome(VectorL position, AgentAddress foramIdentifier) {
-		return Genome.fromScriptObject(configJS.initialGenome(position.x, position.y, position.z),
-				foramIdentifier.toQualifiedString());
+	public Genome initialGenome(VectorL position) {
+		return Genome.fromScriptObject(configJS.initialGenome(position.x, position.y, position.z));
 	}
 
 	public String crossingOverOperator() {

@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
-import org.jage.agent.AbstractAgent;
 import org.jage.agent.SimpleAggregate;
 import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
@@ -81,11 +81,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 		long initialForamsCount = config.initialForamsCount(position);
 		for (long i = 0; i < initialForamsCount; i++) {
-			IForam foram = instanceProvider.getInstance(IForam.class);
-			foram.setEnergy(config.initialEnergy());
-			Genome initialGenome = config.initialGenome(position, foram.getAddress());
-			foram.setGenotype(new DiploidGenotype(initialGenome, initialGenome, foram.getAddress(), getCrossingOverOperator()));
-			add(foram);
+			Genome initialGenome = config.initialGenome(position);
+			add(createForam(initialGenome, initialGenome));
 		}
 		logger.debug("Initialized ocean fragment: {} {}", getAddress(), oceanFragmentProperties.getPosition());
 	}
@@ -121,21 +118,42 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		return (int) getAgents().stream().filter(agent -> ((IForam) agent).isAlive()).count();
 	}
 
+	private Map<AgentAddress, Double> migrationTargetsWithProbability = null;
+
+	private Map<AgentAddress, Double> getMigrationTargetsWithProbability() {
+		if (migrationTargetsWithProbability == null) {
+			VectorL position = oceanFragmentProperties.getPosition();
+			VectorL size = oceanFragmentProperties.getOceanSize();
+			BoundaryConditions boundaryConditions = oceanFragmentProperties.getBoundaryConditions();
+			final Map<VectorL, Double> targetCoordinateProbabilities = oceanFragmentProperties.getCurrentDirection()
+					.getTargetCoordinateProbabilities(position, size, boundaryConditions);
+
+			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
+			migrationTargetsWithProbability = queryParent(
+					query.matching(
+							oceanFragment -> targetCoordinateProbabilities.containsKey(oceanFragment.getPosition())
+					))
+					.stream()
+					.collect(Collectors.toMap(
+									OceanFragment::getAddress,
+									oceanFragment -> targetCoordinateProbabilities.get(oceanFragment.getPosition()))
+					);
+		}
+		return migrationTargetsWithProbability;
+	}
+
 	@Override
 	public AgentAddress getMigrationTarget() {
-		VectorL position = oceanFragmentProperties.getPosition();
-		VectorL size = oceanFragmentProperties.getOceanSize();
-		BoundaryConditions boundaryConditions = oceanFragmentProperties.getBoundaryConditions();
-		VectorL targetCoordinates = oceanFragmentProperties.getCurrentDirection()
-				.getTargetCoordinates(position, size, boundaryConditions);
-
-		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
-		return queryParent(
-				query.matching(oceanFragment -> targetCoordinates.equals(oceanFragment.getPosition())))
-				.stream()
-				.map(AbstractAgent::getAddress)
-				.findAny()
-				.orElse(null);
+		Map<AgentAddress, Double> migrationTargetsWithProbability = getMigrationTargetsWithProbability();
+		double rand = random.nextDouble();
+		double probability = 0.0;
+		for (AgentAddress migrationTarget : migrationTargetsWithProbability.keySet()) {
+			probability += migrationTargetsWithProbability.get(migrationTarget);
+			if (rand <= probability) {
+				return migrationTarget;
+			}
+		}
+		return null;
 	}
 
 	private void processGametes() {

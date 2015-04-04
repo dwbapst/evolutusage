@@ -3,7 +3,7 @@
  ***************************/
 
 function simulationDuration() {
-   return 1000;
+   return 500;
 }
 
 /***************************
@@ -19,7 +19,12 @@ function algaeEnergy() {
 }
 
 function initialForamsCount(x, y, z) {
-   return (x == 1 && y == 1) ? 100 : 0;
+   if (x == 1 && y == 1) {
+      return 100;
+   } else if (x == 5 && y == 5) {
+      return 50;
+   }
+   return 0;
 }
 
 function initialAlgaeAvailability(x, y, z) {
@@ -87,10 +92,6 @@ function chambersLimit() {
    return 20;
 }
 
-function newBornLimit() {
-   return 9;
-}
-
 function energyNeededToReproduce() {
    return 10.0;
 }
@@ -115,23 +116,56 @@ function crossingOverOperator() {
 
 function initialGenome(x, y, z) {
    return {
-      translationFactor: 0.0,
-      growthFactor: {x: 0.0, y: 0.0, z: 0.0},
-      rotationAngle: 0.0,
-      deviationAngle: 0.0,
+      translationFactor: {
+         value: 0.0,
+         //mutationFactor: 0,
+         //minValue: 0,
+         //maxValue: 0,
+      },
+      growthFactor: {
+         value: {x: 0.0, y: 0.0, z: 0.0}
+      },
+      rotationAngle: {
+         value: 0.0
+      },
+      deviationAngle: {
+         value: 0.0
+      },
 
       ploidy: (Math.random() < 0.5) ? 'haploid' : 'diploid',
 
-      haploidFirstChamberRadius: 0.0,
-      diploidFirstChamberRadius: 0.0,
-      wallThicknessFactor: 0.0,
-      minAdultVolume: 0.0,
-      haploidJuvenileVolumeFactor: 0.0,
-      diploidJuvenileVolumeFactor: 0.0,
-
-      maxEnergy: 0.0,
-      minEnergy: 0.0,
-      metabolicEffectiveness: 0.0,
-      minMetabolicEffectiveness: 0.0
+      haploidFirstChamberRadius: {
+         value: 0.0
+      },
+      diploidFirstChamberRadius: {
+         value: 0.0
+      },
+      wallThicknessFactor: {
+         value: 0.0
+      },
+      minAdultAge: {
+         value: 30
+      },
+      minAdultVolume: {
+         value: 0.0
+      },
+      haploidJuvenileVolumeFactor: {
+         value: 0.0
+      },
+      diploidJuvenileVolumeFactor: {
+         value: 0.0
+      },
+      maxEnergy: {
+         value: 0.0
+      },
+      minEnergy: {
+         value: 0.0
+      },
+      metabolicEffectiveness: {
+         value: 0.0
+      },
+      minMetabolicEffectiveness: {
+         value: 0.0
+      }
    }
 }
