@@ -1,8 +1,10 @@
 package pl.edu.agh.evolutus.genotype.gene;
 
-public abstract class JuvenileVolumeFactorGene extends Gene<Double> {
+import jdk.nashorn.internal.runtime.ScriptObject;
 
-	protected JuvenileVolumeFactorGene(Double value, boolean isDominant) {
-		super(value, isDominant);
+public abstract class JuvenileVolumeFactorGene extends MutableGene<Double> {
+
+	public JuvenileVolumeFactorGene(ScriptObject geneScriptObject) {
+		super(geneScriptObject);
 	}
 }

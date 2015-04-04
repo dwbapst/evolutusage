@@ -29,6 +29,7 @@ public class Foram extends SimpleAgent implements IForam {
 	private boolean alive = true;
 	private double energy;
 	private int chambersCount = 1;
+	private int age = 0;
 
 	private Genotype genotype = null;
 
@@ -73,8 +74,6 @@ public class Foram extends SimpleAgent implements IForam {
 		return super.finish();
 	}
 
-	private long steps = 0;
-
 	@Override
 	public void step() {
 		if (!couldForamPerformStep()) {
@@ -95,11 +94,9 @@ public class Foram extends SimpleAgent implements IForam {
 				createChamber();
 			}
 
-			if (steps % 5 == 0) {
-				flowWithCurrent();
-			}
+			tryMigrate();
 
-			steps++;
+			age++;
 		} catch (AgentDiedException e) {
 			logger.debug("Foram died: {}", getAddress());
 		}
@@ -123,7 +120,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean shouldDie() {
-		return energy <= 0.0;
+		return energy <= genotype.getMinEnergyGene().getValue();
 	}
 
 	private void die() throws AgentDiedException {
@@ -142,6 +139,10 @@ public class Foram extends SimpleAgent implements IForam {
 	private AgentAddress lastParentAddress = null;
 	private OceanFragment lastParentReference = null;
 
+	private double getCurrentStrength() {
+		return getOceanFragment().getOceanFragmentProperties().getCurrentDirection().getStrength();
+	}
+
 	private IOceanFragment getOceanFragment() {
 		if (lastParentAddress == null || !lastParentAddress.equals(getParentAddress())) {
 			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
@@ -155,9 +156,10 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean canReproduce() {
-		double energyNeededToReproduce = config.energyNeededToReproduce();
-		double reproductionProbability = config.reproductionProbability();
-		return energy > energyNeededToReproduce && random.nextDouble() > reproductionProbability;
+		boolean oldEnough = age >= genotype.getMinAdultAgeGene().getValue();
+		boolean energyEnough = energy > config.energyNeededToReproduce();
+		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability();
+		return oldEnough && energyEnough && reproductionProbable;
 	}
 
 	private void reproduce() throws AgentDiedException {
@@ -177,6 +179,16 @@ public class Foram extends SimpleAgent implements IForam {
 	private void createChamber() {
 		energy -= config.chamberGrowthEnergyCost(chambersCount);
 		chambersCount++;
+	}
+
+	private double migrationProbability = 0.0;
+
+	private void tryMigrate() {
+		migrationProbability += 0.01;
+		if (random.nextDouble() < migrationProbability + getCurrentStrength()) {
+			migrationProbability = 0.0;
+			flowWithCurrent();
+		}
 	}
 
 	private void flowWithCurrent() {

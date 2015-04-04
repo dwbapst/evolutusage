@@ -18,7 +18,7 @@ public class RecombinationOperator {
 		}
 		Gene[] genes = new Gene[Genome.LENGTH];
 		for (int i = 0; i < Genome.LENGTH; i++) {
-			genes[0] = getGene(genomeA.get(i), genomeB.get(i));
+			genes[i] = getGene(genomeA.get(i), genomeB.get(i));
 		}
 		return Genome.forGenes(genes, genomeA.getForamIdentifier());
 	}

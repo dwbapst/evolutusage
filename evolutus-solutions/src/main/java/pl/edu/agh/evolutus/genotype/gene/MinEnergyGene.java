@@ -2,13 +2,9 @@ package pl.edu.agh.evolutus.genotype.gene;
 
 import jdk.nashorn.internal.runtime.ScriptObject;
 
-public class MinEnergyGene extends Gene<Double> {
+public class MinEnergyGene extends MutableGene<Double> {
 
-	private MinEnergyGene(Double value, boolean isDominant) {
-		super(value, isDominant);
-	}
-
-	public static MinEnergyGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
-		return new MinEnergyGene((Double) genomeScriptObject.get("minEnergy"), RAND.nextDouble() < 0.5);
+	public MinEnergyGene(ScriptObject genomeScriptObject) {
+		super((ScriptObject) genomeScriptObject.get("minEnergy"));
 	}
 }

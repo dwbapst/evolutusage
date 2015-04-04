@@ -4,3 +4,6 @@ target
 tmp
 
 evolutus-solutions/src/gen/
+examples
+bin
+tmp

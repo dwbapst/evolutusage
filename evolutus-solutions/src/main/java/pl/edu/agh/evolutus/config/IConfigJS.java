@@ -34,8 +34,6 @@ public interface IConfigJS {
 
 	int chambersLimit();
 
-	int newBornLimit();
-
 	double energyNeededToReproduce();
 
 	double reproductionProbability();

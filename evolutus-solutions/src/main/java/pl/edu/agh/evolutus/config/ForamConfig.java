@@ -41,10 +41,6 @@ public class ForamConfig {
 		return configJS.chambersLimit();
 	}
 
-	public int newBornLimit() {
-		return configJS.newBornLimit();
-	}
-
 	public double energyNeededToReproduce() {
 		return configJS.energyNeededToReproduce();
 	}
@@ -59,10 +55,5 @@ public class ForamConfig {
 
 	public double gametesSievingCoefficient() {
 		return configJS.gametesSievingCoefficient();
-	}
-
-	public Genome initialGenome(VectorL position, AgentAddress foramIdentifier) {
-		return Genome.fromScriptObject(configJS.initialGenome(position.x, position.y, position.z),
-				foramIdentifier.toQualifiedString());
 	}
 }

@@ -1,47 +1,69 @@
 package pl.edu.agh.evolutus.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import static java.lang.Math.*;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import pl.edu.agh.evolutus.environment.BoundaryConditions;
 
-public class CurrentDirection extends VectorL {
+public class CurrentDirection extends VectorD {
 
-	private static final Random rand = new Random();
+	private final Map<VectorL, Double> vectorComponents = new LinkedHashMap<>();
 
-	private final List<Axis> nonZeroAxes = new ArrayList<>();
+	private final double strength; // vector length
 
-	public CurrentDirection(VectorL vector) {
+	public CurrentDirection(VectorD vector) {
 		this(vector.x, vector.y, vector.z);
 	}
 
-	public CurrentDirection(long x, long y, long z) {
+	public CurrentDirection(double x, double y, double z) {
 		super(x, y, z);
-		if (x != 0) {
-			nonZeroAxes.add(Axis.X);
-		}
-		if (y != 0) {
-			nonZeroAxes.add(Axis.Y);
-		}
-		if (z != 0) {
-			nonZeroAxes.add(Axis.Z);
+
+		computeVectorComponents(x, y, z);
+		strength = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+	}
+
+	private void computeVectorComponents(double x, double y, double z) {
+		double absX = abs(x), absY = abs(y), absZ = abs(z);
+		double sum = absX + absY + absZ;
+		if (sum > 0) {
+			if (absX > 0) {
+				vectorComponents.put(new VectorL(round(x / absX), 0, 0), absX / sum);
+			}
+			if (absY > 0) {
+				vectorComponents.put(new VectorL(0, round(y / absY), 0), absY / sum);
+			}
+			if (absZ > 0) {
+				vectorComponents.put(new VectorL(0, 0, round(z / absZ)), absZ / sum);
+			}
+		} else {
+			vectorComponents.put(new VectorL(1, 0, 0), 1.0 / 6.0);
+			vectorComponents.put(new VectorL(0, 1, 0), 1.0 / 6.0);
+			vectorComponents.put(new VectorL(0, 0, 1), 1.0 / 6.0);
+			vectorComponents.put(new VectorL(-1, 0, 0), 1.0 / 6.0);
+			vectorComponents.put(new VectorL(0, -1, 0), 1.0 / 6.0);
+			vectorComponents.put(new VectorL(0, 0, -1), 1.0 / 6.0);
 		}
 	}
 
-	public VectorL getTargetCoordinates(VectorL sourceCoordinates, VectorL oceanSize, BoundaryConditions boundaryConditions) {
-		if (nonZeroAxes.isEmpty()) {
-			return sourceCoordinates;
-		}
+	public double getStrength() {
+		return strength;
+	}
 
-		Axis randomAxis = nonZeroAxes.get(rand.nextInt(nonZeroAxes.size()));
-		long component = get(randomAxis);
-		long modifier = (component > 0) ? -1 : 1;
-		while (component != 0 && component + modifier != 0 && rand.nextBoolean()) {
-			component += modifier;
-		}
+	public Map<VectorL, Double> getVectorComponents() {
+		return vectorComponents;
+	}
 
-		VectorL targetCoordinates = sourceCoordinates.add(new VectorL(component, randomAxis));
-		return boundaryConditions.keepVectorWithinBounds(targetCoordinates, oceanSize);
+	public Map<VectorL, Double> getTargetCoordinateProbabilities(VectorL sourceCoordinates, VectorL oceanSize,
+			BoundaryConditions boundaryConditions) {
+		Map<VectorL, Double> targetCoordinates = new LinkedHashMap<>();
+
+		for (VectorL vectorComponent : vectorComponents.keySet()) {
+			VectorL target = sourceCoordinates.add(vectorComponent);
+			target = boundaryConditions.keepVectorWithinBounds(target, oceanSize);
+			targetCoordinates.put(target, vectorComponents.get(vectorComponent));
+		}
+		return targetCoordinates;
 	}
 }

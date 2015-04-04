@@ -6,11 +6,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import pl.edu.agh.evolutus.genotype.gene.DeviationAngleGene;
-import pl.edu.agh.evolutus.genotype.gene.FirstChamberRadiusGene;
+import pl.edu.agh.evolutus.genotype.gene.DiploidFirstChamberRadiusGene;
+import pl.edu.agh.evolutus.genotype.gene.DiploidJuvenileVolumeFactorGene;
+import pl.edu.agh.evolutus.genotype.gene.Gene.GeneValidationException;
 import pl.edu.agh.evolutus.genotype.gene.GrowthFactorGene;
-import pl.edu.agh.evolutus.genotype.gene.JuvenileVolumeFactorGene;
+import pl.edu.agh.evolutus.genotype.gene.HaploidFirstChamberRadiusGene;
+import pl.edu.agh.evolutus.genotype.gene.HaploidJuvenileVolumeFactorGene;
 import pl.edu.agh.evolutus.genotype.gene.MaxEnergyGene;
 import pl.edu.agh.evolutus.genotype.gene.MetabolicEffectivenessGene;
+import pl.edu.agh.evolutus.genotype.gene.MinAdultAgeGene;
 import pl.edu.agh.evolutus.genotype.gene.MinAdultVolumeGene;
 import pl.edu.agh.evolutus.genotype.gene.MinEnergyGene;
 import pl.edu.agh.evolutus.genotype.gene.MinMetabolicEffectivenessGene;
@@ -36,55 +40,72 @@ public abstract class Genotype {
 				.collect(Collectors.toList());
 	}
 
+	public void validate() throws GeneValidationException {
+		getEffectiveGenome().validate();
+	}
+
 	public TranslationFactorGene getTranslationFactorGene() {
-		return getEffectiveGenome().getTranslationFactorGene();
+		return getEffectiveGenome().get(Genome.TRANSLATION_FACTOR_INDEX);
 	}
 
 	public GrowthFactorGene getGrowthFactorGene() {
-		return getEffectiveGenome().getGrowthFactorGene();
+		return getEffectiveGenome().get(Genome.GROWTH_FACTOR_INDEX);
 	}
 
 	public RotationAngleGene getRotationAngleGene() {
-		return getEffectiveGenome().getRotationAngleGene();
+		return getEffectiveGenome().get(Genome.ROTATION_ANGLE_INDEX);
 	}
 
 	public DeviationAngleGene getDeviationAngleGene() {
-		return getEffectiveGenome().getDeviationAngleGene();
+		return getEffectiveGenome().get(Genome.DEVIATION_ANGLE_INDEX);
 	}
 
 	public PloidyGene getPloidyGene() {
-		return getEffectiveGenome().getPloidyGene();
+		return getEffectiveGenome().get(Genome.PLOIDY_INDEX);
 	}
 
-	public FirstChamberRadiusGene getFirstChamberRadiusGene() {
-		return getEffectiveGenome().getHaploidFirstChamberRadiusGene();
+	public HaploidFirstChamberRadiusGene getHaploidFirstChamberRadiusGene() {
+		return getEffectiveGenome().get(Genome.HAPLOID_FIRST_CHAMBER_RADIUS_INDEX);
+	}
+
+	public DiploidFirstChamberRadiusGene getDiploidFirstChamberRadiusGene() {
+		return getEffectiveGenome().get(Genome.DIPLOID_FIRST_CHAMBER_RADIUS_INDEX);
 	}
 
 	public WallThicknessFactorGene getWallThicknessFactorGene() {
-		return getEffectiveGenome().getWallThicknessFactorGene();
+		return getEffectiveGenome().get(Genome.WALL_THICKNESS_FACTOR_INDEX);
+	}
+
+	public MinAdultAgeGene getMinAdultAgeGene() {
+		return getEffectiveGenome().get(Genome.MIN_ADULT_AGE_INDEX);
 	}
 
 	public MinAdultVolumeGene getMinAdultVolumeGene() {
-		return getEffectiveGenome().getMinAdultVolumeGene();
+		return getEffectiveGenome().get(Genome.MIN_ADULT_VOLUME_INDEX);
 	}
 
-	public JuvenileVolumeFactorGene getJuvenileVolumeFactorGene() {
-		return getEffectiveGenome().getHaploidJuvenileVolumeFactorGene();
+	public HaploidJuvenileVolumeFactorGene getHaploidJuvenileVolumeFactorGene() {
+		return getEffectiveGenome().get(Genome.HAPLOID_JUVENILE_VOLUME_FACTOR_INDEX);
+	}
+
+	public DiploidJuvenileVolumeFactorGene getDiploidJuvenileVolumeFactorGene() {
+		return getEffectiveGenome().get(Genome.DIPLOID_JUVENILE_VOLUME_FACTOR_INDEX);
 	}
 
 	public MaxEnergyGene getMaxEnergyGene() {
-		return getEffectiveGenome().getMaxEnergyGene();
+		return getEffectiveGenome().get(Genome.MAX_ENERGY_INDEX);
 	}
 
 	public MinEnergyGene getMinEnergyGene() {
-		return getEffectiveGenome().getMinEnergyGene();
+		return getEffectiveGenome().get(Genome.MIN_ENERGY_INDEX);
 	}
 
 	public MetabolicEffectivenessGene getMetabolicEffectivenessGene() {
-		return getEffectiveGenome().getMetabolicEffectivenessGene();
+		return getEffectiveGenome().get(Genome.METABOLIC_EFFECTIVENESS_INDEX);
 	}
 
 	public MinMetabolicEffectivenessGene getMinMetabolicEffectivenessGene() {
-		return getEffectiveGenome().getMinMetabolicEffectivenessGene();
+		return getEffectiveGenome().get(Genome.MIN_METABOLIC_EFFECTIVENESS_INDEX);
 	}
+
 }

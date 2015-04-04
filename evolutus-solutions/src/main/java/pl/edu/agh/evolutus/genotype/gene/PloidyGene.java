@@ -5,8 +5,12 @@ import pl.edu.agh.evolutus.genotype.Ploidy;
 
 public class PloidyGene extends Gene<Ploidy> {
 
-	private PloidyGene(Ploidy value, boolean isDominant) {
-		super(value, isDominant);
+	public PloidyGene(ScriptObject genomeScriptObject) {
+		super(Ploidy.fromString(getValue(genomeScriptObject, "ploidy", "diploid")));
+	}
+
+	@Override
+	public void validate() throws GeneValidationException {
 	}
 
 	public boolean isHaploid() {
@@ -15,10 +19,5 @@ public class PloidyGene extends Gene<Ploidy> {
 
 	public boolean isDiploid() {
 		return value == Ploidy.DIPLOID;
-	}
-
-	public static PloidyGene fromGenomeScriptObject(ScriptObject genomeScriptObject) {
-		String ploidy = genomeScriptObject.get("ploidy").toString();
-		return new PloidyGene(Ploidy.fromString(ploidy), RAND.nextDouble() < 0.5);
 	}
 }
