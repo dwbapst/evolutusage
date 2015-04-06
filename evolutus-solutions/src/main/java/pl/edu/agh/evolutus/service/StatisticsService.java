@@ -1,8 +1,6 @@
 package pl.edu.agh.evolutus.service;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,14 +9,11 @@ import javax.inject.Inject;
 
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
-import org.jooq.Configuration;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DefaultConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.database.tables.daos.StatsDao;
-import pl.edu.agh.evolutus.database.tables.pojos.Stats;
+import pl.edu.agh.evolutus.statistics.dao.StatsDao;
+import pl.edu.agh.evolutus.statistics.model.Stats;
 import pl.edu.agh.evolutus.utils.Utils;
 
 public class StatisticsService implements IStatefulComponent {
@@ -26,31 +21,22 @@ public class StatisticsService implements IStatefulComponent {
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
 	@Inject
-	private ConnectionProvider connectionProvider;
-
-	@Inject
-	private VisualizationService visualizationService;
-
-	@Inject
 	private PsiFileGenerator psiFileGenerator;
+
+	@Inject
+	private StatsDao statsDao;
 
 	private final List<Stats> statsToAdd = new LinkedList<>();
 	private Thread thread;
-	private Connection connection;
 	private boolean isRunning = true;
 
 	public final Timestamp simulationStart = new Timestamp(System.currentTimeMillis());
 
 	@Override
 	public void init() throws StatisticsServiceException {
-		try {
-			connection = connectionProvider.getConnection();
-			thread = createThread(connection);
-			thread.start();
-			logger.info("{} initialized. Thread started.", StatisticsService.class.getSimpleName());
-		} catch (SQLException e) {
-			throw new StatisticsServiceException(e);
-		}
+		thread = createThread();
+		thread.start();
+		logger.info("{} initialized. Thread started.", StatisticsService.class.getSimpleName());
 	}
 
 	public void add(Stats stats) {
@@ -70,11 +56,6 @@ public class StatisticsService implements IStatefulComponent {
 		} catch (InterruptedException e) {
 			throw new StatisticsServiceException("Exception thrown while waiting for statistics thread to finish.", e);
 		}
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			throw new StatisticsServiceException("Exception thrown while closing database connection.", e);
-		}
 
 		File outputDirectory;
 		if (System.getProperty("evolutus.output.dir") != null) {
@@ -85,24 +66,20 @@ public class StatisticsService implements IStatefulComponent {
 		outputDirectory = new File(outputDirectory, Utils.getTimestampAsString(simulationStart));
 
 		try {
-//			visualizationService.visualize(simulationStart, outputDirectory);
 			psiFileGenerator.generate(simulationStart, outputDirectory);
 		} catch (Exception e) {
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
 		}
 
 		logger.info("{} finished.", StatisticsService.class.getSimpleName());
-		return true;
+		return false;
 	}
 
-	private Thread createThread(final Connection connection) {
+	private Thread createThread() {
 		return new Thread() {
 
 			@Override
 			public void run() {
-				Configuration config = new DefaultConfiguration().set(connection).set(SQLDialect.H2);
-				StatsDao statsDao = new StatsDao(config);
-
 				while (isRunning || !statsToAdd.isEmpty()) {
 					try {
 						if (statsToAdd.isEmpty()) {
@@ -118,7 +95,7 @@ public class StatisticsService implements IStatefulComponent {
 						stats = new LinkedList<>(statsToAdd);
 						statsToAdd.clear();
 					}
-					statsDao.insert(stats);
+					statsDao.insert(stats.toArray(new Stats[stats.size()]));
 				}
 			}
 		};

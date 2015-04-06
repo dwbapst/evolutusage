@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.config.IConfigFactory;
-import pl.edu.agh.evolutus.database.tables.pojos.Stats;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.DiploidGenotype;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -30,6 +28,7 @@ import pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
 import pl.edu.agh.evolutus.service.StatisticsService;
+import pl.edu.agh.evolutus.statistics.model.Stats;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
@@ -98,7 +97,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		long z = oceanFragmentProperties.getPosition().z;
 		double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
 		double insolation = oceanFragmentProperties.getInsolation();
-		Stats stats = new Stats(null, statisticsService.simulationStart, steps++, x, y, z, foramsAlive(), algaeAvailability,
+		Stats stats = new Stats(statisticsService.simulationStart, steps++, x, y, z, foramsAlive(), algaeAvailability,
 				totalEnergy(), insolation);
 		statisticsService.add(stats);
 
