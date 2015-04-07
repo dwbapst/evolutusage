@@ -47,4 +47,6 @@ public interface IConfigJS {
 	String crossingOverOperator();
 
 	long simulationDuration();
+
+	ScriptObject databaseParameters();
 }

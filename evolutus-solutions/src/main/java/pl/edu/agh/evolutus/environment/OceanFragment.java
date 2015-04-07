@@ -18,8 +18,8 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.config.ConfigFactory;
 import pl.edu.agh.evolutus.config.EnvironmentConfig;
-import pl.edu.agh.evolutus.config.IConfigFactory;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.DiploidGenotype;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -46,7 +46,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private Map<Genome, Integer> gametes = new HashMap<>();
 
 	@Inject
-	public OceanFragment(AgentAddressSupplier supplier, IConfigFactory configFactory) {
+	public OceanFragment(AgentAddressSupplier supplier, ConfigFactory configFactory) {
 		super(supplier);
 		this.config = configFactory.getEnvironmentConfig();
 	}

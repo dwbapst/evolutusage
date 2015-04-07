@@ -15,8 +15,8 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.config.ConfigFactory;
 import pl.edu.agh.evolutus.config.ForamConfig;
-import pl.edu.agh.evolutus.config.IConfigFactory;
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -38,7 +38,7 @@ public class Foram extends SimpleAgent implements IForam {
 	private Random random = new Random();
 
 	@Inject
-	public Foram(AgentAddressSupplier supplier, IConfigFactory configFactory) {
+	public Foram(AgentAddressSupplier supplier, ConfigFactory configFactory) {
 		super(supplier);
 		this.config = configFactory.getForamConfig();
 		this.energy = config.initialEnergy();

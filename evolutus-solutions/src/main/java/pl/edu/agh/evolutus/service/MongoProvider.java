@@ -2,6 +2,8 @@ package pl.edu.agh.evolutus.service;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
 
@@ -16,19 +18,26 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version.Main;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
+import pl.edu.agh.evolutus.config.ConfigFactory;
+import pl.edu.agh.evolutus.config.SystemConfig;
 
 public class MongoProvider implements IStatefulComponent {
 
-	private static final int PORT_EMBEDDED = 65324;
-	private static final int PORT = 27017;
-	private static final String HOST = "localhost";
-	private static final boolean EMBEDDED = true;
+	private final String host;
+	private final int port;
+	private final boolean inMemory;
 
-	private final int port = EMBEDDED ? PORT_EMBEDDED : PORT;
+	@Inject
+	public MongoProvider(ConfigFactory configFactory) {
+		SystemConfig systemConfig = configFactory.getSystemConfig();
+		this.inMemory = systemConfig.isDatabaseInMemory();
+		this.host = inMemory ? "localhost" : systemConfig.getDatabaseHost();
+		this.port = systemConfig.getDatabasePort();
+	}
 
 	@Override
 	public void init() throws ComponentException {
-		if (EMBEDDED) {
+		if (inMemory) {
 			try {
 				IMongodConfig config = new MongodConfigBuilder()
 						.version(Main.V3_1)
@@ -49,7 +58,7 @@ public class MongoProvider implements IStatefulComponent {
 			try {
 				getMongoClient();
 			} catch (MongoException e) {
-				throw new ComponentException(String.format("Cannot connect to mongodb at %s:%d", HOST, port));
+				throw new ComponentException(String.format("Cannot connect to mongodb at %s:%d", host, port));
 			}
 		}
 	}
@@ -60,7 +69,7 @@ public class MongoProvider implements IStatefulComponent {
 	}
 
 	public MongoClient getMongoClient() {
-		MongoClient mongoClient = new MongoClient(HOST, port);
+		MongoClient mongoClient = new MongoClient(host, port);
 		mongoClient.listDatabaseNames().first(); // test connection
 		return mongoClient;
 	}

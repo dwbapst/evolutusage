@@ -28,12 +28,4 @@
       </includes>
     </fileSet>
   </fileSets>
-
-  <files>
-    <file>
-      <source>../evolutus-applications/src/main/resources/config.js</source>
-      <outputDirectory>/conf</outputDirectory>
-      <destName>config.js</destName>
-    </file>
-  </files>
 </assembly>
