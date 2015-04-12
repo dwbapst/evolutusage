@@ -1,10 +1,5 @@
 package pl.edu.agh.evolutus.config;
 
-import org.jage.address.agent.AgentAddress;
-
-import pl.edu.agh.evolutus.genotype.Genome;
-import pl.edu.agh.evolutus.utils.VectorL;
-
 public class ForamConfig {
 
 	private final IConfigJS configJS;

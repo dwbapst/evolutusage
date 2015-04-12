@@ -1,22 +1,31 @@
 package pl.edu.agh.evolutus.config;
 
+import java.awt.geom.RoundRectangle2D;
+
+import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
+import pl.edu.agh.evolutus.utils.VectorD;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IConfigJS {
+
+	double unitLengthInMeters();
+
+	double stepDurationInHours();
 
 	ScriptObject oceanSize();
 
 	double algaeEnergy();
 
-	long initialForamsCount(long x, long y, long z);
+	long initialForamsCount(double x, double y, double z);
 
-	double initialAlgaeAvailability(long x, long y, long z);
+	double initialAlgaeAvailability(double x, double y, double z);
 
 	double algaeGrowth(double insolation);
 
-	double insolation(long x, long y, long z);
+	double insolation(double x, double y, double z);
 
-	ScriptObject currentDirection(long x, long y, long z);
+	ScriptObject currentDirection(double x, double y, double z);
 
 	String boundaryConditions();
 
@@ -42,11 +51,11 @@ public interface IConfigJS {
 
 	double gametesSievingCoefficient();
 
-	ScriptObject initialGenome(long x, long y, long z);
+	NativeArray initialGenome(double x, double y, double z);
 
 	String crossingOverOperator();
 
-	long simulationDuration();
+	double simulationDuration();
 
 	ScriptObject databaseParameters();
 }

@@ -42,9 +42,8 @@ public class StatsDao implements IStatefulComponent {
 
 	public List<Stats> getStats(Timestamp simulationStart) {
 		return ds.createQuery(Stats.class)
-				.field("simulationStart").equal(simulationStart)
+				.field("simulationStart").equal(simulationStart.getTime())
 				.field("stepNo").greaterThan(0L)
-				.order("stepNo, x, y, z")
 				.asList();
 	}
 

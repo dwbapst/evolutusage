@@ -10,9 +10,9 @@ import pl.edu.agh.evolutus.genotype.Genome;
 public class UniformCrossingOverOperator extends CrossingOverOperator {
 
 	@Override
-	protected Set<Integer> getSwapPoints() {
+	protected Set<Integer> getSwapPoints(int genomeLength) {
 		Set<Integer> swapPoints = new HashSet<>();
-		for (int i = 0; i < Genome.LENGTH; i++) {
+		for (int i = 0; i < genomeLength; i++) {
 			if (rand.nextBoolean()) {
 				swapPoints.add(i);
 			}

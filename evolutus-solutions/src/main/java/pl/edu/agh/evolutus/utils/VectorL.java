@@ -36,12 +36,16 @@ public class VectorL {
 		return new VectorL(x - vector.x, y - vector.y, z - vector.z);
 	}
 
-	public VectorL mul(double factor) {
-		return new VectorL(Math.round(x * factor), Math.round(y * factor), Math.round(z * factor));
+	public VectorD mul(double factor) {
+		return new VectorD(x * factor, y * factor, z * factor);
 	}
 
-	public VectorL div(double divisor) {
+	public VectorD div(double divisor) {
 		return mul(1.0 / divisor);
+	}
+
+	public VectorD toDouble(){
+		return mul(1.0);
 	}
 
 	@Override

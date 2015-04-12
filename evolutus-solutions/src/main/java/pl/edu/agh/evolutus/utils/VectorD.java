@@ -32,6 +32,10 @@ public class VectorD {
 		return mul(1.0 / divisor);
 	}
 
+	public VectorL toLong() {
+		return new VectorL(Math.round(x), Math.round(y), Math.round(z));
+	}
+
 	public static VectorD fromScriptObject(ScriptObject scriptObject) {
 		return new VectorD((Number) scriptObject.get("x"), (Number) scriptObject.get("y"), (Number) scriptObject.get("z"));
 	}

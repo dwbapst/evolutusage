@@ -120,7 +120,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean shouldDie() {
-		return energy <= genotype.getMinEnergyGene().getValue();
+		return energy <= genotype.get(Genome.MIN_ENERGY_NAME).getValue();
 	}
 
 	private void die() throws AgentDiedException {
@@ -156,7 +156,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean canReproduce() {
-		boolean oldEnough = age >= genotype.getMinAdultAgeGene().getValue();
+		boolean oldEnough = age >= genotype.get(Genome.MIN_ADULT_AGE_NAME).getValue();
 		boolean energyEnough = energy > config.energyNeededToReproduce();
 		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability();
 		return oldEnough && energyEnough && reproductionProbable;

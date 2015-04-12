@@ -9,7 +9,11 @@ public class SimulationConfig {
 	}
 
 	public long simulationDuration() {
-		return configJS.simulationDuration();
+		return hoursToSteps(configJS.simulationDuration());
+	}
+
+	long hoursToSteps(double hours) {
+		return Math.round(hours / configJS.stepDurationInHours());
 	}
 
 }

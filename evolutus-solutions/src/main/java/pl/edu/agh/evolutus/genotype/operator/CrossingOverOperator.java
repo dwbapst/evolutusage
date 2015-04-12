@@ -1,32 +1,35 @@
 package pl.edu.agh.evolutus.genotype.operator;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import pl.edu.agh.evolutus.genotype.Gene;
 import pl.edu.agh.evolutus.genotype.Genome;
-import pl.edu.agh.evolutus.genotype.gene.Gene;
 
 public abstract class CrossingOverOperator {
 
 	protected final Random rand = new Random();
 
-	protected abstract Set<Integer> getSwapPoints();
+	protected abstract Set<Integer> getSwapPoints(int genomeLength);
 
 	public Pair<Genome, Genome> apply(Genome genomeA, Genome genomeB) {
-		Set<Integer> swapPoints = getSwapPoints();
+		Set<Integer> swapPoints = getSwapPoints(genomeA.size());
 
-		Gene[] genesA = new Gene[Genome.LENGTH];
-		Gene[] genesB = new Gene[Genome.LENGTH];
+		Map<String, Gene> genesA = new HashMap<>();
+		Map<String, Gene> genesB = new HashMap<>();
 
+		int i = 0;
 		boolean isSwapping = false;
-		for (int i = 0; i < Genome.LENGTH; i++) {
-			if (swapPoints.contains(i)) {
+		for (String name : genomeA.geneNames()) {
+			if (swapPoints.contains(i++)) {
 				isSwapping = !isSwapping;
 			}
-			genesA[i] = isSwapping ? genomeB.get(i) : genomeA.get(i);
-			genesB[i] = isSwapping ? genomeA.get(i) : genomeB.get(i);
+			genesA.put(name, isSwapping ? genomeB.get(name) : genomeA.get(name));
+			genesB.put(name, isSwapping ? genomeA.get(name) : genomeB.get(name));
 		}
 
 		return Pair.of(

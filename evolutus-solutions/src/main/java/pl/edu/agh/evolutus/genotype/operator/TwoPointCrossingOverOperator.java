@@ -4,16 +4,14 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import pl.edu.agh.evolutus.genotype.Genome;
-
 public class TwoPointCrossingOverOperator extends CrossingOverOperator {
 
 	@Override
-	protected Set<Integer> getSwapPoints() {
-		int firstSwapPoint = rand.nextInt(Genome.LENGTH);
-		int secondSwapPoint = rand.nextInt(Genome.LENGTH);
+	protected Set<Integer> getSwapPoints(int genomeLength) {
+		int firstSwapPoint = rand.nextInt(genomeLength);
+		int secondSwapPoint = rand.nextInt(genomeLength);
 		while (secondSwapPoint == firstSwapPoint) {
-			secondSwapPoint = rand.nextInt(Genome.LENGTH);
+			secondSwapPoint = rand.nextInt(genomeLength);
 		}
 		return Sets.newHashSet(firstSwapPoint, secondSwapPoint);
 	}

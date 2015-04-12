@@ -1,25 +1,26 @@
 package pl.edu.agh.evolutus.genotype.operator;
 
+import java.util.Map;
 import java.util.Random;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import pl.edu.agh.evolutus.genotype.Gene;
 import pl.edu.agh.evolutus.genotype.Genome;
-import pl.edu.agh.evolutus.genotype.gene.Gene;
 
 public class RecombinationOperator {
 
 	private final Random rand = new Random();
 
-	public Genome apply(Genome genomeA, Genome genomeB) {
-		if(!genomeA.getForamIdentifier().equals(genomeB.getForamIdentifier())){
+	public Genome apply(final Genome genomeA, final Genome genomeB) {
+		if (!genomeA.getForamIdentifier().equals(genomeB.getForamIdentifier())) {
 			throw new IllegalArgumentException("Cannot recombine genomes with two different ownerIdentifiers.");
 		}
-		Gene[] genes = new Gene[Genome.LENGTH];
-		for (int i = 0; i < Genome.LENGTH; i++) {
-			genes[i] = getGene(genomeA.get(i), genomeB.get(i));
-		}
+		Map<String, Gene> genes = genomeA.stream()
+				.map(geneA -> getGene(geneA, genomeB.getOrThrowException(geneA.getName())))
+				.collect(Collectors.toMap(
+						Gene::getName,
+						gene -> gene
+				));
 		return Genome.forGenes(genes, genomeA.getForamIdentifier());
 	}
 

@@ -4,13 +4,11 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import pl.edu.agh.evolutus.genotype.Genome;
-
 public class OnePointCrossingOverOperator extends CrossingOverOperator {
 
 	@Override
-	protected Set<Integer> getSwapPoints() {
-		int swapPoint = rand.nextInt(Genome.LENGTH);
+	protected Set<Integer> getSwapPoints(int genomeLength) {
+		int swapPoint = rand.nextInt(genomeLength);
 		return Sets.newHashSet(swapPoint);
 	}
 }

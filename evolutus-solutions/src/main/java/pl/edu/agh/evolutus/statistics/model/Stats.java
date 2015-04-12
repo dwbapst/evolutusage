@@ -1,10 +1,12 @@
 package pl.edu.agh.evolutus.statistics.model;
 
+import java.sql.Timestamp;
+
 public class Stats implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private java.sql.Timestamp simulationStart;
+	private Long simulationStart;
 	private Long stepNo;
 	private Long x;
 	private Long y;
@@ -29,7 +31,7 @@ public class Stats implements java.io.Serializable {
 			Double totalEnergy,
 			Double insolation
 	) {
-		this.simulationStart = simulationStart;
+		this.simulationStart = simulationStart.getTime();
 		this.stepNo = stepNo;
 		this.x = x;
 		this.y = y;
@@ -41,7 +43,7 @@ public class Stats implements java.io.Serializable {
 	}
 
 	public java.sql.Timestamp getSimulationStart() {
-		return this.simulationStart;
+		return new Timestamp(this.simulationStart);
 	}
 
 	public Long getStepNo() {
