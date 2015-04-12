@@ -25,6 +25,7 @@
   <component name="templateRenderer" class="pl.edu.agh.evolutus.service.TemplateRenderer"/>
   <component name="psiFileGenerator" class="pl.edu.agh.evolutus.service.PsiFileGenerator"/>
   <component name="mongoProvider" class="pl.edu.agh.evolutus.service.MongoProvider"/>
+  <component name="foramVolumeMeter" class="pl.edu.agh.evolutus.service.ForamVolumeMeter"/>
   <component name="configFactory" class="pl.edu.agh.evolutus.config.ConfigFactory"/>
   <component name="statsDao" class="pl.edu.agh.evolutus.statistics.dao.StatsDao"/>
 
