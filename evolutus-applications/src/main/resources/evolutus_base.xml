@@ -27,7 +27,9 @@
   <component name="mongoProvider" class="pl.edu.agh.evolutus.service.MongoProvider"/>
   <component name="foramVolumeMeter" class="pl.edu.agh.evolutus.service.ForamVolumeMeter"/>
   <component name="configFactory" class="pl.edu.agh.evolutus.config.ConfigFactory"/>
-  <component name="statsDao" class="pl.edu.agh.evolutus.statistics.dao.StatsDao"/>
+
+  <component name="oceanFragmentInfoDao" class="pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao"/>
+  <component name="foramFossilDao" class="pl.edu.agh.evolutus.statistics.dao.ForamFossilDao"/>
 
   <component name="onePointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator"/>
   <component name="twoPointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator"/>

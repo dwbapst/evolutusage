@@ -28,7 +28,7 @@ import pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
 import pl.edu.agh.evolutus.service.StatisticsService;
-import pl.edu.agh.evolutus.statistics.model.Stats;
+import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
@@ -97,9 +97,10 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		long z = oceanFragmentProperties.getPosition().z;
 		double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
 		double insolation = oceanFragmentProperties.getInsolation();
-		Stats stats = new Stats(statisticsService.simulationStart, steps++, x, y, z, foramsAlive(), algaeAvailability,
+		OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.simulationStart, steps++, x, y, z, foramsAlive(),
+				algaeAvailability,
 				totalEnergy(), insolation);
-		statisticsService.add(stats);
+		statisticsService.add(info);
 
 		oceanFragmentProperties.regenerateAlgae();
 
@@ -166,6 +167,11 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public long currentStep() {
+		return steps;
 	}
 
 	private void processGametes() {

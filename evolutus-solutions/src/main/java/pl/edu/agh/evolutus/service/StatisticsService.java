@@ -12,8 +12,10 @@ import org.jage.platform.component.exception.ComponentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.statistics.dao.StatsDao;
-import pl.edu.agh.evolutus.statistics.model.Stats;
+import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
+import pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao;
+import pl.edu.agh.evolutus.statistics.model.ForamFossil;
+import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 
 public class StatisticsService implements IStatefulComponent {
@@ -24,9 +26,13 @@ public class StatisticsService implements IStatefulComponent {
 	private PsiFileGenerator psiFileGenerator;
 
 	@Inject
-	private StatsDao statsDao;
+	private OceanFragmentInfoDao oceanFragmentInfoDao;
 
-	private final List<Stats> statsToAdd = new LinkedList<>();
+	@Inject
+	private ForamFossilDao foramFossilDao;
+
+	private final List<OceanFragmentInfo> oceanFragmentInfoToAdd = new LinkedList<>();
+	private final List<ForamFossil> foramFossilsToAdd = new LinkedList<>();
 	private Thread thread;
 	private boolean isRunning = true;
 
@@ -37,15 +43,6 @@ public class StatisticsService implements IStatefulComponent {
 		thread = createThread();
 		thread.start();
 		logger.info("{} initialized. Thread started.", StatisticsService.class.getSimpleName());
-	}
-
-	public void add(Stats stats) {
-		if (!isRunning) {
-			throw new StatisticsServiceException("Cannot add statistics. Thread is not running.");
-		}
-		synchronized (statsToAdd) {
-			statsToAdd.add(stats);
-		}
 	}
 
 	@Override
@@ -75,14 +72,55 @@ public class StatisticsService implements IStatefulComponent {
 		return false;
 	}
 
+	public Timestamp getSimulationStart() {
+		return simulationStart;
+	}
+
+	private void assertRunning() {
+		if (!isRunning) {
+			throw new StatisticsServiceException("Cannot add statistics. Thread is not running.");
+		}
+	}
+
+	public void add(OceanFragmentInfo info) {
+		assertRunning();
+		synchronized (oceanFragmentInfoToAdd) {
+			oceanFragmentInfoToAdd.add(info);
+		}
+	}
+
+	public void add(ForamFossil foramFossil) {
+		assertRunning();
+		synchronized (foramFossilsToAdd) {
+			foramFossilsToAdd.add(foramFossil);
+		}
+	}
+
+	private boolean areStatsQueuesEmpty() {
+		return oceanFragmentInfoToAdd.isEmpty() && foramFossilsToAdd.isEmpty();
+	}
+
+	private boolean shouldThreadContinue() {
+		return isRunning || !areStatsQueuesEmpty();
+	}
+
+	private <T> List<T> copyAndClearListAtomically(List<T> list) {
+		List<T> copy;
+		synchronized (list) {
+			copy = new LinkedList<>(list);
+			list.clear();
+		}
+		return copy;
+	}
+
 	private Thread createThread() {
 		return new Thread() {
 
 			@Override
 			public void run() {
-				while (isRunning || !statsToAdd.isEmpty()) {
+				while (shouldThreadContinue()) {
 					try {
-						if (statsToAdd.isEmpty()) {
+						if (areStatsQueuesEmpty()) {
 							Thread.sleep(1000);
 						}
 					} catch (InterruptedException e) {
@@ -90,12 +128,8 @@ public class StatisticsService implements IStatefulComponent {
 						isRunning = false;
 					}
 
-					List<Stats> stats;
-					synchronized (statsToAdd) {
-						stats = new LinkedList<>(statsToAdd);
-						statsToAdd.clear();
-					}
-					statsDao.insert(stats.toArray(new Stats[stats.size()]));
+					oceanFragmentInfoDao.insert(copyAndClearListAtomically(oceanFragmentInfoToAdd));
+					foramFossilDao.insert(copyAndClearListAtomically(foramFossilsToAdd));
 				}
 			}
 		};

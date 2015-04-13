@@ -29,4 +29,6 @@ public interface IOceanFragment extends ISimpleAggregate {
 	double totalEnergy();
 
 	AgentAddress getMigrationTarget();
+
+	long currentStep();
 }

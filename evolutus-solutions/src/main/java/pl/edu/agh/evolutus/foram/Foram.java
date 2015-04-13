@@ -21,6 +21,9 @@ import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.genotype.Genotype;
+import pl.edu.agh.evolutus.service.StatisticsService;
+import pl.edu.agh.evolutus.statistics.model.ForamFossil;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class Foram extends SimpleAgent implements IForam {
 
@@ -36,6 +39,9 @@ public class Foram extends SimpleAgent implements IForam {
 	private ForamConfig config;
 
 	private Random random = new Random();
+
+	@Inject
+	private StatisticsService statisticsService;
 
 	@Inject
 	public Foram(AgentAddressSupplier supplier, ConfigFactory configFactory) {
@@ -126,9 +132,21 @@ public class Foram extends SimpleAgent implements IForam {
 	private void die() throws AgentDiedException {
 		energy = 0.0;
 		alive = false;
-		// TODO: persist genotype in virtual fossilization service
+		statisticsService.add(createFossil());
 		doAction(AgentActions.death(this));
 		throw new AgentDiedException();
+	}
+
+	private ForamFossil createFossil() {
+		IOceanFragment oceanFragment = getOceanFragment();
+		VectorL position = oceanFragment.getPosition();
+		return new ForamFossil(
+				statisticsService.getSimulationStart(),
+				oceanFragment.currentStep(),
+				age,
+				genotype,
+				position.x, position.y, position.z
+		);
 	}
 
 	private void eat() {

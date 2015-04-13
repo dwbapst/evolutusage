@@ -11,8 +11,8 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.statistics.dao.StatsDao;
-import pl.edu.agh.evolutus.statistics.model.Stats;
+import pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao;
+import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 
 public class PsiFileGenerator {
@@ -23,7 +23,7 @@ public class PsiFileGenerator {
 	private TemplateRenderer templateRenderer;
 
 	@Inject
-	private StatsDao statsDao;
+	private OceanFragmentInfoDao oceanFragmentInfoDao;
 
 	public void generate(Timestamp simulationStart, File outputDirectory) throws PsiFileGeneratorException {
 		outputDirectory = new File(outputDirectory, "psi");
@@ -32,18 +32,18 @@ public class PsiFileGenerator {
 		try {
 			String simulationStartString = Utils.getTimestampAsString(simulationStart);
 
-			Map<Long, List<Stats>> statsMap = statsDao.getStatsGroupedByStepNo(simulationStart);
-			for (Long stepNo : statsMap.keySet()) {
-				List<Stats> statsList = statsMap.get(stepNo);
+			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulationStart);
+			for (Long stepNo : infoMap.keySet()) {
+				List<OceanFragmentInfo> infoList = infoMap.get(stepNo);
 				Map<String, Object> parameters = Utils.immutableMap(
-						"rowsCount", statsList.size(),
-						"stats", statsList
+						"rowsCount", infoList.size(),
+						"stats", infoList
 				);
 
 				File psiFile = new File(outputDirectory, getPsiFileName(simulationStartString, stepNo));
 				templateRenderer.render("templates/foramsPSI.vm", psiFile, parameters);
 			}
-			log.info("Saved {} Amira PSI files in {}", statsMap.size(), outputDirectory.getAbsolutePath());
+			log.info("Saved {} Amira PSI files in {}", infoMap.size(), outputDirectory.getAbsolutePath());
 
 		} catch (IOException e) {
 			throw new PsiFileGeneratorException(e);

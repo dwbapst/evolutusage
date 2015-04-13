@@ -2,6 +2,7 @@ package pl.edu.agh.evolutus.genotype;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +36,14 @@ public abstract class Genotype {
 
 	public Iterator<Gene> iterator() {
 		return getEffectiveGenome().iterator();
+	}
+
+	public Map<String, Double> toMap() {
+		return getEffectiveGenome()
+				.stream()
+				.collect(Collectors.toMap(
+						Gene::getName, Gene::getValue
+				));
 	}
 
 }

@@ -1,6 +1,8 @@
 package pl.edu.agh.evolutus.environment;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.inject.Inject;
 
@@ -65,13 +67,11 @@ public class OceanFragmentContainer extends ConnectedSimpleWorkplace implements 
 
 	@Override
 	public boolean finish() throws ComponentException {
-		logger.info("Simulation time: {}s", currentSimulationDuration);
+		logger.info("Simulation time: {}s", (System.currentTimeMillis() - beg) / 1000.0);
 		return super.finish();
 	}
 
 	private long beg;
-
-	private double currentSimulationDuration = 0;
 
 	private long simulationDuration;
 
@@ -79,21 +79,30 @@ public class OceanFragmentContainer extends ConnectedSimpleWorkplace implements 
 
 	@Override
 	public void step() {
-		currentSimulationDuration = (System.currentTimeMillis() - beg) / 1000.0;
 		logProgress();
 		super.step();
 		steps++;
 	}
 
 	private double lastProgress = -1.0;
+	private Queue<Long> lastProgressTimes = new LinkedList<>();
 
 	private void logProgress() {
-		final double a = 100.0 * steps / simulationDuration;
-		long progress = Math.round(a);
-		long timeRemaining = Math.round((100.0 - progress) * currentSimulationDuration / progress);
+		long progress = Math.round(100.0 * steps / simulationDuration);
 		if (progress > lastProgress) {
+			String message = String.format("Progress: %s%%.", progress);
+
+			if (lastProgressTimes.size() >= 10) {
+				double timeSinceLastProgress = (System.currentTimeMillis() - lastProgressTimes.poll()) / 1000.0;
+				long timeRemaining = Math.round((100.0 - progress) * timeSinceLastProgress / 10.0);
+				message += String.format(" Time remaining: %sm %ss", timeRemaining / 60, timeRemaining %
+						60);
+			}
+			logger.info(message);
+
 			lastProgress = progress;
-			logger.info("Progress: {}%. Time remaining: {}m {}s", progress, timeRemaining / 60, timeRemaining % 60);
+			lastProgressTimes.offer(System.currentTimeMillis());
 		}
 	}
+
 }

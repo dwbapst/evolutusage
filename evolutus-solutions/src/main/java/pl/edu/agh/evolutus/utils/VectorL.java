@@ -16,18 +16,6 @@ public class VectorL {
 		this.z = z.longValue();
 	}
 
-	public long getX() {
-		return x;
-	}
-
-	public long getY() {
-		return y;
-	}
-
-	public long getZ() {
-		return z;
-	}
-
 	public VectorL add(VectorL vector) {
 		return new VectorL(x + vector.x, y + vector.y, z + vector.z);
 	}
@@ -44,7 +32,7 @@ public class VectorL {
 		return mul(1.0 / divisor);
 	}
 
-	public VectorD toDouble(){
+	public VectorD toDouble() {
 		return mul(1.0);
 	}
 

@@ -2,11 +2,10 @@ package pl.edu.agh.evolutus.statistics.model;
 
 import java.sql.Timestamp;
 
-public class Stats implements java.io.Serializable {
+public class OceanFragmentInfo extends Statistics {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long simulationStart;
 	private Long stepNo;
 	private Long x;
 	private Long y;
@@ -16,12 +15,12 @@ public class Stats implements java.io.Serializable {
 	private Double totalEnergy;
 	private Double insolation;
 
-	private Stats() {
+	private OceanFragmentInfo() {
 		// for morphia
 	}
 
-	public Stats(
-			java.sql.Timestamp simulationStart,
+	public OceanFragmentInfo(
+			Timestamp simulationStart,
 			Long stepNo,
 			Long x,
 			Long y,
@@ -31,7 +30,7 @@ public class Stats implements java.io.Serializable {
 			Double totalEnergy,
 			Double insolation
 	) {
-		this.simulationStart = simulationStart.getTime();
+		super(simulationStart);
 		this.stepNo = stepNo;
 		this.x = x;
 		this.y = y;
@@ -40,10 +39,6 @@ public class Stats implements java.io.Serializable {
 		this.algaeAvailability = algaeAvailability;
 		this.totalEnergy = totalEnergy;
 		this.insolation = insolation;
-	}
-
-	public java.sql.Timestamp getSimulationStart() {
-		return new Timestamp(this.simulationStart);
 	}
 
 	public Long getStepNo() {
