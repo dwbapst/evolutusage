@@ -1,0 +1,4 @@
+StepNo,ForamsCount,AlgaeAvailability
+#foreach($stat in $stats)
+$stat.stepNo,$stat.foramsCount,$stat.algaeAvailability
+#end

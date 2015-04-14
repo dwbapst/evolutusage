@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 
@@ -22,17 +21,14 @@ public class PsiFileGenerator {
 	@Inject
 	private TemplateRenderer templateRenderer;
 
-	@Inject
-	private OceanFragmentInfoDao oceanFragmentInfoDao;
-
-	public void generate(Timestamp simulationStart, File outputDirectory) throws PsiFileGeneratorException {
+	public void generate(Timestamp simulationStart, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
+			throws PsiFileGeneratorException {
 		outputDirectory = new File(outputDirectory, "psi");
 		outputDirectory.mkdirs();
 
 		try {
 			String simulationStartString = Utils.getTimestampAsString(simulationStart);
 
-			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulationStart);
 			for (Long stepNo : infoMap.keySet()) {
 				List<OceanFragmentInfo> infoList = infoMap.get(stepNo);
 				Map<String, Object> parameters = Utils.immutableMap(

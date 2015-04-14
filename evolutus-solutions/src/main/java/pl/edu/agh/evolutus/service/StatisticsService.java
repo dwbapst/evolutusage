@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -24,6 +25,9 @@ public class StatisticsService implements IStatefulComponent {
 
 	@Inject
 	private PsiFileGenerator psiFileGenerator;
+
+	@Inject
+	private CsvFileGenerator csvFileGenerator;
 
 	@Inject
 	private OceanFragmentInfoDao oceanFragmentInfoDao;
@@ -63,7 +67,9 @@ public class StatisticsService implements IStatefulComponent {
 		outputDirectory = new File(outputDirectory, Utils.getTimestampAsString(simulationStart));
 
 		try {
-			psiFileGenerator.generate(simulationStart, outputDirectory);
+			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulationStart);
+			psiFileGenerator.generate(simulationStart, outputDirectory, infoMap);
+			csvFileGenerator.generate(simulationStart, outputDirectory, infoMap);
 		} catch (Exception e) {
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
 		}
