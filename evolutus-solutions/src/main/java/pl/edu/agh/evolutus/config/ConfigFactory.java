@@ -47,8 +47,6 @@ public class ConfigFactory {
 			environmentConfig = new EnvironmentConfig(configJS);
 			foramConfig = new ForamConfig(configJS);
 			simulationConfig = new SimulationConfig(configJS);
-		} catch (IOException e) {
-			throw new ConfigServiceException("Cannot read config files", e);
 		} catch (ScriptException e) {
 			throw new ConfigServiceException("Cannot evaluate config script", e);
 		} finally {
@@ -56,16 +54,20 @@ public class ConfigFactory {
 		}
 	}
 
-	private List<Reader> getConfigReaders() throws IOException, ConfigServiceException {
+	public List<Reader> getConfigReaders() throws ConfigServiceException {
 		List<Reader> readers = new ArrayList<>();
 		String configPathsString = System.getProperty(CONFIG_PROPERTY);
 
 		if (configPathsString != null) {
 			logger.info("Loading config files:");
 			String[] configPaths = StringUtils.split(configPathsString, '\u0000');
-			for (String configPath : configPaths) {
-				readers.add(new FileReader(configPath));
-				logger.info("\t" + new File(configPath).getAbsolutePath());
+			try {
+				for (String configPath : configPaths) {
+					readers.add(new FileReader(configPath));
+					logger.info("\t" + new File(configPath).getAbsolutePath());
+				}
+			} catch (IOException e) {
+				throw new ConfigServiceException("Cannot read config files", e);
 			}
 		} else {
 			InputStream configStream = getClass().getClassLoader().getResourceAsStream(CONFIG_CLASSPATH_LOCATION);

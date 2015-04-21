@@ -10,16 +10,19 @@ import javax.inject.Inject;
 
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
+import org.jage.platform.component.provider.IComponentInstanceProvider;
+import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.service.OutputFileGenerator.FileGeneratorException;
 import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
 import pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 
-public class StatisticsService implements IStatefulComponent {
+public class StatisticsService implements IStatefulComponent, IComponentInstanceProviderAware {
 
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
@@ -30,10 +33,15 @@ public class StatisticsService implements IStatefulComponent {
 	private CsvFileGenerator csvFileGenerator;
 
 	@Inject
+	private HtmlFileGenerator htmlFileGenerator;
+
+	@Inject
 	private OceanFragmentInfoDao oceanFragmentInfoDao;
 
 	@Inject
 	private ForamFossilDao foramFossilDao;
+
+	private IComponentInstanceProvider instanceProvider;
 
 	private final List<OceanFragmentInfo> oceanFragmentInfoToAdd = new LinkedList<>();
 	private final List<ForamFossil> foramFossilsToAdd = new LinkedList<>();
@@ -41,6 +49,11 @@ public class StatisticsService implements IStatefulComponent {
 	private boolean isRunning = true;
 
 	public final Timestamp simulationStart = new Timestamp(System.currentTimeMillis());
+
+	@Override
+	public void setInstanceProvider(IComponentInstanceProvider iComponentInstanceProvider) {
+		this.instanceProvider = iComponentInstanceProvider;
+	}
 
 	@Override
 	public void init() throws StatisticsServiceException {
@@ -68,9 +81,10 @@ public class StatisticsService implements IStatefulComponent {
 
 		try {
 			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulationStart);
-			psiFileGenerator.generate(simulationStart, outputDirectory, infoMap);
-			csvFileGenerator.generate(simulationStart, outputDirectory, infoMap);
-		} catch (Exception e) {
+			for (OutputFileGenerator generator : OutputFileGenerator.getGenerators(instanceProvider)) {
+				generator.generate(simulationStart, outputDirectory, infoMap);
+			}
+		} catch (FileGeneratorException e) {
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
 		}
 

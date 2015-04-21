@@ -40,7 +40,7 @@ function gametesProduction(chambersCount) {
 }
 
 function gametesSievingCoefficient() {
-   return 0.9;
+   return 0.99;
 }
 
 function crossingOverOperator() {
@@ -50,57 +50,70 @@ function crossingOverOperator() {
 }
 
 function initialGenome(x, y, z) {
-   return {
-      translationFactor: {
+   return [
+      {
+         name: "translationFactor",
          value: 0.0,
          //mutationFactor: 0,
          //minValue: 0,
          //maxValue: 0,
       },
-      growthFactor: {
-         value: {x: 0.0, y: 0.0, z: 0.0}
-      },
-      rotationAngle: {
+      {
+         name: "growthFactor",
          value: 0.0
       },
-      deviationAngle: {
+      {
+         name: "rotationAngle",
+         value: 0.0
+      },
+      {
+         name: "deviationAngle",
          value: 0.0
       },
 
-      ploidy: (Math.random() < 0.5) ? 'haploid' : 'diploid',
-
-      haploidFirstChamberRadius: {
+      {
+         name: "haploidFirstChamberRadius",
          value: 0.0
       },
-      diploidFirstChamberRadius: {
+      {
+         name: "diploidFirstChamberRadius",
          value: 0.0
       },
-      wallThicknessFactor: {
+      {
+         name: "wallThicknessFactor",
          value: 0.0
       },
-      minAdultAge: {
+      {
+         name: "minAdultAge",
          value: 30
       },
-      minAdultVolume: {
+      {
+         name: "minAdultVolume",
          value: 0.0
       },
-      haploidJuvenileVolumeFactor: {
+      {
+         name: "haploidJuvenileVolumeFactor",
          value: 0.0
       },
-      diploidJuvenileVolumeFactor: {
+      {
+         name: "diploidJuvenileVolumeFactor",
          value: 0.0
       },
-      maxEnergy: {
+      {
+         name: "maxEnergy",
          value: 0.0
       },
-      minEnergy: {
+      {
+         name: "minEnergy",
          value: 0.0
       },
-      metabolicEffectiveness: {
+      {
+         name: "metabolicEffectiveness",
          value: 0.0
       },
-      minMetabolicEffectiveness: {
+      {
+         name: "minMetabolicEffectiveness",
          value: 0.0
       }
-   }
+   ]
 }

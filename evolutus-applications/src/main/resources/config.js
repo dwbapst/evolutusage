@@ -26,15 +26,19 @@ function stepDurationInHours() {
 }
 
 function simulationDuration() {
-   return 100 * 24;
+   return 1000 * 24;
 }
 
 /***************************
  *       ENVIRONMENT       *
  ***************************/
 
+function rand(maxValue) {
+   return Math.round((Math.random() * maxValue))
+}
+
 function oceanSize() {
-   return {x: 500, y: 500, z: 100};
+   return {x: 300, y: 300, z: 100};
 }
 
 function algaeEnergy() {
@@ -42,15 +46,12 @@ function algaeEnergy() {
 }
 
 function initialForamsCount(x, y, z) {
-   var count = (x <= 50 && y <= 50) ? 100 : 0;
-   if (z > 50) {
-      count /= 2;
-   }
+   var count = rand(10);
    return count;
 }
 
 function initialAlgaeAvailability(x, y, z) {
-   return 10.0;
+   return 5.0;
 }
 
 function algaeGrowth(insolation) {
@@ -64,7 +65,7 @@ function insolation(x, y, z) {
 }
 
 function currentDirection(x, y, z) {
-   return {x: 100, y: 100, z: 0};
+   return {x: 50, y: 50, z: 0};
 }
 
 function boundaryConditions() {
@@ -118,7 +119,7 @@ function gametesProduction(chambersCount) {
 }
 
 function gametesSievingCoefficient() {
-   return 0.999;
+   return 0.99;
 }
 
 function crossingOverOperator() {
