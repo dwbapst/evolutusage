@@ -1,11 +1,7 @@
-package pl.edu.agh.evolutus.config;
-
-import java.awt.geom.RoundRectangle2D;
+package pl.edu.agh.evolutus.service.config;
 
 import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
-import pl.edu.agh.evolutus.utils.VectorD;
-import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IConfigJS {
 
@@ -50,6 +46,8 @@ public interface IConfigJS {
 	int gametesProduction(int chambersCount);
 
 	double gametesSievingCoefficient();
+
+	double globalMutationProbability();
 
 	NativeArray initialGenome(double x, double y, double z);
 

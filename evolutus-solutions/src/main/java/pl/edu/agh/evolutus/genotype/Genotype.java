@@ -17,11 +17,12 @@ public abstract class Genotype {
 
 	protected abstract Stream<Genome> createGameteStream(int number);
 
-	public List<Genome> createGametes(int number, double gametesSievingCoefficient) {
+	public List<Genome> createGametes(int number, double globalMutationProbability, double gametesSievingCoefficient) {
 		if (number % 2 != 0) {
 			throw new IllegalArgumentException("Number of gametes to create has to be even. Given: " + number);
 		}
 		return createGameteStream(number)
+				.map(gamete -> gamete.mutate(globalMutationProbability))
 				.filter(gamete -> rand.nextDouble() > gametesSievingCoefficient)
 				.collect(Collectors.toList());
 	}

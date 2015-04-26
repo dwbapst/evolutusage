@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.config;
+package pl.edu.agh.evolutus.service.config;
 
 import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -8,13 +8,7 @@ import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 
-public class EnvironmentConfig {
-
-	private final IConfigJS configJS;
-
-	public EnvironmentConfig(IConfigJS configJS) {
-		this.configJS = configJS;
-	}
+public class EnvironmentConfig extends Config {
 
 	double unitLengthInMeters() {
 		return configJS.unitLengthInMeters();
@@ -26,7 +20,7 @@ public class EnvironmentConfig {
 
 	public VectorL oceanSize() {
 		VectorD sizeMeters = VectorD.fromScriptObject(configJS.oceanSize());
-		return metersToUnits(sizeMeters);
+		return unitsConverter.metersToUnits(sizeMeters);
 	}
 
 	public double algaeEnergy() {
@@ -34,7 +28,7 @@ public class EnvironmentConfig {
 	}
 
 	public long initialForamsCount(VectorL positionUnits) {
-		VectorD positionMeters = unitsToMeters(positionUnits);
+		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
 		return configJS.initialForamsCount(positionMeters.x, positionMeters.y, positionMeters.z);
 	}
 
@@ -43,7 +37,7 @@ public class EnvironmentConfig {
 	}
 
 	public double initialAlgaeAvailability(VectorL positionUnits) {
-		VectorD positionMeters = unitsToMeters(positionUnits);
+		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
 		return configJS.initialAlgaeAvailability(positionMeters.x, positionMeters.y, positionMeters.z);
 	}
 
@@ -52,12 +46,12 @@ public class EnvironmentConfig {
 	}
 
 	public double insolation(VectorL positionUnits) {
-		VectorD positionMeters = unitsToMeters(positionUnits);
+		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
 		return configJS.insolation(positionMeters.x, positionMeters.y, positionMeters.z);
 	}
 
 	public CurrentDirection currentDirection(VectorL positionUnits) {
-		VectorD positionMeters = unitsToMeters(positionUnits);
+		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
 		ScriptObject currentDirection = configJS.currentDirection(positionMeters.x, positionMeters.y, positionMeters.z);
 		return new CurrentDirection(VectorD.fromScriptObject(currentDirection));
 	}
@@ -67,36 +61,12 @@ public class EnvironmentConfig {
 	}
 
 	public Genome initialGenome(VectorL positionUnits) {
-		VectorD positionMeters = unitsToMeters(positionUnits);
+		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
 		NativeArray initialGenome = configJS.initialGenome(positionMeters.x, positionMeters.y, positionMeters.z);
 		return Genome.fromScriptObject(initialGenome);
 	}
 
 	public String crossingOverOperator() {
 		return configJS.crossingOverOperator();
-	}
-
-	double unitsToMeters(long units) {
-		return units * unitLengthInMeters();
-	}
-
-	VectorD unitsToMeters(VectorL units) {
-		return units.mul(unitLengthInMeters());
-	}
-
-	long metersToUnits(double meters) {
-		return Math.round(meters / unitLengthInMeters());
-	}
-
-	VectorL metersToUnits(VectorD meters) {
-		return meters.div(unitLengthInMeters()).toLong();
-	}
-
-	double stepsToHours(long steps) {
-		return steps * stepDurationInHours();
-	}
-
-	long hoursToSteps(double hours) {
-		return Math.round(hours / stepDurationInHours());
 	}
 }

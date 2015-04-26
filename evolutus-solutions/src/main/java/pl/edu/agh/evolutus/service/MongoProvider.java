@@ -18,8 +18,7 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.distribution.Version.Main;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
-import pl.edu.agh.evolutus.config.ConfigFactory;
-import pl.edu.agh.evolutus.config.SystemConfig;
+import pl.edu.agh.evolutus.service.config.SystemConfig;
 
 public class MongoProvider implements IStatefulComponent {
 
@@ -28,8 +27,7 @@ public class MongoProvider implements IStatefulComponent {
 	private final boolean inMemory;
 
 	@Inject
-	public MongoProvider(ConfigFactory configFactory) {
-		SystemConfig systemConfig = configFactory.getSystemConfig();
+	public MongoProvider(SystemConfig systemConfig) {
 		this.inMemory = systemConfig.isDatabaseInMemory();
 		this.host = inMemory ? "localhost" : systemConfig.getDatabaseHost();
 		this.port = systemConfig.getDatabasePort();

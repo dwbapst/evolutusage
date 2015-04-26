@@ -15,7 +15,10 @@ import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.service.OutputFileGenerator.FileGeneratorException;
+import pl.edu.agh.evolutus.service.output.CsvFileGenerator;
+import pl.edu.agh.evolutus.service.output.HtmlFileGenerator;
+import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
+import pl.edu.agh.evolutus.service.output.OutputFileGenerator.FileGeneratorException;
 import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
 import pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;

@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.environment;
 
-import pl.edu.agh.evolutus.config.EnvironmentConfig;
+import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorL;
 

@@ -3,6 +3,7 @@ package pl.edu.agh.evolutus.genotype;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -83,10 +84,27 @@ public class Genome implements Iterable<Gene> {
 		return gene;
 	}
 
+	public Genome mutate(double globalMutationProbability) {
+		Genome mutatedGenome = new Genome(foramIdentifier);
+		for (Entry<String, Gene> entry : genes.entrySet()) {
+			mutatedGenome.genes.put(entry.getKey(), entry.getValue().mutate(globalMutationProbability));
+		}
+		return mutatedGenome;
+	}
+
 	public void validate() throws GeneValidationException {
 		for (Gene gene : this) {
 			gene.validate();
 		}
+	}
+
+	public boolean isValid() {
+		for (Gene gene : this) {
+			if (!gene.isValid()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public Set<String> geneNames() {

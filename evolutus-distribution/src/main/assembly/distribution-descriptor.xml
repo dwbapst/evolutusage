@@ -27,5 +27,13 @@
         <include>**/*</include>
       </includes>
     </fileSet>
+
+    <fileSet>
+      <directory>../evolutus-applications/src/main/resources/conf_js</directory>
+      <outputDirectory>/conf</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.service;
+package pl.edu.agh.evolutus.service.output;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,8 @@ import org.jage.platform.component.provider.IComponentInstanceProvider;
 
 import com.google.common.collect.Lists;
 
+import pl.edu.agh.evolutus.service.PsiFileGenerator;
+import pl.edu.agh.evolutus.service.TemplateRenderer;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 

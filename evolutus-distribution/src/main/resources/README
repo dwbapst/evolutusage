@@ -1,4 +1,4 @@
-In ./conf directory, there is an example config.js file.
+In ./conf directory, there are example config files.
 
 Start simulation by executing:
-./evolutus.sh <output-directory> conf/config.js
+./evolutus.sh <output-directory> conf/*

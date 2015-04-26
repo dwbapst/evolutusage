@@ -39,3 +39,4 @@ function boundaryConditions() {
    return "periodic";
 //   return "mixed";
 }
+

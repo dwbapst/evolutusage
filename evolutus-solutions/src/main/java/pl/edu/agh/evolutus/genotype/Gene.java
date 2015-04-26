@@ -12,16 +12,18 @@ public class Gene {
 	private final Double value;
 	private final Double minValue;
 	private final Double maxValue;
-	private final Double mutationFactor; // FIXME: mutationProbability?
+	private final Double mutationRate;
+	private final Double mutationProbability;
 
 	private final boolean isDominant;
 
-	public Gene(String name, Number value, Number minValue, Number maxValue, Number mutationFactor) {
+	public Gene(String name, Number value, Number minValue, Number maxValue, Number mutationRate, Number mutationProbability) {
 		this.name = name;
 		this.value = value.doubleValue();
 		this.minValue = minValue.doubleValue();
 		this.maxValue = maxValue.doubleValue();
-		this.mutationFactor = mutationFactor.doubleValue();
+		this.mutationRate = mutationRate.doubleValue();
+		this.mutationProbability = mutationProbability.doubleValue();
 		this.isDominant = RAND.nextBoolean();
 	}
 
@@ -29,9 +31,10 @@ public class Gene {
 		this(
 				getValue(geneScriptObject, "name", null, true),
 				getValue(geneScriptObject, "value", null, true),
-				getValue(geneScriptObject, "minValue", Double.MIN_VALUE, false),
-				getValue(geneScriptObject, "maxValue", Double.MAX_VALUE, false),
-				getValue(geneScriptObject, "mutationFactor", 0.0, false)
+				getValue(geneScriptObject, "minValue", Double.NEGATIVE_INFINITY, false),
+				getValue(geneScriptObject, "maxValue", Double.POSITIVE_INFINITY, false),
+				getValue(geneScriptObject, "mutationRate", 0.0, false),
+				getValue(geneScriptObject, "mutationProbability", Double.NaN, false)
 		);
 	}
 
@@ -62,8 +65,12 @@ public class Gene {
 		return maxValue;
 	}
 
-	public Double getMutationFactor() {
-		return mutationFactor;
+	public Double getMutationRate() {
+		return mutationRate;
+	}
+
+	public Double getMutationProbability() {
+		return mutationProbability;
 	}
 
 	public boolean isDominant() {
@@ -81,6 +88,24 @@ public class Gene {
 		if (maxValue < value) {
 			throw new GeneValidationException(value, "greater", maxValue);
 		}
+	}
+
+	public boolean isValid() {
+		return value >= minValue && value <= maxValue;
+	}
+
+	public Gene mutate(double globalMutationProbability) {
+		if (shouldMutate(globalMutationProbability)) {
+			double mutationFactor = RAND.nextBoolean() ? (1 + mutationRate) : (1 - mutationRate);
+			double newValue = value * mutationFactor;
+			return new Gene(name, newValue, minValue, maxValue, mutationRate, mutationProbability);
+		}
+		return this;
+	}
+
+	private boolean shouldMutate(double globalMutationProbability) {
+		double probability = mutationProbability.isNaN() ? globalMutationProbability : mutationProbability;
+		return RAND.nextDouble() < probability;
 	}
 
 	public static class GeneValidationException extends Exception {

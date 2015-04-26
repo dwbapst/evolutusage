@@ -15,13 +15,12 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.config.ConfigFactory;
-import pl.edu.agh.evolutus.config.ForamConfig;
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.genotype.Genotype;
 import pl.edu.agh.evolutus.service.StatisticsService;
+import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -36,6 +35,7 @@ public class Foram extends SimpleAgent implements IForam {
 
 	private Genotype genotype = null;
 
+	@Inject
 	private ForamConfig config;
 
 	private Random random = new Random();
@@ -44,10 +44,8 @@ public class Foram extends SimpleAgent implements IForam {
 	private StatisticsService statisticsService;
 
 	@Inject
-	public Foram(AgentAddressSupplier supplier, ConfigFactory configFactory) {
+	public Foram(AgentAddressSupplier supplier) {
 		super(supplier);
-		this.config = configFactory.getForamConfig();
-		this.energy = config.initialEnergy();
 	}
 
 	@Override
@@ -72,6 +70,7 @@ public class Foram extends SimpleAgent implements IForam {
 	@Override
 	public void init() throws ComponentException {
 		super.init();
+		this.energy = config.initialEnergy();
 	}
 
 	@Override
@@ -182,7 +181,8 @@ public class Foram extends SimpleAgent implements IForam {
 
 	private void reproduce() throws AgentDiedException {
 		int gametesProduction = config.gametesProduction(chambersCount);
-		List<Genome> gametes = genotype.createGametes(gametesProduction, config.gametesSievingCoefficient());
+		List<Genome> gametes = genotype
+				.createGametes(gametesProduction, config.globalMutationProbability(), config.gametesSievingCoefficient());
 		getOceanFragment().addGametes(gametes);
 		die();
 	}

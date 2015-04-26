@@ -8,5 +8,5 @@ function stepDurationInHours() {
 }
 
 function simulationDuration() {
-   return 1000 * 24;
+   return 400 * 24;
 }

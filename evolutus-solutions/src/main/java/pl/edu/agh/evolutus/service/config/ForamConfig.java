@@ -1,12 +1,6 @@
-package pl.edu.agh.evolutus.config;
+package pl.edu.agh.evolutus.service.config;
 
-public class ForamConfig {
-
-	private final IConfigJS configJS;
-
-	public ForamConfig(IConfigJS configJS) {
-		this.configJS = configJS;
-	}
+public class ForamConfig extends Config {
 
 	public double initialEnergy() {
 		return configJS.initialEnergy();
@@ -50,5 +44,9 @@ public class ForamConfig {
 
 	public double gametesSievingCoefficient() {
 		return configJS.gametesSievingCoefficient();
+	}
+
+	public double globalMutationProbability() {
+		return configJS.globalMutationProbability();
 	}
 }

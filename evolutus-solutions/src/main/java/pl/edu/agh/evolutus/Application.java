@@ -11,7 +11,7 @@ public class Application {
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("Usage:");
-			System.out.println("\tevolutus.sh output-dir [config-file]...");
+			System.out.println("\tevolutus.sh output-dir [config-files]...");
 			System.exit(127);
 		}
 

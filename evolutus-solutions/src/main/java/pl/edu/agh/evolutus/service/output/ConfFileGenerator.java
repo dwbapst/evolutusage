@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.service;
+package pl.edu.agh.evolutus.service.output;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +13,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.config.ConfigFactory;
-import pl.edu.agh.evolutus.config.ConfigFactory.ConfigServiceException;
+import pl.edu.agh.evolutus.service.config.ConfigFactory;
+import pl.edu.agh.evolutus.service.config.ConfigFactory.ConfigServiceException;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 
 public class ConfFileGenerator extends OutputFileGenerator {

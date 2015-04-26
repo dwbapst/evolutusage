@@ -15,17 +15,18 @@ import org.jage.workplace.ConnectedSimpleWorkplace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pl.edu.agh.evolutus.config.ConfigFactory;
-import pl.edu.agh.evolutus.config.EnvironmentConfig;
-import pl.edu.agh.evolutus.config.SimulationConfig;
+import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
+import pl.edu.agh.evolutus.service.config.SimulationConfig;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragmentContainer extends ConnectedSimpleWorkplace implements IOceanFragmentContainer {
 
 	private static final Logger logger = LoggerFactory.getLogger(OceanFragmentContainer.class);
 
+	@Inject
 	private SimulationConfig simulationConfig;
 
+	@Inject
 	private EnvironmentConfig environmentConfig;
 
 	public OceanFragmentContainer(final AgentAddress address) {
@@ -33,10 +34,8 @@ public class OceanFragmentContainer extends ConnectedSimpleWorkplace implements 
 	}
 
 	@Inject
-	public OceanFragmentContainer(final AgentAddressSupplier supplier, final ConfigFactory configFactory) {
+	public OceanFragmentContainer(final AgentAddressSupplier supplier) {
 		super(supplier);
-		this.simulationConfig = configFactory.getSimulationConfig();
-		this.environmentConfig = configFactory.getEnvironmentConfig();
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.service;
+package pl.edu.agh.evolutus.service.output;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.service.TemplateRenderer;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 

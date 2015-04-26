@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Utils;
 

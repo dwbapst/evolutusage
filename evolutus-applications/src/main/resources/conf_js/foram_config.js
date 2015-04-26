@@ -1,82 +1,3 @@
-/***************************
- *         SYSTEM          *
- ***************************/
-
-function databaseParameters() {
-   return {
-      //host: "localhost",
-      //port: 27017,
-      //inMemory: false
-      host: "localhost",
-      port: 65432,
-      inMemory: true
-   };
-}
-
-/***************************
- *       SIMULATION        *
- ***************************/
-
-function unitLengthInMeters() {
-   return 30;
-}
-
-function stepDurationInHours() {
-   return 12;
-}
-
-function simulationDuration() {
-   return 1000 * 24;
-}
-
-/***************************
- *       ENVIRONMENT       *
- ***************************/
-
-function rand(maxValue) {
-   return Math.round((Math.random() * maxValue))
-}
-
-function oceanSize() {
-   return {x: 300, y: 300, z: 100};
-}
-
-function algaeEnergy() {
-   return 1.0;
-}
-
-function initialForamsCount(x, y, z) {
-   var count = rand(10);
-   return count;
-}
-
-function initialAlgaeAvailability(x, y, z) {
-   return 5.0;
-}
-
-function algaeGrowth(insolation) {
-   return 1.0 * insolation;
-}
-
-function insolation(x, y, z) {
-   var surfaceInsolation = 1.0;
-   var insolation = surfaceInsolation - 0.01 * z;
-   return Math.max(0.0, insolation);
-}
-
-function currentDirection(x, y, z) {
-   return {x: 50, y: 50, z: 0};
-}
-
-function boundaryConditions() {
-//   return "fixed";
-   return "periodic";
-//   return "mixed";
-}
-
-/***************************
- *          FORAM          *
- ***************************/
 
 function initialEnergy() {
    return 5.0;
@@ -128,12 +49,17 @@ function crossingOverOperator() {
    return "UniformCrossingOverOperator";
 }
 
+function globalMutationProbability() {
+   return 0.0;
+}
+
 function initialGenome(x, y, z) {
    return [
       {
          name: "translationFactor",
          value: 0.0,
-         //mutationFactor: 0,
+         //mutationProbability: 0,
+         //mutationRate: 0,
          //minValue: 0,
          //maxValue: 0,
       },
