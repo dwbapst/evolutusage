@@ -1,5 +1,8 @@
 package pl.edu.agh.evolutus.genotype;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -36,5 +39,20 @@ public class DiploidGenotype extends Genotype {
 				.mapToObj(i -> Pair.of(genomeA.copy(), genomeB.copy()))
 				.map(crossingOverOperator::apply)
 				.flatMap(pair -> Stream.of(pair.getLeft(), pair.getRight()));
+	}
+
+	public Map<String, Double[]> toFossilizationMap() {
+		Iterator<Gene> genomeAIt = genomeA.iterator();
+		Iterator<Gene> genomeBIt = genomeB.iterator();
+		return effectiveGenome.stream()
+				.collect(Collectors.toMap(
+						Gene::getName,
+						gene -> new Double[] { gene.getValue(), genomeAIt.next().getValue(), genomeBIt.next().getValue() }
+				));
+	}
+
+	@Override
+	public boolean isDiploid() {
+		return true;
 	}
 }

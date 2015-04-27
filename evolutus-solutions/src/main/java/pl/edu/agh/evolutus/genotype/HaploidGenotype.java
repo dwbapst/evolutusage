@@ -1,5 +1,7 @@
 package pl.edu.agh.evolutus.genotype;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -21,5 +23,18 @@ public class HaploidGenotype extends Genotype {
 	@Override
 	protected Stream<Genome> createGameteStream(int number) {
 		return IntStream.range(0, number).mapToObj(i -> genome.copy());
+	}
+
+	public Map<String, Double[]> toFossilizationMap() {
+		return genome.stream()
+				.collect(Collectors.toMap(
+						Gene::getName,
+						gene -> new Double[] { gene.getValue(), null, null }
+				));
+	}
+
+	@Override
+	public boolean isDiploid() {
+		return false;
 	}
 }

@@ -17,6 +17,10 @@ public abstract class Genotype {
 
 	protected abstract Stream<Genome> createGameteStream(int number);
 
+	public abstract Map<String, Double[]> toFossilizationMap();
+
+	public abstract boolean isDiploid();
+
 	public List<Genome> createGametes(int number, double globalMutationProbability, double gametesSievingCoefficient) {
 		if (number % 2 != 0) {
 			throw new IllegalArgumentException("Number of gametes to create has to be even. Given: " + number);
@@ -37,14 +41,6 @@ public abstract class Genotype {
 
 	public Iterator<Gene> iterator() {
 		return getEffectiveGenome().iterator();
-	}
-
-	public Map<String, Double> toMap() {
-		return getEffectiveGenome()
-				.stream()
-				.collect(Collectors.toMap(
-						Gene::getName, Gene::getValue
-				));
 	}
 
 }

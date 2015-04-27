@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -51,7 +52,7 @@ public class Genome implements Iterable<Gene> {
 		return new Genome(genes, null);
 	}
 
-	private Map<String, Gene> genes = new HashMap<>();
+	private Map<String, Gene> genes = new TreeMap<>();
 
 	private final String foramIdentifier;
 

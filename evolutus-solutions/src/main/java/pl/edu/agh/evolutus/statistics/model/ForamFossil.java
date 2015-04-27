@@ -11,7 +11,8 @@ public class ForamFossil extends Statistics {
 
 	private Long deathStepNo;
 	private Integer age;
-	private Map<String, Double> genotype;
+	private boolean isDiploid;
+	private Map<String, Double[]> genotype;
 	private Long x;
 	private Long y;
 	private Long z;
@@ -32,7 +33,8 @@ public class ForamFossil extends Statistics {
 		super(simulationStart);
 		this.deathStepNo = deathStepNo;
 		this.age = age;
-		this.genotype = genotype.toMap();
+		this.isDiploid = genotype.isDiploid();
+		this.genotype = genotype.toFossilizationMap();
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -46,7 +48,11 @@ public class ForamFossil extends Statistics {
 		return age;
 	}
 
-	public Map<String, Double> getGenotype() {
+	public boolean isDiploid() {
+		return isDiploid;
+	}
+
+	public Map<String, Double[]> getGenotype() {
 		return genotype;
 	}
 
