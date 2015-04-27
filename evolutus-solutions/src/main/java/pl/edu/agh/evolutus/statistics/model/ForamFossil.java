@@ -1,6 +1,5 @@
 package pl.edu.agh.evolutus.statistics.model;
 
-import java.sql.Timestamp;
 import java.util.Map;
 
 import pl.edu.agh.evolutus.genotype.Genotype;
@@ -22,7 +21,7 @@ public class ForamFossil extends Statistics {
 	}
 
 	public ForamFossil(
-			Timestamp simulationStart,
+			Simulation simulation,
 			Long deathStepNo,
 			Integer age,
 			Genotype genotype,
@@ -30,7 +29,7 @@ public class ForamFossil extends Statistics {
 			Long y,
 			Long z
 	) {
-		super(simulationStart);
+		super(simulation.getSimulationStart());
 		this.deathStepNo = deathStepNo;
 		this.age = age;
 		this.isDiploid = genotype.isDiploid();

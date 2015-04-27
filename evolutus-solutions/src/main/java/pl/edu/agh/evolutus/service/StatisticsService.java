@@ -1,7 +1,6 @@
 package pl.edu.agh.evolutus.service;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,10 @@ import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator.FileGeneratorException;
 import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
 import pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao;
+import pl.edu.agh.evolutus.statistics.dao.SimulationDao;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.statistics.model.Simulation;
 import pl.edu.agh.evolutus.utils.Utils;
 
 public class StatisticsService implements IStatefulComponent, IComponentInstanceProviderAware {
@@ -44,6 +45,9 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	@Inject
 	private ForamFossilDao foramFossilDao;
 
+	@Inject
+	private SimulationDao simulationDao;
+
 	private IComponentInstanceProvider instanceProvider;
 
 	private final List<OceanFragmentInfo> oceanFragmentInfoToAdd = new LinkedList<>();
@@ -51,7 +55,7 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	private Thread thread;
 	private boolean isRunning = true;
 
-	public final Timestamp simulationStart = new Timestamp(System.currentTimeMillis());
+	private final Simulation simulation = new Simulation(System.currentTimeMillis());
 
 	@Override
 	public void setInstanceProvider(IComponentInstanceProvider iComponentInstanceProvider) {
@@ -62,6 +66,7 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	public void init() throws StatisticsServiceException {
 		thread = createThread();
 		thread.start();
+		simulationDao.insert(simulation);
 		logger.info("{} initialized. Thread started.", StatisticsService.class.getSimpleName());
 	}
 
@@ -80,12 +85,12 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 		} else {
 			outputDirectory = new File(System.getProperty("java.io.tmpdir"));
 		}
-		outputDirectory = new File(outputDirectory, Utils.getTimestampAsString(simulationStart));
+		outputDirectory = new File(outputDirectory, Utils.getTimestampAsString(simulation.getSimulationStart()));
 
 		try {
-			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulationStart);
+			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulation);
 			for (OutputFileGenerator generator : OutputFileGenerator.getGenerators(instanceProvider)) {
-				generator.generate(simulationStart, outputDirectory, infoMap);
+				generator.generate(simulation.getSimulationStart(), outputDirectory, infoMap);
 			}
 		} catch (FileGeneratorException e) {
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
@@ -95,8 +100,8 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 		return false;
 	}
 
-	public Timestamp getSimulationStart() {
-		return simulationStart;
+	public Simulation getSimulation() {
+		return simulation;
 	}
 
 	private void assertRunning() {

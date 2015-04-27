@@ -94,7 +94,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		long z = oceanFragmentProperties.getPosition().z;
 		double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
 		double insolation = oceanFragmentProperties.getInsolation();
-		OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.simulationStart, steps++, x, y, z, foramsAlive(),
+		OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps++, x, y, z, foramsAlive(),
 				algaeAvailability,
 				totalEnergy(), insolation);
 		statisticsService.add(info);

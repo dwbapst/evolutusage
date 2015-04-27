@@ -140,7 +140,7 @@ public class Foram extends SimpleAgent implements IForam {
 		IOceanFragment oceanFragment = getOceanFragment();
 		VectorL position = oceanFragment.getPosition();
 		return new ForamFossil(
-				statisticsService.getSimulationStart(),
+				statisticsService.getSimulation(),
 				oceanFragment.currentStep(),
 				age,
 				genotype,

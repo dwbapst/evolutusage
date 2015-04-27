@@ -1,7 +1,5 @@
 package pl.edu.agh.evolutus.statistics.model;
 
-import java.sql.Timestamp;
-
 public class OceanFragmentInfo extends Statistics {
 
 	private static final long serialVersionUID = 1L;
@@ -20,7 +18,7 @@ public class OceanFragmentInfo extends Statistics {
 	}
 
 	public OceanFragmentInfo(
-			Timestamp simulationStart,
+			Simulation simulation,
 			Long stepNo,
 			Long x,
 			Long y,
@@ -30,7 +28,7 @@ public class OceanFragmentInfo extends Statistics {
 			Double totalEnergy,
 			Double insolation
 	) {
-		super(simulationStart);
+		super(simulation.getSimulationStart());
 		this.stepNo = stepNo;
 		this.x = x;
 		this.y = y;

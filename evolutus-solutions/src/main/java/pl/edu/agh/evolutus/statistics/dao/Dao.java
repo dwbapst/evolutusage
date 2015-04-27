@@ -14,16 +14,15 @@ import pl.edu.agh.evolutus.service.MongoProvider;
 
 public abstract class Dao<T> implements IStatefulComponent {
 
+	public static final String DB_NAME = "evolutus";
 	@Inject
 	private MongoProvider mongoProvider;
 
 	protected Datastore ds;
 
-	protected abstract String getCollectionName();
-
 	@Override
 	public void init() throws ComponentException {
-		ds = new Morphia().createDatastore(mongoProvider.getMongoClient(), getCollectionName());
+		ds = new Morphia().createDatastore(mongoProvider.getMongoClient(), DB_NAME);
 	}
 
 	@Override

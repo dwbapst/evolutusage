@@ -41,6 +41,7 @@
 
   <component name="oceanFragmentInfoDao" class="pl.edu.agh.evolutus.statistics.dao.OceanFragmentInfoDao"/>
   <component name="foramFossilDao" class="pl.edu.agh.evolutus.statistics.dao.ForamFossilDao"/>
+  <component name="simulationDao" class="pl.edu.agh.evolutus.statistics.dao.SimulationDao"/>
 
   <component name="onePointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator"/>
   <component name="twoPointCrossingOverOperator" class="pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator"/>
