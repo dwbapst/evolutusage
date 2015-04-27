@@ -11,7 +11,7 @@ public class SystemConfig extends Config {
 
 	public int getDatabasePort() {
 		ScriptObject parameters = configJS.databaseParameters();
-		return parameters.getInt("port");
+		return (int) parameters.get("port");
 	}
 
 	public boolean isDatabaseInMemory() {
