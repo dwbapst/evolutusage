@@ -2,19 +2,16 @@ package pl.edu.agh.evolutus.service.output;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.service.config.ConfigFactory;
-import pl.edu.agh.evolutus.service.config.ConfigFactory.ConfigServiceException;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 
 public class ConfFileGenerator extends OutputFileGenerator {
@@ -34,17 +31,9 @@ public class ConfFileGenerator extends OutputFileGenerator {
 			throws IOException, FileGeneratorException {
 
 		File file = new File(outputDirectory, getFileName(simulationStartString));
-		PrintWriter writer = new PrintWriter(file);
 
-		try {
-			for (Reader reader : configFactory.getConfigReaders()) {
-				writer.println(IOUtils.toString(reader));
-				reader.close();
-			}
-			writer.close();
-		} catch (ConfigServiceException e) {
-			throw new FileGeneratorException(e);
-		}
+		String configAsString = configFactory.getConfigAsString();
+		FileUtils.write(file, configAsString);
 		log.info("Saved config file in {}", outputDirectory.getAbsolutePath());
 	}
 

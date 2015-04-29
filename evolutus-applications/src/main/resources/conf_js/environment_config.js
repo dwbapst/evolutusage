@@ -1,4 +1,8 @@
 
+/***************************
+ *       ENVIRONMENT       *
+ ***************************/
+
 function rand(maxValue) {
    return Math.round((Math.random() * maxValue))
 }

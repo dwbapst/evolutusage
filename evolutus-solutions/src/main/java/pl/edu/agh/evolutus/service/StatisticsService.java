@@ -14,6 +14,8 @@ import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.service.config.ConfigFactory;
+import pl.edu.agh.evolutus.service.config.SimulationConfig;
 import pl.edu.agh.evolutus.service.output.CsvFileGenerator;
 import pl.edu.agh.evolutus.service.output.HtmlFileGenerator;
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
@@ -31,15 +33,6 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	private static final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
 
 	@Inject
-	private PsiFileGenerator psiFileGenerator;
-
-	@Inject
-	private CsvFileGenerator csvFileGenerator;
-
-	@Inject
-	private HtmlFileGenerator htmlFileGenerator;
-
-	@Inject
 	private OceanFragmentInfoDao oceanFragmentInfoDao;
 
 	@Inject
@@ -48,6 +41,12 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	@Inject
 	private SimulationDao simulationDao;
 
+	@Inject
+	private SimulationConfig simulationConfig;
+
+	@Inject
+	private ConfigFactory configFactory;
+
 	private IComponentInstanceProvider instanceProvider;
 
 	private final List<OceanFragmentInfo> oceanFragmentInfoToAdd = new LinkedList<>();
@@ -55,7 +54,7 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	private Thread thread;
 	private boolean isRunning = true;
 
-	private final Simulation simulation = new Simulation(System.currentTimeMillis());
+	private Simulation simulation;
 
 	@Override
 	public void setInstanceProvider(IComponentInstanceProvider iComponentInstanceProvider) {
@@ -64,9 +63,14 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 
 	@Override
 	public void init() throws StatisticsServiceException {
+		simulation = new Simulation(System.currentTimeMillis(),
+				simulationConfig.simulationName(),
+				simulationConfig.simulationDescription(),
+				configFactory.getConfigAsString());
+		simulationDao.insert(simulation);
+
 		thread = createThread();
 		thread.start();
-		simulationDao.insert(simulation);
 		logger.info("{} initialized. Thread started.", StatisticsService.class.getSimpleName());
 	}
 

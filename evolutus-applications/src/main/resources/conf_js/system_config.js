@@ -1,4 +1,8 @@
 
+/***************************
+ *         SYSTEM          *
+ ***************************/
+
 function databaseParameters() {
    return {
       //host: "localhost",

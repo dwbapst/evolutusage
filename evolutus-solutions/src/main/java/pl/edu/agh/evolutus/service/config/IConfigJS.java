@@ -55,5 +55,9 @@ public interface IConfigJS {
 
 	double simulationDuration();
 
+	String simulationName();
+
+	String simulationDescription();
+
 	ScriptObject databaseParameters();
 }

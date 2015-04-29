@@ -27,10 +27,10 @@ public class ConfigFactory implements IStatefulComponent {
 
 	public static final String CONFIG_PROPERTY = "evolutus.config";
 	public static final String[] CLASSPATH_CONFIG_FILES = {
-			"conf_js/environment_config.js",
-			"conf_js/foram_config.js",
+			"conf_js/system_config.js",
 			"conf_js/simulation_config.js",
-			"conf_js/system_config.js"
+			"conf_js/environment_config.js",
+			"conf_js/foram_config.js"
 	};
 	private IConfigJS configJS;
 
@@ -58,6 +58,18 @@ public class ConfigFactory implements IStatefulComponent {
 	@Override
 	public boolean finish() throws ComponentException {
 		return true;
+	}
+
+	public String getConfigAsString() throws ConfigServiceException {
+		try {
+			StringBuilder config = new StringBuilder();
+			for (Reader reader : getConfigReaders()) {
+				config.append(IOUtils.toString(reader));
+			}
+			return config.toString();
+		} catch (IOException e) {
+			throw new ConfigServiceException("Cannot read config.", e);
+		}
 	}
 
 	public List<Reader> getConfigReaders() throws ConfigServiceException {
