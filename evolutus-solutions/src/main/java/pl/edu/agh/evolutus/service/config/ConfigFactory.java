@@ -63,16 +63,48 @@ public class ConfigFactory implements IStatefulComponent {
 	public String getConfigAsString() throws ConfigServiceException {
 		try {
 			StringBuilder config = new StringBuilder();
-			for (Reader reader : getConfigReaders()) {
-				config.append(IOUtils.toString(reader));
-			}
+			config.append("\n"
+					+ "/*******************************\n"
+					+ " *        DEFAULT CONFIG       *\n"
+					+ " *******************************/\n");
+			append(config, getClasspathConfigReaders());
+			config.append("\n"
+					+ "/*******************************\n"
+					+ " *      OVERRIDDEN CONFIG      *\n"
+					+ " *******************************/\n");
+			append(config, getUserDefinedConfigReaders());
 			return config.toString();
 		} catch (IOException e) {
 			throw new ConfigServiceException("Cannot read config.", e);
 		}
 	}
 
+	private void append(StringBuilder stringBuilder, List<Reader> readers) throws IOException {
+		for (Reader reader : readers) {
+			stringBuilder.append(IOUtils.toString(reader));
+		}
+	}
+
 	public List<Reader> getConfigReaders() throws ConfigServiceException {
+		List<Reader> readers = new ArrayList<>();
+		readers.addAll(getClasspathConfigReaders());
+		readers.addAll(getUserDefinedConfigReaders());
+		return readers;
+	}
+
+	public List<Reader> getClasspathConfigReaders() throws ConfigServiceException {
+		List<Reader> readers = new ArrayList<>();
+		for (String configFile : CLASSPATH_CONFIG_FILES) {
+			InputStream configStream = getClass().getClassLoader().getResourceAsStream(configFile);
+			if (configStream == null) {
+				throw new ConfigServiceException("Cannot find " + configFile + " file in the classpath root directory.");
+			}
+			readers.add(new InputStreamReader(configStream));
+		}
+		return readers;
+	}
+
+	public List<Reader> getUserDefinedConfigReaders() throws ConfigServiceException {
 		List<Reader> readers = new ArrayList<>();
 		String configPathsString = System.getProperty(CONFIG_PROPERTY);
 
@@ -86,14 +118,6 @@ public class ConfigFactory implements IStatefulComponent {
 				}
 			} catch (IOException e) {
 				throw new ConfigServiceException("Cannot read config files", e);
-			}
-		} else {
-			for (String configFile : CLASSPATH_CONFIG_FILES) {
-				InputStream configStream = getClass().getClassLoader().getResourceAsStream(configFile);
-				if (configStream == null) {
-					throw new ConfigServiceException("Cannot find " + configFile + " file in the classpath root directory.");
-				}
-				readers.add(new InputStreamReader(configStream));
 			}
 		}
 		return readers;

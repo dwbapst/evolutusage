@@ -1,7 +1,5 @@
 
-/***************************
- *         SYSTEM          *
- ***************************/
+// ---- SYSTEM ----
 
 function databaseParameters() {
    return {

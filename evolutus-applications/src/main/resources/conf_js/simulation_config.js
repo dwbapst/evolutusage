@@ -1,7 +1,5 @@
 
-/***************************
- *       SIMULATION        *
- ***************************/
+// ---- SIMULATION ----
 
 function simulationName() {
    return "sample simulation";
