@@ -1,6 +1,7 @@
 package pl.edu.agh.evolutus.service.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,11 +114,26 @@ public class ConfigFactory implements IStatefulComponent {
 			String[] configPaths = StringUtils.split(configPathsString, '\u0000');
 			try {
 				for (String configPath : configPaths) {
-					readers.add(new FileReader(configPath));
-					logger.info("\t" + new File(configPath).getAbsolutePath());
+					File configFile = new File(configPath);
+					if (configFile.isDirectory()) {
+						readers.addAll(getUserDefinedConfigReaders(configFile.listFiles()));
+					} else {
+						readers.addAll(getUserDefinedConfigReaders(configFile));
+					}
 				}
 			} catch (IOException e) {
 				throw new ConfigServiceException("Cannot read config files", e);
+			}
+		}
+		return readers;
+	}
+
+	public List<Reader> getUserDefinedConfigReaders(File... configFiles) throws FileNotFoundException {
+		List<Reader> readers = new ArrayList<>();
+		for (File configFile : configFiles) {
+			if (!configFile.isDirectory()) {
+				readers.add(new FileReader(configFile));
+				logger.info("\t" + configFile.getAbsolutePath());
 			}
 		}
 		return readers;
