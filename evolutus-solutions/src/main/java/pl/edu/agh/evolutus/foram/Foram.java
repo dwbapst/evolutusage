@@ -19,7 +19,9 @@ import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.genotype.Genotype;
+import pl.edu.agh.evolutus.service.ForamVolumeMeter;
 import pl.edu.agh.evolutus.service.StatisticsService;
+import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -37,6 +39,9 @@ public class Foram extends SimpleAgent implements IForam {
 
 	@Inject
 	private ForamConfig config;
+
+	@Inject
+	private ForamVolumeMeter foramVolumeMeter;
 
 	private Random random = new Random();
 
@@ -85,7 +90,7 @@ public class Foram extends SimpleAgent implements IForam {
 			return;
 		}
 
-		energy -= config.energyDemand(chambersCount);
+		energy -= genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * chambersCount;
 
 		try {
 			if (shouldDie()) {
@@ -125,31 +130,36 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean shouldDie() {
-		return energy <= genotype.get(Genome.MIN_ENERGY_NAME).getValue();
+		return energy <= genotype.get(Genome.MIN_ENERGY).getValue();
 	}
 
 	private void die() throws AgentDiedException {
 		energy = 0.0;
 		alive = false;
-		statisticsService.add(createFossil());
+		addStats();
 		doAction(AgentActions.death(this));
 		throw new AgentDiedException();
 	}
 
-	private ForamFossil createFossil() {
-		IOceanFragment oceanFragment = getOceanFragment();
-		VectorL position = oceanFragment.getPosition();
-		return new ForamFossil(
-				statisticsService.getSimulation(),
-				oceanFragment.currentStep(),
-				age,
-				genotype,
-				position.x, position.y, position.z
-		);
+	private void addStats() {
+		try {
+			IOceanFragment oceanFragment = getOceanFragment();
+			VectorL position = oceanFragment.getPosition();
+			ForamFossil fossil = new ForamFossil(
+					statisticsService.getSimulation(),
+					oceanFragment.currentStep(),
+					age,
+					genotype,
+					position.x, position.y, position.z
+			);
+			statisticsService.add(fossil);
+		} catch (StatisticsServiceException e) {
+			logger.debug(e.getMessage(), e);
+		}
 	}
 
 	private void eat() {
-		double capacity = config.energyCapacity(chambersCount);
+		double capacity = genotype.get(Genome.MAX_ENERGY_PER_CHAMBER).getValue() * chambersCount;
 		energy += getOceanFragment().takeAlgae(capacity);
 	}
 
@@ -173,7 +183,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private boolean canReproduce() {
-		boolean oldEnough = age >= genotype.get(Genome.MIN_ADULT_AGE_NAME).getValue();
+		boolean oldEnough = age >= genotype.get(Genome.MIN_ADULT_AGE).getValue();
 		boolean energyEnough = energy > config.energyNeededToReproduce();
 		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability();
 		return oldEnough && energyEnough && reproductionProbable;
@@ -195,7 +205,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void createChamber() {
-		energy -= config.chamberGrowthEnergyCost(chambersCount);
+		energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
 		chambersCount++;
 	}
 

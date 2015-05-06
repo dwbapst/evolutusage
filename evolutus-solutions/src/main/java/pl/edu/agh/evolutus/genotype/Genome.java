@@ -17,23 +17,25 @@ import pl.edu.agh.evolutus.genotype.Gene.GeneValidationException;
 
 public class Genome implements Iterable<Gene> {
 
-	public static final String TRANSLATION_FACTOR_NAME = "translationFactor";
-	public static final String GROWTH_FACTOR_NAME = "growthFactor";
-	public static final String ROTATION_ANGLE_NAME = "rotationAngle";
-	public static final String DEVIATION_ANGLE_NAME = "deviationAngle";
+	public static final String TRANSLATION_FACTOR = "translationFactor";
+	public static final String GROWTH_FACTOR = "growthFactor";
+	public static final String ROTATION_ANGLE = "rotationAngle";
+	public static final String DEVIATION_ANGLE = "deviationAngle";
 
-	public static final String HAPLOID_FIRST_CHAMBER_RADIUS_NAME = "haploidFirstChamberRadius";
-	public static final String DIPLOID_FIRST_CHAMBER_RADIUS_NAME = "diploidFirstChamberRadius";
-	public static final String WALL_THICKNESS_FACTOR_NAME = "wallThicknessFactor";
-	public static final String MIN_ADULT_AGE_NAME = "minAdultAge";
-	public static final String MIN_ADULT_VOLUME_NAME = "minAdultVolume";
-	public static final String HAPLOID_JUVENILE_VOLUME_FACTOR_NAME = "haploidJuvenileVolumeFactor";
-	public static final String DIPLOID_JUVENILE_VOLUME_FACTOR_NAME = "diploidJuvenileVolumeFactor";
+	public static final String HAPLOID_FIRST_CHAMBER_RADIUS = "haploidFirstChamberRadius";
+	public static final String DIPLOID_FIRST_CHAMBER_RADIUS = "diploidFirstChamberRadius";
+	public static final String WALL_THICKNESS_FACTOR = "wallThicknessFactor";
+	public static final String MIN_ADULT_AGE = "minAdultAge";
+	public static final String MIN_ADULT_VOLUME = "minAdultVolume";
+	public static final String HAPLOID_JUVENILE_VOLUME_FACTOR = "haploidJuvenileVolumeFactor";
+	public static final String DIPLOID_JUVENILE_VOLUME_FACTOR = "diploidJuvenileVolumeFactor";
 
-	public static final String MAX_ENERGY_NAME = "maxEnergy";
-	public static final String MIN_ENERGY_NAME = "minEnergy";
-	public static final String METABOLIC_EFFECTIVENESS_NAME = "metabolicEffectiveness";
-	public static final String MIN_METABOLIC_EFFECTIVENESS_NAME = "minMetabolicEffectiveness";
+	public static final String MAX_ENERGY_PER_CHAMBER = "maxEnergyPerChamber";
+	public static final String ENERGY_DEMAND_PER_CHAMBER = "energyDemandPerChamber";
+	public static final String MIN_ENERGY = "minEnergy";
+	public static final String CHAMBER_GROWTH_COST_FACTOR = "chamberGrowthCostFactor";
+	public static final String METABOLIC_EFFECTIVENESS = "metabolicEffectiveness";
+	public static final String MIN_METABOLIC_EFFECTIVENESS = "minMetabolicEffectiveness";
 
 	public static Genome forGenome(Genome genome, String foramIdentifier) {
 		return forGenes(genome.genes, foramIdentifier);

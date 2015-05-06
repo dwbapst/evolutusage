@@ -6,18 +6,6 @@ public class ForamConfig extends Config {
 		return configJS.initialEnergy();
 	}
 
-	public double energyCapacity(int chambersCount) {
-		return configJS.energyCapacity(chambersCount);
-	}
-
-	public double energyDemand(int chambersCount) {
-		return configJS.energyDemand(chambersCount);
-	}
-
-	public double chamberGrowthEnergyCost(int chambersCount) {
-		return configJS.chamberGrowthEnergyCost(chambersCount);
-	}
-
 	public double energyNeededForGrowth() {
 		return configJS.energyNeededForGrowth();
 	}

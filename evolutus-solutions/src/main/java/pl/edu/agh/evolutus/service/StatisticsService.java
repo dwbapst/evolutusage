@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.service.config.ConfigFactory;
 import pl.edu.agh.evolutus.service.config.SimulationConfig;
-import pl.edu.agh.evolutus.service.output.CsvFileGenerator;
-import pl.edu.agh.evolutus.service.output.HtmlFileGenerator;
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator.FileGeneratorException;
 import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
@@ -94,7 +92,7 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 		try {
 			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulation);
 			for (OutputFileGenerator generator : OutputFileGenerator.getGenerators(instanceProvider)) {
-				generator.generate(simulation.getSimulationStart(), outputDirectory, infoMap);
+				generator.generate(simulation, outputDirectory, infoMap);
 			}
 		} catch (FileGeneratorException e) {
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);

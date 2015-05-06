@@ -27,12 +27,6 @@ public interface IConfigJS {
 
 	double initialEnergy();
 
-	double energyCapacity(int chambersCount);
-
-	double energyDemand(int chambersCount);
-
-	double chamberGrowthEnergyCost(int chambersCount);
-
 	double energyNeededForGrowth();
 
 	double growthProbability();

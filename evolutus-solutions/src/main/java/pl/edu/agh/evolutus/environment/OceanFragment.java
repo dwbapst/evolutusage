@@ -20,6 +20,7 @@ import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.ReproductionService;
 import pl.edu.agh.evolutus.service.StatisticsService;
+import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -89,20 +90,27 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	public void step() {
 		super.step();
 
-		long x = oceanFragmentProperties.getPosition().x;
-		long y = oceanFragmentProperties.getPosition().y;
-		long z = oceanFragmentProperties.getPosition().z;
-		double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
-		double insolation = oceanFragmentProperties.getInsolation();
-		OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps++, x, y, z, foramsAlive(),
-				algaeAvailability,
-				totalEnergy(), insolation);
-		statisticsService.add(info);
-
+		addStats();
 		oceanFragmentProperties.regenerateAlgae();
 
 		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesWithAge);
 		addAll(foramsToAdd);
+	}
+
+	private void addStats() {
+		try {
+			long x = oceanFragmentProperties.getPosition().x;
+			long y = oceanFragmentProperties.getPosition().y;
+			long z = oceanFragmentProperties.getPosition().z;
+			double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
+			double insolation = oceanFragmentProperties.getInsolation();
+			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps++, x, y, z, foramsAlive(),
+					algaeAvailability,
+					totalEnergy(), insolation);
+			statisticsService.add(info);
+		} catch (StatisticsServiceException e) {
+			logger.debug(e.getMessage(), e);
+		}
 	}
 
 	@Override

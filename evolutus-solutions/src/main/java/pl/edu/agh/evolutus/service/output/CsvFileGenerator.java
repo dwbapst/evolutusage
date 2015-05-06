@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.service.TemplateRenderer;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.statistics.model.Simulation;
 import pl.edu.agh.evolutus.utils.Utils;
 
 public class CsvFileGenerator extends OutputFileGenerator {
@@ -27,8 +28,11 @@ public class CsvFileGenerator extends OutputFileGenerator {
 	}
 
 	@Override
-	protected void generateInner(String simulationStartString, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
+	protected void generateInner(Simulation simulation, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
 			throws IOException {
+
+		String simulationStartString = Utils.getTimestampAsString(simulation.getSimulationStart());
+
 		List<Stats> statsList = infoMapToStatsList(infoMap);
 		File csvFile = new File(outputDirectory, getCsvFileName(simulationStartString));
 		templateRenderer.render("templates/foramsCSV.vm", csvFile, Utils.immutableMap("stats", statsList));

@@ -1,20 +1,7 @@
-
 // ---- FORAM ----
 
 function initialEnergy() {
    return 5.0;
-}
-
-function energyCapacity(chambersCount) {
-   return 1.1 * chambersCount;
-}
-
-function energyDemand(chambersCount) {
-   return 0.2 * chambersCount;
-}
-
-function chamberGrowthEnergyCost(chambersCount) {
-   return 0.5 * energyCapacity(chambersCount);
 }
 
 function energyNeededForGrowth() {
@@ -107,12 +94,28 @@ function initialGenome(x, y, z) {
          value: 0.0
       },
       {
-         name: "maxEnergy",
-         value: 0.0
+         name: "maxEnergyPerChamber",
+         value: 1,
+         mutationProbability: 0.5,
+         mutationRate: 0.5,
+         minValue: 0.2,
+         maxValue: 10
+      },
+      {
+         name: "energyDemandPerChamber",
+         value: 0.2,
+         mutationProbability: 0.5,
+         mutationRate: 0.5,
+         minValue: 0.05,
+         maxValue: 5
       },
       {
          name: "minEnergy",
          value: 0.0
+      },
+      {
+         name: "chamberGrowthCostFactor",
+         value: 0.5
       },
       {
          name: "metabolicEffectiveness",

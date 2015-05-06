@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.service.config.ConfigFactory;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.statistics.model.Simulation;
+import pl.edu.agh.evolutus.utils.Utils;
 
 public class ConfFileGenerator extends OutputFileGenerator {
 
@@ -27,9 +29,10 @@ public class ConfFileGenerator extends OutputFileGenerator {
 	}
 
 	@Override
-	protected void generateInner(String simulationStartString, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
+	protected void generateInner(Simulation simulation, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
 			throws IOException, FileGeneratorException {
 
+		String simulationStartString = Utils.getTimestampAsString(simulation.getSimulationStart());
 		File file = new File(outputDirectory, getFileName(simulationStartString));
 
 		String configAsString = configFactory.getConfigAsString();

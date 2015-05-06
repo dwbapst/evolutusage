@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.statistics.model.Simulation;
 import pl.edu.agh.evolutus.utils.Utils;
 
 public class PsiFileGenerator extends OutputFileGenerator {
@@ -27,8 +28,10 @@ public class PsiFileGenerator extends OutputFileGenerator {
 	}
 
 	@Override
-	protected void generateInner(String simulationStartString, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
+	protected void generateInner(Simulation simulation, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
 			throws IOException {
+
+		String simulationStartString = Utils.getTimestampAsString(simulation.getSimulationStart());
 
 		for (Long stepNo : infoMap.keySet()) {
 			List<OceanFragmentInfo> infoList = infoMap.get(stepNo);

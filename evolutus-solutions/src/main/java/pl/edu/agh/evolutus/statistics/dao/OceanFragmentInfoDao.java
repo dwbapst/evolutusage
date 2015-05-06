@@ -11,9 +11,13 @@ import pl.edu.agh.evolutus.statistics.model.Simulation;
 
 public class OceanFragmentInfoDao extends Dao<OceanFragmentInfo> {
 
+	@Override
+	protected Class<OceanFragmentInfo> getReturnType() {
+		return OceanFragmentInfo.class;
+	}
+
 	public List<OceanFragmentInfo> getStats(Simulation simulation) {
-		return ds.createQuery(OceanFragmentInfo.class)
-				.field("simulationStart").equal(simulation.getSimulationStart().getTime())
+		return createQuery(simulation)
 				.field("stepNo").greaterThan(0L)
 				.asList();
 	}

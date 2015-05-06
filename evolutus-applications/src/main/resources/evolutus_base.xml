@@ -30,7 +30,7 @@
   <component name="unitsConverter" class="pl.edu.agh.evolutus.service.config.UnitsConverter"/>
 
   <component name="csvFileGenerator" class="pl.edu.agh.evolutus.service.output.CsvFileGenerator"/>
-  <component name="htmlFileGenerator" class="pl.edu.agh.evolutus.service.output.HtmlFileGenerator"/>
+  <component name="chartsGenerator" class="pl.edu.agh.evolutus.service.output.ChartsGenerator"/>
   <component name="confFileGenerator" class="pl.edu.agh.evolutus.service.output.ConfFileGenerator"/>
 
   <component name="configFactory" class="pl.edu.agh.evolutus.service.config.ConfigFactory"/>

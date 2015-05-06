@@ -2,7 +2,6 @@ package pl.edu.agh.evolutus.service.output;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import com.google.common.collect.Lists;
 import pl.edu.agh.evolutus.service.PsiFileGenerator;
 import pl.edu.agh.evolutus.service.TemplateRenderer;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
-import pl.edu.agh.evolutus.utils.Utils;
+import pl.edu.agh.evolutus.statistics.model.Simulation;
 
 public abstract class OutputFileGenerator {
 
@@ -24,7 +23,7 @@ public abstract class OutputFileGenerator {
 		return Lists.newArrayList(
 				instanceProvider.getInstance(PsiFileGenerator.class),
 				instanceProvider.getInstance(CsvFileGenerator.class),
-				instanceProvider.getInstance(HtmlFileGenerator.class),
+				instanceProvider.getInstance(ChartsGenerator.class),
 				instanceProvider.getInstance(ConfFileGenerator.class)
 		);
 	}
@@ -34,18 +33,16 @@ public abstract class OutputFileGenerator {
 
 	protected abstract String outputDirectoryName();
 
-	protected abstract void generateInner(String simulationStartString, File outputDirectory, Map<Long,
-			List<OceanFragmentInfo>> infoMap) throws IOException, FileGeneratorException;
+	protected abstract void generateInner(Simulation simulation, File outputDirectory,
+			Map<Long, List<OceanFragmentInfo>> infoMap) throws IOException, FileGeneratorException;
 
-	public void generate(Timestamp simulationStart, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
+	public void generate(Simulation simulation, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
 			throws FileGeneratorException {
 		outputDirectory = new File(outputDirectory, outputDirectoryName());
 		outputDirectory.mkdirs();
 
-		String simulationStartString = Utils.getTimestampAsString(simulationStart);
-
 		try {
-			generateInner(simulationStartString, outputDirectory, infoMap);
+			generateInner(simulation, outputDirectory, infoMap);
 		} catch (IOException e) {
 			throw new FileGeneratorException(e);
 		}
