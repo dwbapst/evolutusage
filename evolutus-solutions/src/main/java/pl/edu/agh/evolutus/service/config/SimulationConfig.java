@@ -10,6 +10,10 @@ public class SimulationConfig extends Config {
 		return configJS.simulationDescription();
 	}
 
+	public boolean virtualFossilizationEnabled() {
+		return configJS.virtualFossilizationEnabled();
+	}
+
 	public long simulationDuration() {
 		return unitsConverter.hoursToSteps(configJS.simulationDuration());
 	}

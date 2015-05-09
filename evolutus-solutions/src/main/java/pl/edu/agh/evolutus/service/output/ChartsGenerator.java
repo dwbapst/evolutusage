@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.service.config.SimulationConfig;
 import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.statistics.model.Simulation;
@@ -21,6 +22,9 @@ import pl.edu.agh.evolutus.utils.Utils;
 public class ChartsGenerator extends OutputFileGenerator {
 
 	private static final Logger log = LoggerFactory.getLogger(ChartsGenerator.class);
+
+	@Inject
+	private SimulationConfig simulationConfig;
 
 	@Inject
 	private ForamFossilDao foramFossilDao;
@@ -40,7 +44,9 @@ public class ChartsGenerator extends OutputFileGenerator {
 		File htmlFile = new File(outputDirectory, getHtmlFileName("populationChart", simulationStartString));
 		templateRenderer.render("templates/populationChart.vm", htmlFile, Utils.immutableMap("stats", statsList));
 
-		generateGeneEvolutionCharts(simulation, outputDirectory);
+		if (simulationConfig.virtualFossilizationEnabled()) {
+			generateGeneEvolutionCharts(simulation, outputDirectory);
+		}
 
 		log.info("Saved charts in {}", outputDirectory.getAbsolutePath());
 	}

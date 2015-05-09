@@ -54,4 +54,6 @@ public interface IConfigJS {
 	String simulationDescription();
 
 	ScriptObject databaseParameters();
+
+	boolean virtualFossilizationEnabled();
 }

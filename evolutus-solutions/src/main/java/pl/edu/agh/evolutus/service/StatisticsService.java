@@ -120,9 +120,11 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 	}
 
 	public void add(ForamFossil foramFossil) {
-		assertRunning();
-		synchronized (foramFossilsToAdd) {
-			foramFossilsToAdd.add(foramFossil);
+		if (simulationConfig.virtualFossilizationEnabled()) {
+			assertRunning();
+			synchronized (foramFossilsToAdd) {
+				foramFossilsToAdd.add(foramFossil);
+			}
 		}
 	}
 
