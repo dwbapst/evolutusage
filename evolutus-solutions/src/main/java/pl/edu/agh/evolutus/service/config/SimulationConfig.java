@@ -14,6 +14,18 @@ public class SimulationConfig extends Config {
 		return configJS.virtualFossilizationEnabled();
 	}
 
+	public boolean generatePSI() {
+		return configJS.generatePSI();
+	}
+
+	public boolean generateCSV() {
+		return configJS.generateCSV();
+	}
+
+	public boolean generateHTML() {
+		return configJS.generateHTML();
+	}
+
 	public long simulationDuration() {
 		return unitsConverter.hoursToSteps(configJS.simulationDuration());
 	}

@@ -13,6 +13,18 @@ function virtualFossilizationEnabled() {
    return true;
 }
 
+function generatePSI() {
+   return false;
+}
+
+function generateCSV() {
+   return false;
+}
+
+function generateHTML() {
+   return false;
+}
+
 function simulationDuration() {
    return 400 * 24;
 }

@@ -56,4 +56,10 @@ public interface IConfigJS {
 	ScriptObject databaseParameters();
 
 	boolean virtualFossilizationEnabled();
+
+	boolean generatePSI();
+
+	boolean generateCSV();
+
+	boolean generateHTML();
 }

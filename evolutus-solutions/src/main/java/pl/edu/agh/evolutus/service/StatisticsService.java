@@ -1,6 +1,7 @@
 package pl.edu.agh.evolutus.service;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,13 @@ import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import pl.edu.agh.evolutus.service.config.ConfigFactory;
 import pl.edu.agh.evolutus.service.config.SimulationConfig;
+import pl.edu.agh.evolutus.service.output.ChartsGenerator;
+import pl.edu.agh.evolutus.service.output.ConfFileGenerator;
+import pl.edu.agh.evolutus.service.output.CsvFileGenerator;
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator;
 import pl.edu.agh.evolutus.service.output.OutputFileGenerator.FileGeneratorException;
 import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
@@ -90,8 +96,11 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 		outputDirectory = new File(outputDirectory, Utils.getTimestampAsString(simulation.getSimulationStart()));
 
 		try {
-			Map<Long, List<OceanFragmentInfo>> infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulation);
-			for (OutputFileGenerator generator : OutputFileGenerator.getGenerators(instanceProvider)) {
+			Map<Long, List<OceanFragmentInfo>> infoMap = new HashMap<>();
+			if (getGenerators().size() > 1) {
+				infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulation);
+			}
+			for (OutputFileGenerator generator : getGenerators()) {
 				generator.generate(simulation, outputDirectory, infoMap);
 			}
 		} catch (FileGeneratorException e) {
@@ -100,6 +109,20 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 
 		logger.info("{} finished.", StatisticsService.class.getSimpleName());
 		return false;
+	}
+
+	private List<OutputFileGenerator> getGenerators() {
+		List<OutputFileGenerator> generators = Lists.newArrayList(instanceProvider.getInstance(ConfFileGenerator.class));
+		if (simulationConfig.generatePSI()) {
+			generators.add(instanceProvider.getInstance(PsiFileGenerator.class));
+		}
+		if (simulationConfig.generateCSV()) {
+			generators.add(instanceProvider.getInstance(CsvFileGenerator.class));
+		}
+		if (simulationConfig.generateHTML()) {
+			generators.add(instanceProvider.getInstance(ChartsGenerator.class));
+		}
+		return generators;
 	}
 
 	public Simulation getSimulation() {

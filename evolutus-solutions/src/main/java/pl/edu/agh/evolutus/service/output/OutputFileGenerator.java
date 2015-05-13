@@ -19,15 +19,6 @@ import pl.edu.agh.evolutus.statistics.model.Simulation;
 
 public abstract class OutputFileGenerator {
 
-	public static List<OutputFileGenerator> getGenerators(IComponentInstanceProvider instanceProvider) {
-		return Lists.newArrayList(
-				instanceProvider.getInstance(PsiFileGenerator.class),
-				instanceProvider.getInstance(CsvFileGenerator.class),
-				instanceProvider.getInstance(ChartsGenerator.class),
-				instanceProvider.getInstance(ConfFileGenerator.class)
-		);
-	}
-
 	@Inject
 	protected TemplateRenderer templateRenderer;
 
