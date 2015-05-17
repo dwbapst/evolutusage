@@ -2,6 +2,7 @@ package pl.edu.agh.evolutus.statistics.model;
 
 import java.util.Map;
 
+import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.genotype.Genotype;
 
 public class ForamFossil extends Statistics {
@@ -11,6 +12,7 @@ public class ForamFossil extends Statistics {
 	private Long deathStepNo;
 	private Integer age;
 	private boolean isDiploid;
+	private ForamType foramType;
 	private Map<String, Double[]> genotype;
 	private Long x;
 	private Long y;
@@ -24,6 +26,7 @@ public class ForamFossil extends Statistics {
 			Simulation simulation,
 			Long deathStepNo,
 			Integer age,
+			ForamType foramType,
 			Genotype genotype,
 			Long x,
 			Long y,
@@ -33,6 +36,7 @@ public class ForamFossil extends Statistics {
 		this.deathStepNo = deathStepNo;
 		this.age = age;
 		this.isDiploid = genotype.isDiploid();
+		this.foramType = foramType;
 		this.genotype = genotype.toFossilizationMap();
 		this.x = x;
 		this.y = y;
@@ -49,6 +53,10 @@ public class ForamFossil extends Statistics {
 
 	public boolean isDiploid() {
 		return isDiploid;
+	}
+
+	public ForamType getForamType() {
+		return foramType;
 	}
 
 	public Map<String, Double[]> getGenotype() {

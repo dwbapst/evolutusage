@@ -6,6 +6,7 @@ import java.util.List;
 import org.jage.address.agent.AgentAddress;
 import org.jage.agent.ISimpleAggregate;
 
+import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -18,7 +19,7 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	Collection<IForam> getForams();
 
-	void addGametes(List<Genome> gametes);
+	void addGametes(List<Genome> gametes, ForamType foramType);
 
 	void initialize(VectorL position);
 

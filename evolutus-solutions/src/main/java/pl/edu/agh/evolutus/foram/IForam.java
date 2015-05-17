@@ -7,6 +7,10 @@ import pl.edu.agh.evolutus.genotype.Genotype;
 
 public interface IForam extends ISimpleAgent {
 
+	void setType(ForamType type);
+
+	ForamType getType();
+
 	void setEnergy(double energy);
 
 	double getEnergy();

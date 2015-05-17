@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
 import org.jage.agent.SimpleAggregate;
@@ -16,6 +17,7 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.ReproductionService;
@@ -41,8 +43,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private OceanFragmentProperties oceanFragmentProperties;
 
-	// gamete -> age in steps
-	private Map<Genome, Integer> gametesWithAge = new HashMap<>();
+	// gamete -> type, age in steps
+	private Map<Genome, Pair<ForamType, Integer>> gametesMap = new HashMap<>();
 
 	@Inject
 	public OceanFragment(AgentAddressSupplier supplier) {
@@ -66,9 +68,9 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public void addGametes(List<Genome> gametes) {
+	public void addGametes(List<Genome> gametes, ForamType foramType) {
 		for (Genome gamete : gametes) {
-			this.gametesWithAge.put(gamete, 0);
+			this.gametesMap.put(gamete, Pair.of(foramType, 0));
 		}
 	}
 
@@ -78,10 +80,29 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 		long initialForamsCount = config.initialForamsCount(position);
 		for (long i = 0; i < initialForamsCount; i++) {
-			Genome initialGenome = config.initialGenome(position);
-			add(reproductionService.createForam(initialGenome, initialGenome));
+			add(createInitialForam());
 		}
 		logger.debug("Initialized ocean fragment: {} {}", getAddress(), oceanFragmentProperties.getPosition());
+	}
+
+	private IForam createInitialForam() {
+		VectorL size = oceanFragmentProperties.getOceanSize();
+		VectorL position = oceanFragmentProperties.getPosition();
+		Genome initialGenome = config.initialGenome(position);
+
+		if (size.z - 1 == position.z) {
+			// benthos
+			if (random.nextBoolean()) {
+				// haploid
+				return reproductionService.createForam(ForamType.HAPLOID_BENTHIC, initialGenome);
+			} else {
+				// diploid
+				return reproductionService.createForam(ForamType.DIPLOID_BENTHIC, initialGenome, initialGenome);
+			}
+		} else {
+			// plankton
+			return reproductionService.createForam(ForamType.PLANCTONIC, initialGenome, initialGenome);
+		}
 	}
 
 	private long steps = 0;
@@ -93,7 +114,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		addStats();
 		oceanFragmentProperties.regenerateAlgae();
 
-		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesWithAge);
+		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesMap);
 		addAll(foramsToAdd);
 	}
 

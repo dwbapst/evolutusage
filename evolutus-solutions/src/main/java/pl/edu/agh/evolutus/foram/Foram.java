@@ -30,6 +30,7 @@ public class Foram extends SimpleAgent implements IForam {
 
 	private static final Logger logger = LoggerFactory.getLogger(Foram.class);
 
+	private ForamType type;
 	private boolean alive = true;
 	private double energy;
 	private int chambersCount = 1;
@@ -51,6 +52,16 @@ public class Foram extends SimpleAgent implements IForam {
 	@Inject
 	public Foram(AgentAddressSupplier supplier) {
 		super(supplier);
+	}
+
+	@Override
+	public void setType(ForamType type) {
+		this.type = type;
+	}
+
+	@Override
+	public ForamType getType() {
+		return type;
 	}
 
 	@Override
@@ -149,6 +160,7 @@ public class Foram extends SimpleAgent implements IForam {
 					statisticsService.getSimulation(),
 					oceanFragment.currentStep(),
 					age,
+					type,
 					genotype,
 					position.x, position.y, position.z
 			);
@@ -193,7 +205,7 @@ public class Foram extends SimpleAgent implements IForam {
 		int gametesProduction = config.gametesProduction(chambersCount);
 		List<Genome> gametes = genotype
 				.createGametes(gametesProduction, config.globalMutationProbability(), config.gametesSievingCoefficient());
-		getOceanFragment().addGametes(gametes);
+		getOceanFragment().addGametes(gametes, type);
 		die();
 	}
 

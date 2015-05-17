@@ -7,20 +7,25 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
 import org.jage.platform.component.provider.IComponentInstanceProvider;
 import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 
+import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.DiploidGenotype;
 import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.genotype.HaploidGenotype;
 import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator;
 import pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator;
@@ -59,41 +64,69 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 		return true;
 	}
 
-	public Collection<IForam> processGametesAndReturnNewForams(Map<Genome, Integer> gametesWithAge) {
+	public Collection<IForam> processGametesAndReturnNewForams(Map<Genome, Pair<ForamType, Integer>> gametesMap) {
 
-		updateAgeAndRemoveTooOld(gametesWithAge);
+		updateAgeAndRemoveTooOld(gametesMap);
 		List<IForam> foramsToAdd = new ArrayList<>();
 
-		streamOfPairs(gametesWithAge)
-				.filter(pair -> !pair.getLeft().getForamIdentifier().equals(pair.getRight().getForamIdentifier()))
-				.filter(pair -> pair.getLeft().isValid() && pair.getRight().isValid())
-				.forEach(pair -> {
-					gametesWithAge.remove(pair.getLeft());
-					gametesWithAge.remove(pair.getRight());
-					foramsToAdd.add(createForam(pair.getLeft(), pair.getRight()));
+		list(gametesMap, ForamType.DIPLOID_BENTHIC)
+				.stream()
+				.filter(Genome::isValid)
+				.forEach(gamete -> {
+					gametesMap.remove(gamete);
+					foramsToAdd.add(createForam(ForamType.HAPLOID_BENTHIC, gamete));
 				});
+
+		processGametes(gametesMap, ForamType.HAPLOID_BENTHIC, ForamType.DIPLOID_BENTHIC, foramsToAdd);
+
+		processGametes(gametesMap, ForamType.PLANCTONIC, ForamType.PLANCTONIC, foramsToAdd);
 
 		return foramsToAdd;
 	}
 
-	private void updateAgeAndRemoveTooOld(Map<Genome, Integer> gametesWithAge) {
-		for (Genome curr : new LinkedList<>(gametesWithAge.keySet())) {
-			if (gametesWithAge.get(curr) > maxGameteAgeInSteps) {
-				gametesWithAge.remove(curr); // Remove gametes older than 4 steps
+	private void updateAgeAndRemoveTooOld(Map<Genome, Pair<ForamType, Integer>> gametesMap) {
+		for (Genome curr : new LinkedList<>(gametesMap.keySet())) {
+			ForamType type = gametesMap.get(curr).getLeft();
+			Integer age = gametesMap.get(curr).getRight();
+			if (age > maxGameteAgeInSteps) {
+				gametesMap.remove(curr); // Remove gametes older than 4 steps
 			} else {
-				gametesWithAge.put(curr, gametesWithAge.get(curr) + 1);
+				gametesMap.put(curr, Pair.of(type, age + 1));
 			}
 		}
 	}
 
-	private Stream<Pair<Genome, Genome>> streamOfPairs(Map<Genome, Integer> gametesWithAge) {
-		if (gametesWithAge.size() < 2) {
+	private void processGametes(Map<Genome, Pair<ForamType, Integer>> gametesMap, ForamType parentType, ForamType childrenType,
+			List<IForam> foramsToAdd) {
+
+		List<Genome> list = list(gametesMap, parentType);
+
+		streamOfPairs(list)
+				.filter(pair -> !pair.getLeft().getForamIdentifier().equals(pair.getRight().getForamIdentifier()))
+				.filter(pair -> pair.getLeft().isValid() && pair.getRight().isValid())
+				.forEach(pair -> {
+					gametesMap.remove(pair.getLeft());
+					gametesMap.remove(pair.getRight());
+					foramsToAdd.add(createForam(childrenType, pair.getLeft(), pair.getRight()));
+				});
+	}
+
+	private List<Genome> list(Map<Genome, Pair<ForamType, Integer>> gametesMap, ForamType foramType) {
+		return gametesMap.entrySet()
+				.stream()
+				.filter(entry -> entry.getValue().getLeft() == foramType)
+				.map(Entry::getKey)
+				.collect(Collectors.toList());
+	}
+
+	private Stream<Pair<Genome, Genome>> streamOfPairs(Collection<Genome> gametes) {
+		if (gametes.size() < 2) {
 			return Stream.of();
 		}
 
-		List<Genome> gametes = new ArrayList<>(gametesWithAge.keySet());
-		Collections.shuffle(gametes);
-		Iterator<Genome> iterator = gametes.iterator();
+		List<Genome> gametesList = new ArrayList<>(gametes);
+		Collections.shuffle(gametesList);
+		Iterator<Genome> iterator = gametesList.iterator();
 
 		Iterator<Pair<Genome, Genome>> pairIterator = new Iterator<Pair<Genome, Genome>>() {
 			Genome first = iterator.next();
@@ -117,11 +150,35 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 		return StreamSupport.stream(iterable.spliterator(), false);
 	}
 
-	public IForam createForam(Genome genomeA, Genome genomeB) {
+	private IForam createForam(ForamType foramType) {
 		IForam foram = instanceProvider.getInstance(IForam.class);
+		foram.setType(foramType);
 		foram.setEnergy(config.initialEnergy());
+		return foram;
+	}
+
+	public IForam createForam(ForamType foramType, Genome genome) {
+		assertType(foramType, ForamType.HAPLOID_BENTHIC);
+		IForam foram = createForam(foramType);
+		foram.setGenotype(new HaploidGenotype(genome, foram.getAddress()));
+		return foram;
+	}
+
+	public IForam createForam(ForamType foramType, Genome genomeA, Genome genomeB) {
+		assertType(foramType, ForamType.PLANCTONIC, ForamType.DIPLOID_BENTHIC);
+		IForam foram = createForam(foramType);
 		foram.setGenotype(new DiploidGenotype(genomeA, genomeB, foram.getAddress(), crossingOverOperator));
 		return foram;
+	}
+
+	private void assertType(ForamType actual, ForamType... expecteds) {
+		for (ForamType expected : expecteds) {
+			if (expected == actual) {
+				return;
+			}
+		}
+		String msg = String.format("Unexpected foram type: %s. Allowed: %s", actual, StringUtils.join(expecteds, ", "));
+		throw new IllegalArgumentException(msg);
 	}
 
 	private CrossingOverOperator getCrossingOverOperator() {
