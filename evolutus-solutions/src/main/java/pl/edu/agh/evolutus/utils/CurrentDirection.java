@@ -47,12 +47,11 @@ public class CurrentDirection extends VectorD {
 		}
 	}
 
+	/**
+	 * @return the distance that current 'travels' within one step
+	 */
 	public double getStrength() {
 		return strength;
-	}
-
-	public Map<VectorL, Double> getVectorComponents() {
-		return vectorComponents;
 	}
 
 	public Map<VectorL, Double> getTargetCoordinateProbabilities(VectorL sourceCoordinates, VectorL oceanSize,

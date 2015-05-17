@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.service.config.SimulationConfig;
+import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragmentContainer extends ConnectedSimpleWorkplace implements IOceanFragmentContainer {
@@ -54,7 +55,7 @@ public class OceanFragmentContainer extends ConnectedSimpleWorkplace implements 
 			for (long y = 0; y < oceanSize.y; y++) {
 				for (long z = 0; z < oceanSize.z; z++) {
 					IOceanFragment oceanFragment = instanceProvider.getInstance(IOceanFragment.class);
-					VectorL position = new VectorL(x, y, z);
+					Position position = new Position(x, y, z);
 					oceanFragment.initialize(position);
 					add(oceanFragment);
 				}

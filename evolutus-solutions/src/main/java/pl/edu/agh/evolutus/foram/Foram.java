@@ -23,6 +23,7 @@ import pl.edu.agh.evolutus.service.ForamVolumeMeter;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
+import pl.edu.agh.evolutus.service.config.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -40,6 +41,9 @@ public class Foram extends SimpleAgent implements IForam {
 
 	@Inject
 	private ForamConfig config;
+
+	@Inject
+	private UnitsConverter unitsConverter;
 
 	@Inject
 	private ForamVolumeMeter foramVolumeMeter;
@@ -178,8 +182,14 @@ public class Foram extends SimpleAgent implements IForam {
 	private AgentAddress lastParentAddress = null;
 	private OceanFragment lastParentReference = null;
 
+	/**
+	 * @return the distance in units that ocean current 'travels' within one step.
+	 * It could be also interpreted as a probability that foram will migrate to another ocean fragment.
+	 * If current 'travels' one unit per step (one ocean fragment per step) then the probability of migration is 100%.
+	 */
 	private double getCurrentStrength() {
-		return getOceanFragment().getOceanFragmentProperties().getCurrentDirection().getStrength();
+		double distance = getOceanFragment().getOceanFragmentProperties().getCurrentDirection().getStrength();
+		return unitsConverter.metersToUnits(distance);
 	}
 
 	private IOceanFragment getOceanFragment() {
@@ -221,22 +231,30 @@ public class Foram extends SimpleAgent implements IForam {
 		chambersCount++;
 	}
 
-	private double migrationProbability = 0.0;
-
 	private void tryMigrate() {
-		migrationProbability += 0.01;
-		if (random.nextDouble() < migrationProbability + getCurrentStrength()) {
-			migrationProbability = 0.0;
-			flowWithCurrent();
-		}
-	}
 
-	private void flowWithCurrent() {
-		IOceanFragment oceanFragment = getOceanFragment();
-		AgentAddress migrationTarget = oceanFragment.getMigrationTarget();
+		AgentAddress migrationTarget;
+		if (type.isBenthic()) {
+			migrationTarget = getOceanFragment().getBenthicMigrationTarget();
+		} else {
+			migrationTarget = tryFlowWithCurrent();
+		}
+
 		if (migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
 			doAction(AgentActions.migrate(this, migrationTarget));
 		}
+	}
+
+	private double migrationProbability = 0.0;
+
+	private AgentAddress tryFlowWithCurrent() {
+		migrationProbability += 0.01;
+		double currentStrength = getCurrentStrength();
+		if (random.nextDouble() < migrationProbability + currentStrength) {
+			migrationProbability = 0.0;
+			return getOceanFragment().getPlanktonicMigrationTarget();
+		}
+		return null;
 	}
 
 	private static class AgentDiedException extends Exception {

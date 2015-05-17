@@ -79,7 +79,7 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 
 		processGametes(gametesMap, ForamType.HAPLOID_BENTHIC, ForamType.DIPLOID_BENTHIC, foramsToAdd);
 
-		processGametes(gametesMap, ForamType.PLANCTONIC, ForamType.PLANCTONIC, foramsToAdd);
+		processGametes(gametesMap, ForamType.PLANKTONIC, ForamType.PLANKTONIC, foramsToAdd);
 
 		return foramsToAdd;
 	}
@@ -165,7 +165,7 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 	}
 
 	public IForam createForam(ForamType foramType, Genome genomeA, Genome genomeB) {
-		assertType(foramType, ForamType.PLANCTONIC, ForamType.DIPLOID_BENTHIC);
+		assertType(foramType, ForamType.PLANKTONIC, ForamType.DIPLOID_BENTHIC);
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new DiploidGenotype(genomeA, genomeB, foram.getAddress(), crossingOverOperator));
 		return foram;

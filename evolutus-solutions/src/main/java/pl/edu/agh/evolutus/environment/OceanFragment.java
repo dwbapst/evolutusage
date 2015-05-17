@@ -25,6 +25,7 @@ import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
@@ -57,8 +58,13 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public VectorL getPosition() {
+	public Position getPosition() {
 		return oceanFragmentProperties.getPosition();
+	}
+
+	@Override
+	public double getAlgaeAvailability() {
+		return oceanFragmentProperties.getAlgaeAvailability();
 	}
 
 	@Override
@@ -75,7 +81,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public void initialize(VectorL position) {
+	public void initialize(Position position) {
 		this.oceanFragmentProperties = new OceanFragmentProperties(position, this.config);
 
 		long initialForamsCount = config.initialForamsCount(position);
@@ -101,7 +107,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			}
 		} else {
 			// plankton
-			return reproductionService.createForam(ForamType.PLANCTONIC, initialGenome, initialGenome);
+			return reproductionService.createForam(ForamType.PLANKTONIC, initialGenome, initialGenome);
 		}
 	}
 
@@ -183,7 +189,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public AgentAddress getMigrationTarget() {
+	public AgentAddress getPlanktonicMigrationTarget() {
 		Map<AgentAddress, Double> migrationTargetsWithProbability = getMigrationTargetsWithProbability();
 		double rand = random.nextDouble();
 		double probability = 0.0;
@@ -194,6 +200,28 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public AgentAddress getBenthicMigrationTarget() {
+		Position position = oceanFragmentProperties.getPosition();
+		VectorL oceanSize = oceanFragmentProperties.getOceanSize();
+		BoundaryConditions boundaryConditions = oceanFragmentProperties.getBoundaryConditions();
+		List<Position> neighborhood = position.getTheSameLevelNeighborhood(oceanSize, boundaryConditions);
+
+		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
+		Collection<OceanFragment> neighbors = queryParent(
+				query.matching(
+						oceanFragment -> neighborhood.contains(oceanFragment.getPosition())
+				));
+
+		OceanFragment target = this;
+		for (OceanFragment neighbor : neighbors) {
+			if (neighbor.getAlgaeAvailability() > target.getAlgaeAvailability()) {
+				target = neighbor;
+			}
+		}
+		return target.getAddress();
 	}
 
 	@Override

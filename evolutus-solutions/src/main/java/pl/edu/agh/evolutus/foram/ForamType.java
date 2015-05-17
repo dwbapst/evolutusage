@@ -1,5 +1,24 @@
 package pl.edu.agh.evolutus.foram;
 
 public enum ForamType {
-	PLANCTONIC, HAPLOID_BENTHIC, DIPLOID_BENTHIC
+
+	PLANKTONIC(false, true),
+	HAPLOID_BENTHIC(true, false),
+	DIPLOID_BENTHIC(true, true);
+
+	private final boolean isBenthic;
+	private final boolean isDiploid;
+
+	ForamType(boolean isBenthic, boolean isDiploid) {
+		this.isBenthic = isBenthic;
+		this.isDiploid = isDiploid;
+	}
+
+	public boolean isBenthic() {
+		return isBenthic;
+	}
+
+	public boolean isDiploid() {
+		return isDiploid;
+	}
 }

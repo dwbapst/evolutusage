@@ -9,19 +9,22 @@ import org.jage.agent.ISimpleAggregate;
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IOceanFragment extends ISimpleAggregate {
 
 	OceanFragmentProperties getOceanFragmentProperties();
 
-	VectorL getPosition();
+	Position getPosition();
+
+	double getAlgaeAvailability();
 
 	Collection<IForam> getForams();
 
 	void addGametes(List<Genome> gametes, ForamType foramType);
 
-	void initialize(VectorL position);
+	void initialize(Position position);
 
 	double takeAlgae(double demand);
 
@@ -29,7 +32,9 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	double totalEnergy();
 
-	AgentAddress getMigrationTarget();
+	AgentAddress getPlanktonicMigrationTarget();
+
+	AgentAddress getBenthicMigrationTarget();
 
 	long currentStep();
 }
