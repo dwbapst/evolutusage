@@ -18,14 +18,10 @@ public class DiploidGenotype extends Genotype {
 	private final Genome genomeB;
 	private final Genome effectiveGenome;
 
-	private final CrossingOverOperator crossingOverOperator;
-
-	public DiploidGenotype(Genome genomeA, Genome genomeB, AgentAddress agentAddress,
-			CrossingOverOperator crossingOverOperator) {
+	public DiploidGenotype(Genome genomeA, Genome genomeB, AgentAddress agentAddress) {
 		this.genomeA = Genome.forGenome(genomeA, agentAddress.toQualifiedString());
 		this.genomeB = Genome.forGenome(genomeB, agentAddress.toQualifiedString());
 		this.effectiveGenome = new RecombinationOperator().apply(this.genomeA, this.genomeB);
-		this.crossingOverOperator = crossingOverOperator;
 	}
 
 	@Override
@@ -34,7 +30,7 @@ public class DiploidGenotype extends Genotype {
 	}
 
 	@Override
-	protected Stream<Genome> createGameteStream(int number) {
+	protected Stream<Genome> createGameteStream(int number, CrossingOverOperator crossingOverOperator) {
 		return IntStream.range(0, number / 2)
 				.mapToObj(i -> Pair.of(genomeA.copy(), genomeB.copy()))
 				.map(crossingOverOperator::apply)

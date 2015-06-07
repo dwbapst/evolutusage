@@ -2,12 +2,14 @@ package pl.edu.agh.evolutus.service.config;
 
 import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
+import pl.edu.agh.evolutus.service.config.utils.EnvState;
+import pl.edu.agh.evolutus.service.config.utils.ForamState;
 
 public interface IConfigJS {
 
-	double unitLengthInMeters();
-
-	double stepDurationInHours();
+	/*-********************
+	 *    ENVIRONMENT     *
+	 **********************/
 
 	ScriptObject oceanSize();
 
@@ -25,35 +27,45 @@ public interface IConfigJS {
 
 	String boundaryConditions();
 
+	/*-********************
+	 *       FORAM        *
+	 **********************/
+
 	double initialEnergy();
 
-	double energyNeededForGrowth();
+	double energyNeededForGrowth(EnvState envState, ForamState foramState, double time);
 
-	double growthProbability();
+	double growthProbability(EnvState envState, ForamState foramState, double time);
 
-	int chambersLimit();
+	int chambersLimit(EnvState envState, ForamState foramState, double time);
 
-	double energyNeededToReproduce();
+	double energyNeededToReproduce(EnvState envState, ForamState foramState, double time);
 
-	double reproductionProbability();
+	double reproductionProbability(EnvState envState, ForamState foramState, double time);
 
-	int gametesProduction(int chambersCount);
+	int gametesProduction(EnvState envState, ForamState foramState, double time);
 
-	double gametesSievingCoefficient();
+	double gametesSievingCoefficient(EnvState envState, ForamState foramState, double time);
 
-	double globalMutationProbability();
+	String crossingOverOperator(EnvState envState, ForamState foramState, double time);
 
-	NativeArray initialGenome(double x, double y, double z);
+	double globalMutationProbability(EnvState envState, ForamState foramState, double time);
 
-	String crossingOverOperator();
+	NativeArray initialGenome(EnvState envState);
+
+	/*-********************
+	 *     SIMULATION     *
+	 **********************/
+
+	double unitLengthInMeters();
+
+	double stepDurationInHours();
 
 	double simulationDuration();
 
 	String simulationName();
 
 	String simulationDescription();
-
-	ScriptObject databaseParameters();
 
 	boolean virtualFossilizationEnabled();
 
@@ -62,4 +74,11 @@ public interface IConfigJS {
 	boolean generateCSV();
 
 	boolean generateHTML();
+
+	/*-********************
+	 *       SYSTEM       *
+	 **********************/
+
+	ScriptObject databaseParameters();
+
 }

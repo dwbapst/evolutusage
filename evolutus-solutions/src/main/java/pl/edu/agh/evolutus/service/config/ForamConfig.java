@@ -1,40 +1,47 @@
 package pl.edu.agh.evolutus.service.config;
 
+import pl.edu.agh.evolutus.service.config.utils.EnvState;
+import pl.edu.agh.evolutus.service.config.utils.ForamState;
+
 public class ForamConfig extends Config {
 
 	public double initialEnergy() {
 		return configJS.initialEnergy();
 	}
 
-	public double energyNeededForGrowth() {
-		return configJS.energyNeededForGrowth();
+	public double energyNeededForGrowth(EnvState envState, ForamState foramState, double time) {
+		return configJS.energyNeededForGrowth(envState, foramState, time);
 	}
 
-	public double growthProbability() {
-		return configJS.growthProbability();
+	public double growthProbability(EnvState envState, ForamState foramState, double time) {
+		return configJS.growthProbability(envState, foramState, time);
 	}
 
-	public int chambersLimit() {
-		return configJS.chambersLimit();
+	public int chambersLimit(EnvState envState, ForamState foramState, double time) {
+		return configJS.chambersLimit(envState, foramState, time);
 	}
 
-	public double energyNeededToReproduce() {
-		return configJS.energyNeededToReproduce();
+	public double energyNeededToReproduce(EnvState envState, ForamState foramState, double time) {
+		return configJS.energyNeededToReproduce(envState, foramState, time);
 	}
 
-	public double reproductionProbability() {
-		return configJS.reproductionProbability();
+	public double reproductionProbability(EnvState envState, ForamState foramState, double time) {
+		return configJS.reproductionProbability(envState, foramState, time);
 	}
 
-	public int gametesProduction(int chambersCount) {
-		return configJS.gametesProduction(chambersCount);
+	public int gametesProduction(EnvState envState, ForamState foramState, double time) {
+		return configJS.gametesProduction(envState, foramState, time);
 	}
 
-	public double gametesSievingCoefficient() {
-		return configJS.gametesSievingCoefficient();
+	public double gametesSievingCoefficient(EnvState envState, ForamState foramState, double time) {
+		return configJS.gametesSievingCoefficient(envState, foramState, time);
 	}
 
-	public double globalMutationProbability() {
-		return configJS.globalMutationProbability();
+	public String crossingOverOperator(EnvState envState, ForamState foramState, double time) {
+		return configJS.crossingOverOperator(envState, foramState, time);
+	}
+
+	public double globalMutationProbability(EnvState envState, ForamState foramState, double time) {
+		return configJS.globalMutationProbability(envState, foramState, time);
 	}
 }

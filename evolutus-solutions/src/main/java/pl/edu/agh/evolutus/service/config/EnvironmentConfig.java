@@ -4,6 +4,7 @@ import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.environment.BoundaryConditions;
 import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -32,10 +33,6 @@ public class EnvironmentConfig extends Config {
 		return configJS.initialForamsCount(positionMeters.x, positionMeters.y, positionMeters.z);
 	}
 
-	public double initialEnergy() {
-		return configJS.initialEnergy();
-	}
-
 	public double initialAlgaeAvailability(VectorL positionUnits) {
 		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
 		return configJS.initialAlgaeAvailability(positionMeters.x, positionMeters.y, positionMeters.z);
@@ -60,13 +57,8 @@ public class EnvironmentConfig extends Config {
 		return BoundaryConditions.fromString(configJS.boundaryConditions());
 	}
 
-	public Genome initialGenome(VectorL positionUnits) {
-		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
-		NativeArray initialGenome = configJS.initialGenome(positionMeters.x, positionMeters.y, positionMeters.z);
+	public Genome initialGenome(EnvState envState) {
+		NativeArray initialGenome = configJS.initialGenome(envState);
 		return Genome.fromScriptObject(initialGenome);
-	}
-
-	public String crossingOverOperator() {
-		return configJS.crossingOverOperator();
 	}
 }

@@ -4,45 +4,78 @@ function initialEnergy() {
    return 5.0;
 }
 
-function energyNeededForGrowth() {
+/**
+ Each kernel gets three parameters:
+
+ envState {
+   position: { x, y, z },
+   insolation,
+   algaeEnergy,
+   algaeGrowth,
+   algaeAvailability,
+   currentDirection: { x, y, z }
+ }
+
+ foramState {
+   genotype: {
+     translationFactor: double[3],       - value of each gene is an array of 3 elements: [effective value, value from A chromosome, value B]
+     growthFactor: double[3],
+     rotationAngle: double[3],
+     deviationAngle: double[3],
+     ...
+   },
+   energy,
+   age,
+   shell: {
+     firstChamberRadius,
+     lastChamberRadius,
+     chambersCount,
+     volume
+   }
+ }
+
+ time - time in hours from the beginning of the simulation
+ */
+
+function energyNeededForGrowth(envState, foramState, time) {
    return 10.0;
 }
 
-function growthProbability() {
+function growthProbability(envState, foramState, time) {
    return 0.8;
 }
 
-function chambersLimit() {
+function chambersLimit(envState, foramState, time) {
    return 20;
 }
 
-function energyNeededToReproduce() {
+function energyNeededToReproduce(envState, foramState, time) {
    return 10.0;
 }
 
-function reproductionProbability() {
+function reproductionProbability(envState, foramState, time) {
    return 0.8;
 }
 
-function gametesProduction(chambersCount) {
-   return 1000 * chambersCount;
+function gametesProduction(envState, foramState, time) {
+   return 1000 * foramState.shell.chambersCount;
 }
 
-function gametesSievingCoefficient() {
+function gametesSievingCoefficient(envState, foramState, time) {
    return 0.99;
 }
 
-function crossingOverOperator() {
+function crossingOverOperator(envState, foramState, time) {
    // return "OnePointCrossingOverOperator";
    // return "TwoPointCrossingOverOperator";
    return "UniformCrossingOverOperator";
 }
 
-function globalMutationProbability() {
+function globalMutationProbability(envState, foramState, time) {
    return 0.0;
 }
 
-function initialGenome(x, y, z) {
+function initialGenome(envState) {
    return [
       {
          name: "translationFactor",

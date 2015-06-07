@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 
 import org.jage.address.agent.AgentAddress;
 
+import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
+
 public class HaploidGenotype extends Genotype {
 
 	private final Genome genome;
@@ -21,7 +23,7 @@ public class HaploidGenotype extends Genotype {
 	}
 
 	@Override
-	protected Stream<Genome> createGameteStream(int number) {
+	protected Stream<Genome> createGameteStream(int number, CrossingOverOperator crossingOverOperator) {
 		return IntStream.range(0, number).mapToObj(i -> genome.copy());
 	}
 

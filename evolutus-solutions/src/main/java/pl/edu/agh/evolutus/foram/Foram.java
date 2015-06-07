@@ -17,13 +17,20 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
+import pl.edu.agh.evolutus.environment.OceanFragmentProperties;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.genotype.Genotype;
-import pl.edu.agh.evolutus.service.ForamVolumeMeter;
+import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
+import pl.edu.agh.evolutus.genotype.operator.OnePointCrossingOverOperator;
+import pl.edu.agh.evolutus.genotype.operator.TwoPointCrossingOverOperator;
+import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
+import pl.edu.agh.evolutus.service.ShellFactory;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
-import pl.edu.agh.evolutus.service.config.UnitsConverter;
+import pl.edu.agh.evolutus.service.config.utils.EnvState;
+import pl.edu.agh.evolutus.service.config.utils.ForamState;
+import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -34,8 +41,10 @@ public class Foram extends SimpleAgent implements IForam {
 	private ForamType type;
 	private boolean alive = true;
 	private double energy;
-	private int chambersCount = 1;
-	private int age = 0;
+	private double age = 0;
+	private double stepDurationInHours;
+
+	private Shell shell;
 
 	private Genotype genotype = null;
 
@@ -46,7 +55,7 @@ public class Foram extends SimpleAgent implements IForam {
 	private UnitsConverter unitsConverter;
 
 	@Inject
-	private ForamVolumeMeter foramVolumeMeter;
+	private ShellFactory shellFactory;
 
 	private Random random = new Random();
 
@@ -88,9 +97,25 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	@Override
+	public Genotype getGenotype() {
+		return genotype;
+	}
+
+	@Override
+	public void setShell(Shell shell) {
+		this.shell = shell;
+	}
+
+	@Override
+	public Shell getShell() {
+		return shell;
+	}
+
+	@Override
 	public void init() throws ComponentException {
 		super.init();
 		this.energy = config.initialEnergy();
+		this.stepDurationInHours = unitsConverter.stepDurationInHours();
 	}
 
 	@Override
@@ -99,13 +124,34 @@ public class Foram extends SimpleAgent implements IForam {
 		return super.finish();
 	}
 
+	private EnvState envState;
+	private ForamState foramState;
+	private double currentTime;
+
+	private void updateEnvState() {
+		OceanFragmentProperties properties = getOceanFragment().getOceanFragmentProperties();
+		envState = new EnvState(properties, unitsConverter);
+	}
+
+	private void updateForamState() {
+		foramState = new ForamState(genotype, energy, age, shell);
+	}
+
+	private void updateCurrentStep() {
+		currentTime = unitsConverter.stepsToHours(getOceanFragment().currentStep());
+	}
+
 	@Override
 	public void step() {
+		updateEnvState();
+		updateForamState();
+		updateCurrentStep();
+
 		if (!couldForamPerformStep()) {
 			return;
 		}
 
-		energy -= genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * chambersCount;
+		energy -= genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * shell.getChambersCount();
 
 		try {
 			if (shouldDie()) {
@@ -121,7 +167,7 @@ public class Foram extends SimpleAgent implements IForam {
 
 			tryMigrate();
 
-			age++;
+			age += stepDurationInHours;
 		} catch (AgentDiedException e) {
 			logger.debug("Foram died: {}", getAddress());
 		}
@@ -175,7 +221,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void eat() {
-		double capacity = genotype.get(Genome.MAX_ENERGY_PER_CHAMBER).getValue() * chambersCount;
+		double capacity = genotype.get(Genome.MAX_ENERGY_PER_CHAMBER).getValue() * shell.getChambersCount();
 		energy += getOceanFragment().takeAlgae(capacity);
 	}
 
@@ -206,29 +252,34 @@ public class Foram extends SimpleAgent implements IForam {
 
 	private boolean canReproduce() {
 		boolean oldEnough = age >= genotype.get(Genome.MIN_ADULT_AGE).getValue();
-		boolean energyEnough = energy > config.energyNeededToReproduce();
-		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability();
+		boolean energyEnough = energy > config.energyNeededToReproduce(envState, foramState, currentTime);
+		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability(envState, foramState, currentTime);
 		return oldEnough && energyEnough && reproductionProbable;
 	}
 
 	private void reproduce() throws AgentDiedException {
-		int gametesProduction = config.gametesProduction(chambersCount);
+		int gametesProduction = config.gametesProduction(envState, foramState, currentTime);
 		List<Genome> gametes = genotype
-				.createGametes(gametesProduction, config.globalMutationProbability(), config.gametesSievingCoefficient());
+				.createGametes(gametesProduction,
+						config.globalMutationProbability(envState, foramState, currentTime),
+						config.gametesSievingCoefficient(envState, foramState, currentTime),
+						getCrossingOverOperator());
 		getOceanFragment().addGametes(gametes, type);
 		die();
 	}
 
 	private boolean canCreateChamber() {
-		double energyNeededForGrowth = config.energyNeededForGrowth();
-		int chambersLimit = config.chambersLimit();
-		double growthProbability = config.growthProbability();
-		return energy > energyNeededForGrowth && chambersCount < chambersLimit && random.nextDouble() > growthProbability;
+		double energyNeededForGrowth = config.energyNeededForGrowth(envState, foramState, currentTime);
+		int chambersLimit = config.chambersLimit(envState, foramState, currentTime);
+		double growthProbability = config.growthProbability(envState, foramState, currentTime);
+		return energy > energyNeededForGrowth
+				&& shell.getChambersCount() < chambersLimit
+				&& random.nextDouble() > growthProbability;
 	}
 
 	private void createChamber() {
 		energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
-		chambersCount++;
+		shell = shellFactory.createShellWithNewChamber(this);
 	}
 
 	private void tryMigrate() {
@@ -255,6 +306,20 @@ public class Foram extends SimpleAgent implements IForam {
 			return getOceanFragment().getPlanktonicMigrationTarget();
 		}
 		return null;
+	}
+
+	private CrossingOverOperator getCrossingOverOperator() {
+		String operatorName = config.crossingOverOperator(envState, foramState, currentTime);
+		switch (operatorName) {
+		case "OnePointCrossingOverOperator":
+			return instanceProvider.getInstance(OnePointCrossingOverOperator.class);
+		case "TwoPointCrossingOverOperator":
+			return instanceProvider.getInstance(TwoPointCrossingOverOperator.class);
+		case "UniformCrossingOverOperator":
+			return instanceProvider.getInstance(UniformCrossingOverOperator.class);
+		default:
+			throw new IllegalStateException("Unknown crossing-over operator: " + operatorName);
+		}
 	}
 
 	private static class AgentDiedException extends Exception {

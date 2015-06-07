@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
 
+import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
+
 abstract class Config implements IStatefulComponent {
 
 	@Inject

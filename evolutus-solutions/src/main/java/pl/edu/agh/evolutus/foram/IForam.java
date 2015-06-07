@@ -17,5 +17,11 @@ public interface IForam extends ISimpleAgent {
 
 	void setGenotype(Genotype genotype);
 
+	Genotype getGenotype();
+
+	void setShell(Shell shell);
+
+	Shell getShell();
+
 	boolean isAlive();
 }

@@ -20,10 +20,13 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.service.ForamFactory;
 import pl.edu.agh.evolutus.service.ReproductionService;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
+import pl.edu.agh.evolutus.service.config.utils.EnvState;
+import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -40,7 +43,13 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private ReproductionService reproductionService;
 
 	@Inject
+	private ForamFactory foramFactory;
+
+	@Inject
 	private EnvironmentConfig config;
+
+	@Inject
+	private UnitsConverter unitsConverter;
 
 	private OceanFragmentProperties oceanFragmentProperties;
 
@@ -94,28 +103,34 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private IForam createInitialForam() {
 		VectorL size = oceanFragmentProperties.getOceanSize();
 		VectorL position = oceanFragmentProperties.getPosition();
-		Genome initialGenome = config.initialGenome(position);
+		Genome initialGenome = config.initialGenome(envState);
 
 		if (size.z - 1 == position.z) {
 			// benthos
 			if (random.nextBoolean()) {
 				// haploid
-				return reproductionService.createForam(ForamType.HAPLOID_BENTHIC, initialGenome);
+				return foramFactory.createForam(ForamType.HAPLOID_BENTHIC, initialGenome);
 			} else {
 				// diploid
-				return reproductionService.createForam(ForamType.DIPLOID_BENTHIC, initialGenome, initialGenome);
+				return foramFactory.createForam(ForamType.DIPLOID_BENTHIC, initialGenome, initialGenome);
 			}
 		} else {
 			// plankton
-			return reproductionService.createForam(ForamType.PLANKTONIC, initialGenome, initialGenome);
+			return foramFactory.createForam(ForamType.PLANKTONIC, initialGenome, initialGenome);
 		}
 	}
 
 	private long steps = 0;
+	private EnvState envState;
+
+	private void updateEnvState() {
+		envState = new EnvState(oceanFragmentProperties, unitsConverter);
+	}
 
 	@Override
 	public void step() {
 		super.step();
+		updateEnvState();
 
 		addStats();
 		oceanFragmentProperties.regenerateAlgae();

@@ -25,9 +25,10 @@
   <component name="templateRenderer" class="pl.edu.agh.evolutus.service.TemplateRenderer"/>
   <component name="psiFileGenerator" class="pl.edu.agh.evolutus.service.PsiFileGenerator"/>
   <component name="mongoProvider" class="pl.edu.agh.evolutus.service.MongoProvider"/>
-  <component name="foramVolumeMeter" class="pl.edu.agh.evolutus.service.ForamVolumeMeter"/>
+  <component name="foramVolumeMeter" class="pl.edu.agh.evolutus.service.ShellFactory"/>
   <component name="reproductionService" class="pl.edu.agh.evolutus.service.ReproductionService"/>
-  <component name="unitsConverter" class="pl.edu.agh.evolutus.service.config.UnitsConverter"/>
+  <component name="foramFactory" class="pl.edu.agh.evolutus.service.ForamFactory"/>
+  <component name="unitsConverter" class="pl.edu.agh.evolutus.service.config.utils.UnitsConverter"/>
 
   <component name="csvFileGenerator" class="pl.edu.agh.evolutus.service.output.CsvFileGenerator"/>
   <component name="chartsGenerator" class="pl.edu.agh.evolutus.service.output.ChartsGenerator"/>

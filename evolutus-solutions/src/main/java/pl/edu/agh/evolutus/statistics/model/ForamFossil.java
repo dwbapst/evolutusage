@@ -10,7 +10,7 @@ public class ForamFossil extends Statistics {
 	private static final long serialVersionUID = 1L;
 
 	private Long deathStepNo;
-	private Integer age;
+	private Double age;
 	private boolean isDiploid;
 	private ForamType foramType;
 	private Map<String, Double[]> genotype;
@@ -25,7 +25,7 @@ public class ForamFossil extends Statistics {
 	public ForamFossil(
 			Simulation simulation,
 			Long deathStepNo,
-			Integer age,
+			Double age,
 			ForamType foramType,
 			Genotype genotype,
 			Long x,
@@ -47,7 +47,7 @@ public class ForamFossil extends Statistics {
 		return deathStepNo;
 	}
 
-	public Integer getAge() {
+	public Double getAge() {
 		return age;
 	}
 

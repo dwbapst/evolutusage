@@ -98,6 +98,7 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 		try {
 			Map<Long, List<OceanFragmentInfo>> infoMap = new HashMap<>();
 			if (getGenerators().size() > 1) {
+				logger.info("Generating output files");
 				infoMap = oceanFragmentInfoDao.getInfoGroupedByStepNo(simulation);
 			}
 			for (OutputFileGenerator generator : getGenerators()) {

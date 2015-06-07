@@ -1,7 +1,9 @@
-package pl.edu.agh.evolutus.service.config;
+package pl.edu.agh.evolutus.service.config.utils;
 
 import javax.inject.Inject;
 
+import pl.edu.agh.evolutus.service.config.ConfigFactory;
+import pl.edu.agh.evolutus.service.config.IConfigJS;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -36,5 +38,13 @@ public class UnitsConverter {
 
 	public long hoursToSteps(double hours) {
 		return Math.round(hours / configJS.stepDurationInHours());
+	}
+
+	public double unitLengthInMeters() {
+		return configJS.unitLengthInMeters();
+	}
+
+	public double stepDurationInHours() {
+		return configJS.stepDurationInHours();
 	}
 }

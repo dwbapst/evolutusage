@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import pl.edu.agh.evolutus.genotype.Gene.GeneValidationException;
+import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
 
 public abstract class Genotype {
 
@@ -15,17 +16,18 @@ public abstract class Genotype {
 
 	public abstract Genome getEffectiveGenome();
 
-	protected abstract Stream<Genome> createGameteStream(int number);
+	protected abstract Stream<Genome> createGameteStream(int number, CrossingOverOperator crossingOverOperator);
 
 	public abstract Map<String, Double[]> toFossilizationMap();
 
 	public abstract boolean isDiploid();
 
-	public List<Genome> createGametes(int number, double globalMutationProbability, double gametesSievingCoefficient) {
+	public List<Genome> createGametes(int number, double globalMutationProbability, double gametesSievingCoefficient,
+			CrossingOverOperator crossingOverOperator) {
 		if (number % 2 != 0) {
 			throw new IllegalArgumentException("Number of gametes to create has to be even. Given: " + number);
 		}
-		return createGameteStream(number)
+		return createGameteStream(number, crossingOverOperator)
 				.map(gamete -> gamete.mutate(globalMutationProbability))
 				.filter(gamete -> rand.nextDouble() > gametesSievingCoefficient)
 				.collect(Collectors.toList());
