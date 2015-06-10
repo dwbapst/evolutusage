@@ -9,12 +9,13 @@ import org.jage.agent.ISimpleAggregate;
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IOceanFragment extends ISimpleAggregate {
 
-	OceanFragmentProperties getOceanFragmentProperties();
+	EnvState getEnvState();
 
 	Position getPosition();
 

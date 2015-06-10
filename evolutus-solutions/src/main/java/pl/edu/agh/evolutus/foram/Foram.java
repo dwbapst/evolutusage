@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.agh.evolutus.environment.IOceanFragment;
 import pl.edu.agh.evolutus.environment.OceanFragment;
-import pl.edu.agh.evolutus.environment.OceanFragmentProperties;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.genotype.Genotype;
 import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
@@ -129,8 +128,7 @@ public class Foram extends SimpleAgent implements IForam {
 	private double currentTime;
 
 	private void updateEnvState() {
-		OceanFragmentProperties properties = getOceanFragment().getOceanFragmentProperties();
-		envState = new EnvState(properties, unitsConverter);
+		envState = getOceanFragment().getEnvState();
 	}
 
 	private void updateForamState() {
@@ -234,7 +232,7 @@ public class Foram extends SimpleAgent implements IForam {
 	 * If current 'travels' one unit per step (one ocean fragment per step) then the probability of migration is 100%.
 	 */
 	private double getCurrentStrength() {
-		double distance = getOceanFragment().getOceanFragmentProperties().getCurrentDirection().getStrength();
+		double distance = getOceanFragment().getEnvState().currentDirection.getStrength();
 		return unitsConverter.metersToUnits(distance);
 	}
 

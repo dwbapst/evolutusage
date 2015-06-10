@@ -6,6 +6,7 @@ import pl.edu.agh.evolutus.environment.BoundaryConditions;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.utils.CurrentDirection;
+import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 
@@ -19,13 +20,15 @@ public class EnvironmentConfig extends Config {
 		return configJS.stepDurationInHours();
 	}
 
-	public VectorL oceanSize() {
-		VectorD sizeMeters = VectorD.fromScriptObject(configJS.oceanSize());
-		return unitsConverter.metersToUnits(sizeMeters);
-	}
+	private VectorL oceanSize = null;
+	private BoundaryConditions boundaryConditions = null;
 
-	public double algaeEnergy() {
-		return configJS.algaeEnergy();
+	public VectorL oceanSize() {
+		if (oceanSize == null) {
+			VectorD sizeMeters = VectorD.fromScriptObject(configJS.oceanSize());
+			oceanSize = unitsConverter.metersToUnits(sizeMeters);
+		}
+		return oceanSize;
 	}
 
 	public long initialForamsCount(VectorL positionUnits) {
@@ -38,27 +41,32 @@ public class EnvironmentConfig extends Config {
 		return configJS.initialAlgaeAvailability(positionMeters.x, positionMeters.y, positionMeters.z);
 	}
 
-	public double algaeGrowth(double insolation) {
-		return configJS.algaeGrowth(insolation);
+	public BoundaryConditions boundaryConditions() {
+		if (boundaryConditions == null) {
+			boundaryConditions = BoundaryConditions.fromString(configJS.boundaryConditions());
+		}
+		return boundaryConditions;
 	}
 
-	public double insolation(VectorL positionUnits) {
-		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
-		return configJS.insolation(positionMeters.x, positionMeters.y, positionMeters.z);
+	public double algaeEnergy(long steps, EnvState currentEnvState) {
+		return configJS.algaeEnergy(unitsConverter.stepsToHours(steps), currentEnvState);
 	}
 
-	public CurrentDirection currentDirection(VectorL positionUnits) {
-		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
-		ScriptObject currentDirection = configJS.currentDirection(positionMeters.x, positionMeters.y, positionMeters.z);
+	public double algaeGrowth(long steps, EnvState currentEnvState) {
+		return configJS.algaeGrowth(unitsConverter.stepsToHours(steps), currentEnvState);
+	}
+
+	public double insolation(long steps, EnvState currentEnvState) {
+		return configJS.insolation(unitsConverter.stepsToHours(steps), currentEnvState);
+	}
+
+	public CurrentDirection currentDirection(long steps, EnvState currentEnvState) {
+		ScriptObject currentDirection = configJS.currentDirection(unitsConverter.stepsToHours(steps), currentEnvState);
 		return new CurrentDirection(VectorD.fromScriptObject(currentDirection));
 	}
 
-	public BoundaryConditions boundaryConditions() {
-		return BoundaryConditions.fromString(configJS.boundaryConditions());
-	}
-
-	public Genome initialGenome(EnvState envState) {
-		NativeArray initialGenome = configJS.initialGenome(envState);
+	public Genome initialGenome(Position position) {
+		NativeArray initialGenome = configJS.initialGenome(unitsConverter.unitsToMeters(position));
 		return Genome.fromScriptObject(initialGenome);
 	}
 }

@@ -75,7 +75,10 @@ function globalMutationProbability(envState, foramState, time) {
    return 0.0;
 }
 
-function initialGenome(envState) {
+/**
+ * position {  x, y, z }  - position in meters
+ */
+function initialGenome(position) {
    return [
       {
          name: "translationFactor",

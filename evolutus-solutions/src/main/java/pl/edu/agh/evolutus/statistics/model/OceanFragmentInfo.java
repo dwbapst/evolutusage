@@ -1,5 +1,7 @@
 package pl.edu.agh.evolutus.statistics.model;
 
+import pl.edu.agh.evolutus.utils.Position;
+
 public class OceanFragmentInfo extends Statistics {
 
 	private static final long serialVersionUID = 1L;
@@ -20,9 +22,7 @@ public class OceanFragmentInfo extends Statistics {
 	public OceanFragmentInfo(
 			Simulation simulation,
 			Long stepNo,
-			Long x,
-			Long y,
-			Long z,
+			Position position,
 			Integer foramsCount,
 			Double algaeAvailability,
 			Double totalEnergy,
@@ -30,9 +30,9 @@ public class OceanFragmentInfo extends Statistics {
 	) {
 		super(simulation.getSimulationStart());
 		this.stepNo = stepNo;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = position.x;
+		this.y = position.y;
+		this.z = position.z;
 		this.foramsCount = foramsCount;
 		this.algaeAvailability = algaeAvailability;
 		this.totalEnergy = totalEnergy;

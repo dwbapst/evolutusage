@@ -51,29 +51,31 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	@Inject
 	private UnitsConverter unitsConverter;
 
-	private OceanFragmentProperties oceanFragmentProperties;
-
-	// gamete -> type, age in steps
-	private Map<Genome, Pair<ForamType, Integer>> gametesMap = new HashMap<>();
-
 	@Inject
 	public OceanFragment(AgentAddressSupplier supplier) {
 		super(supplier);
 	}
 
+	private long steps = 0;
+	private EnvState envState;
+	private Position position;
+
+	// gamete -> type, age in steps
+	private Map<Genome, Pair<ForamType, Integer>> gametesMap = new HashMap<>();
+
 	@Override
-	public OceanFragmentProperties getOceanFragmentProperties() {
-		return oceanFragmentProperties;
+	public EnvState getEnvState() {
+		return envState;
 	}
 
 	@Override
 	public Position getPosition() {
-		return oceanFragmentProperties.getPosition();
+		return position;
 	}
 
 	@Override
 	public double getAlgaeAvailability() {
-		return oceanFragmentProperties.getAlgaeAvailability();
+		return envState.algaeAvailability;
 	}
 
 	@Override
@@ -91,21 +93,21 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public void initialize(Position position) {
-		this.oceanFragmentProperties = new OceanFragmentProperties(position, this.config);
+		this.position = position;
+		this.envState = new EnvState(unitsConverter.unitsToMeters(position), 0.0, 0.0, 0.0,
+				config.initialAlgaeAvailability(position), null);
 
 		long initialForamsCount = config.initialForamsCount(position);
 		for (long i = 0; i < initialForamsCount; i++) {
 			add(createInitialForam());
 		}
-		logger.debug("Initialized ocean fragment: {} {}", getAddress(), oceanFragmentProperties.getPosition());
+		logger.debug("Initialized ocean fragment: {} {}", getAddress(), position);
 	}
 
 	private IForam createInitialForam() {
-		VectorL size = oceanFragmentProperties.getOceanSize();
-		VectorL position = oceanFragmentProperties.getPosition();
-		Genome initialGenome = config.initialGenome(envState);
+		Genome initialGenome = config.initialGenome(position);
 
-		if (size.z - 1 == position.z) {
+		if (config.oceanSize().z - 1 == position.z) {
 			// benthos
 			if (random.nextBoolean()) {
 				// haploid
@@ -120,35 +122,38 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		}
 	}
 
-	private long steps = 0;
-	private EnvState envState;
+	private synchronized void updateEnvState() {
+		envState = new EnvState(
+				unitsConverter.unitsToMeters(position),
+				config.insolation(steps, envState),
+				config.algaeEnergy(steps, envState),
+				config.algaeGrowth(steps, envState),
+				envState.algaeAvailability,
+				config.currentDirection(steps, envState)
+		);
+	}
 
-	private void updateEnvState() {
-		envState = new EnvState(oceanFragmentProperties, unitsConverter);
+	private synchronized void changeAlgaeAvailability(double amount) {
+		envState = new EnvState(envState, envState.algaeAvailability + amount);
 	}
 
 	@Override
 	public void step() {
-		super.step();
 		updateEnvState();
-
-		addStats();
-		oceanFragmentProperties.regenerateAlgae();
+		changeAlgaeAvailability(envState.algaeGrowth); // regenerate algae
 
 		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesMap);
 		addAll(foramsToAdd);
+
+		super.step(); // call forams' step() methods
+		addStats();
+		steps++;
 	}
 
 	private void addStats() {
 		try {
-			long x = oceanFragmentProperties.getPosition().x;
-			long y = oceanFragmentProperties.getPosition().y;
-			long z = oceanFragmentProperties.getPosition().z;
-			double algaeAvailability = oceanFragmentProperties.getAlgaeAvailability();
-			double insolation = oceanFragmentProperties.getInsolation();
-			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps++, x, y, z, foramsAlive(),
-					algaeAvailability,
-					totalEnergy(), insolation);
+			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps, position, foramsAlive(),
+					envState.algaeAvailability, totalEnergy(), envState.insolation);
 			statisticsService.add(info);
 		} catch (StatisticsServiceException e) {
 			logger.debug(e.getMessage(), e);
@@ -157,11 +162,11 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public double takeAlgae(double energyDemand) {
-		double algaeNeeded = energyDemand / oceanFragmentProperties.getAlgaeEnergy();
-		double availableAlgae = oceanFragmentProperties.getAlgaeAvailability();
+		double algaeNeeded = energyDemand / envState.algaeEnergy;
+		double availableAlgae = envState.algaeAvailability;
 		double takenAlgae = Math.min(availableAlgae, algaeNeeded);
-		oceanFragmentProperties.decreaseAlgaeAvailability(takenAlgae);
-		return takenAlgae * oceanFragmentProperties.getAlgaeEnergy();
+		changeAlgaeAvailability(-takenAlgae);
+		return takenAlgae * envState.algaeEnergy;
 	}
 
 	@Override
@@ -173,11 +178,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private Map<AgentAddress, Double> getMigrationTargetsWithProbability() {
 		if (migrationTargetsWithProbability == null) {
-			VectorL position = oceanFragmentProperties.getPosition();
-			VectorL size = oceanFragmentProperties.getOceanSize();
-			BoundaryConditions boundaryConditions = oceanFragmentProperties.getBoundaryConditions();
-			final Map<VectorL, Double> targetCoordinateProbabilities = oceanFragmentProperties.getCurrentDirection()
-					.getTargetCoordinateProbabilities(position, size, boundaryConditions);
+			final Map<VectorL, Double> targetCoordinateProbabilities = envState.currentDirection
+					.getTargetCoordinateProbabilities(position, config.oceanSize(), config.boundaryConditions());
 
 			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
 			migrationTargetsWithProbability = queryParent(
@@ -219,10 +221,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public AgentAddress getBenthicMigrationTarget() {
-		Position position = oceanFragmentProperties.getPosition();
-		VectorL oceanSize = oceanFragmentProperties.getOceanSize();
-		BoundaryConditions boundaryConditions = oceanFragmentProperties.getBoundaryConditions();
-		List<Position> neighborhood = position.getTheSameLevelNeighborhood(oceanSize, boundaryConditions);
+		List<Position> neighborhood = position.getTheSameLevelNeighborhood(config.oceanSize(), config.boundaryConditions());
 
 		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
 		Collection<OceanFragment> neighbors = queryParent(

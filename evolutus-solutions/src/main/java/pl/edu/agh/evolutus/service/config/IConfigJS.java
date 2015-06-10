@@ -4,6 +4,7 @@ import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
+import pl.edu.agh.evolutus.utils.VectorD;
 
 public interface IConfigJS {
 
@@ -13,19 +14,19 @@ public interface IConfigJS {
 
 	ScriptObject oceanSize();
 
-	double algaeEnergy();
-
 	long initialForamsCount(double x, double y, double z);
 
 	double initialAlgaeAvailability(double x, double y, double z);
 
-	double algaeGrowth(double insolation);
-
-	double insolation(double x, double y, double z);
-
-	ScriptObject currentDirection(double x, double y, double z);
-
 	String boundaryConditions();
+
+	double algaeEnergy(double time, EnvState currentEnvState);
+
+	double algaeGrowth(double time, EnvState currentEnvState);
+
+	double insolation(double time, EnvState currentEnvState);
+
+	ScriptObject currentDirection(double time, EnvState currentEnvState);
 
 	/*-********************
 	 *       FORAM        *
@@ -51,7 +52,7 @@ public interface IConfigJS {
 
 	double globalMutationProbability(EnvState envState, ForamState foramState, double time);
 
-	NativeArray initialGenome(EnvState envState);
+	NativeArray initialGenome(VectorD position);
 
 	/*-********************
 	 *     SIMULATION     *
