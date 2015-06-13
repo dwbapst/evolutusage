@@ -48,20 +48,20 @@ public class EnvironmentConfig extends Config {
 		return boundaryConditions;
 	}
 
-	public double algaeEnergy(long steps, EnvState currentEnvState) {
-		return configJS.algaeEnergy(unitsConverter.stepsToHours(steps), currentEnvState);
+	public double algaeEnergy(long steps, EnvState[] envStates) {
+		return configJS.algaeEnergy(unitsConverter.stepsToHours(steps), envStates);
 	}
 
-	public double algaeGrowth(long steps, EnvState currentEnvState) {
-		return configJS.algaeGrowth(unitsConverter.stepsToHours(steps), currentEnvState);
+	public double algaeGrowth(long steps, EnvState[] envStates) {
+		return configJS.algaeGrowth(unitsConverter.stepsToHours(steps), envStates);
 	}
 
-	public double insolation(long steps, EnvState currentEnvState) {
-		return configJS.insolation(unitsConverter.stepsToHours(steps), currentEnvState);
+	public double insolation(long steps, EnvState[] envStates) {
+		return configJS.insolation(unitsConverter.stepsToHours(steps), envStates);
 	}
 
-	public CurrentDirection currentDirection(long steps, EnvState currentEnvState) {
-		ScriptObject currentDirection = configJS.currentDirection(unitsConverter.stepsToHours(steps), currentEnvState);
+	public CurrentDirection currentDirection(long steps, EnvState[] envStates) {
+		ScriptObject currentDirection = configJS.currentDirection(unitsConverter.stepsToHours(steps), envStates);
 		return new CurrentDirection(VectorD.fromScriptObject(currentDirection));
 	}
 

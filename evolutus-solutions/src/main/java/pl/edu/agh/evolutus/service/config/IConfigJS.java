@@ -20,13 +20,13 @@ public interface IConfigJS {
 
 	String boundaryConditions();
 
-	double algaeEnergy(double time, EnvState currentEnvState);
+	double algaeEnergy(double time, EnvState[] envStates);
 
-	double algaeGrowth(double time, EnvState currentEnvState);
+	double algaeGrowth(double time, EnvState[] envStates);
 
-	double insolation(double time, EnvState currentEnvState);
+	double insolation(double time, EnvState[] envStates);
 
-	ScriptObject currentDirection(double time, EnvState currentEnvState);
+	ScriptObject currentDirection(double time, EnvState[] envStates);
 
 	/*-********************
 	 *       FORAM        *

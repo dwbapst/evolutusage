@@ -1,5 +1,6 @@
 package pl.edu.agh.evolutus.environment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -29,6 +32,7 @@ import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Position;
+import pl.edu.agh.evolutus.utils.QueuedMap;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
@@ -57,15 +61,30 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	private long steps = 0;
-	private EnvState envState;
 	private Position position;
+	private List<OceanFragment> neighbors;
+
+	private QueuedMap<Long, EnvState> envStatesCache = new QueuedMap<>(3);
 
 	// gamete -> type, age in steps
 	private Map<Genome, Pair<ForamType, Integer>> gametesMap = new HashMap<>();
 
 	@Override
 	public EnvState getEnvState() {
-		return envState;
+		return envStatesCache.getItem(steps);
+	}
+
+	@Override
+	public EnvState getPrevEnvState() {
+		return envStatesCache.getItem(steps - 1);
+	}
+
+	private void setEnvState(EnvState envState) {
+		envStatesCache.addItem(steps, envState);
+	}
+
+	private void setPrevEnvState(EnvState envState) {
+		envStatesCache.addItem(steps - 1, envState);
 	}
 
 	@Override
@@ -75,7 +94,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public double getAlgaeAvailability() {
-		return envState.algaeAvailability;
+		return getEnvState().algaeAvailability;
 	}
 
 	@Override
@@ -94,14 +113,23 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	@Override
 	public void initialize(Position position) {
 		this.position = position;
-		this.envState = new EnvState(unitsConverter.unitsToMeters(position), 0.0, 0.0, 0.0,
+
+		EnvState initialEnvState = new EnvState(unitsConverter.unitsToMeters(position), 0.0, 0.0, 0.0,
 				config.initialAlgaeAvailability(position), null);
+		setEnvState(initialEnvState);
+		setPrevEnvState(initialEnvState);
 
 		long initialForamsCount = config.initialForamsCount(position);
 		for (long i = 0; i < initialForamsCount; i++) {
 			add(createInitialForam());
 		}
 		logger.debug("Initialized ocean fragment: {} {}", getAddress(), position);
+	}
+
+	private void initNeighbors() {
+		neighbors = Lists.newArrayList();
+		neighbors.add(this);
+		neighbors.addAll(getNeighbors());
 	}
 
 	private IForam createInitialForam() {
@@ -123,24 +151,35 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	private synchronized void updateEnvState() {
-		envState = new EnvState(
+		EnvState[] envStates = neighbors.stream()
+				.map(neighbor -> (neighbor == null) ? null : neighbor.getPrevEnvState())
+				.collect(Collectors.toList())
+				.toArray(new EnvState[neighbors.size()]);
+
+		EnvState prevEnvState = getPrevEnvState();
+		EnvState newEnvState = new EnvState(
 				unitsConverter.unitsToMeters(position),
-				config.insolation(steps, envState),
-				config.algaeEnergy(steps, envState),
-				config.algaeGrowth(steps, envState),
-				envState.algaeAvailability,
-				config.currentDirection(steps, envState)
+				config.insolation(steps, envStates),
+				config.algaeEnergy(steps, envStates),
+				config.algaeGrowth(steps, envStates),
+				prevEnvState.algaeAvailability,
+				config.currentDirection(steps, envStates)
 		);
+		setEnvState(newEnvState);
 	}
 
 	private synchronized void changeAlgaeAvailability(double amount) {
-		envState = new EnvState(envState, envState.algaeAvailability + amount);
+		setEnvState(new EnvState(getEnvState(), getEnvState().algaeAvailability + amount));
 	}
 
 	@Override
 	public void step() {
-		updateEnvState();
-		changeAlgaeAvailability(envState.algaeGrowth); // regenerate algae
+		if (steps == 0) {
+			initNeighbors();
+			updateEnvState();
+		}
+
+		changeAlgaeAvailability(getEnvState().algaeGrowth); // regenerate algae
 
 		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesMap);
 		addAll(foramsToAdd);
@@ -148,12 +187,13 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		super.step(); // call forams' step() methods
 		addStats();
 		steps++;
+		updateEnvState();
 	}
 
 	private void addStats() {
 		try {
 			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps, position, foramsAlive(),
-					envState.algaeAvailability, totalEnergy(), envState.insolation);
+					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation);
 			statisticsService.add(info);
 		} catch (StatisticsServiceException e) {
 			logger.debug(e.getMessage(), e);
@@ -162,11 +202,11 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public double takeAlgae(double energyDemand) {
-		double algaeNeeded = energyDemand / envState.algaeEnergy;
-		double availableAlgae = envState.algaeAvailability;
+		double algaeNeeded = energyDemand / getEnvState().algaeEnergy;
+		double availableAlgae = getEnvState().algaeAvailability;
 		double takenAlgae = Math.min(availableAlgae, algaeNeeded);
 		changeAlgaeAvailability(-takenAlgae);
-		return takenAlgae * envState.algaeEnergy;
+		return takenAlgae * getEnvState().algaeEnergy;
 	}
 
 	@Override
@@ -178,7 +218,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private Map<AgentAddress, Double> getMigrationTargetsWithProbability() {
 		if (migrationTargetsWithProbability == null) {
-			final Map<VectorL, Double> targetCoordinateProbabilities = envState.currentDirection
+			final Map<VectorL, Double> targetCoordinateProbabilities = getEnvState().currentDirection
 					.getTargetCoordinateProbabilities(position, config.oceanSize(), config.boundaryConditions());
 
 			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
@@ -241,6 +281,35 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	@Override
 	public long currentStep() {
 		return steps;
+	}
+
+	private List<OceanFragment> getNeighbors() {
+		ArrayList<Position> neighborPositions = getNeighborPositions();
+		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
+
+		Map<Position, OceanFragment> neighbors = queryParent(
+				query.matching(oceanFragment -> neighborPositions.contains(oceanFragment.getPosition())))
+				.stream()
+				.collect(Collectors.toMap(
+						OceanFragment::getPosition,
+						oceanFragment -> oceanFragment
+				));
+
+		return neighborPositions
+				.stream()
+				.map(neighbors::get)
+				.collect(Collectors.toList());
+	}
+
+	private ArrayList<Position> getNeighborPositions() {
+		return Lists.newArrayList(
+				new Position(position.x + 1, position.y, position.z),
+				new Position(position.x, position.y + 1, position.z),
+				new Position(position.x, position.y, position.z + 1),
+				new Position(position.x - 1, position.y, position.z),
+				new Position(position.x, position.y - 1, position.z),
+				new Position(position.x, position.y, position.z - 1)
+		);
 	}
 
 }

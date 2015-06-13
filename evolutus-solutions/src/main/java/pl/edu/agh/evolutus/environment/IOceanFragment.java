@@ -17,6 +17,8 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	EnvState getEnvState();
 
+	EnvState getPrevEnvState();
+
 	Position getPosition();
 
 	double getAlgaeAvailability();
