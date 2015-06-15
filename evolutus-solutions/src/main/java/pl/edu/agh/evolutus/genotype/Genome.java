@@ -36,6 +36,8 @@ public class Genome implements Iterable<Gene> {
 	public static final String CHAMBER_GROWTH_COST_FACTOR = "chamberGrowthCostFactor";
 	public static final String METABOLIC_EFFECTIVENESS = "metabolicEffectiveness";
 	public static final String MIN_METABOLIC_EFFECTIVENESS = "minMetabolicEffectiveness";
+	public static final String HIBERNATION_ENERGY_LEVEL = "hibernationEnergyLevel";
+	public static final String HIBERNATION_ENERGY_CONSUMPTION = "hibernationEnergyConsumption";
 
 	public static Genome forGenome(Genome genome, String foramIdentifier) {
 		return forGenes(genome.genes, foramIdentifier);

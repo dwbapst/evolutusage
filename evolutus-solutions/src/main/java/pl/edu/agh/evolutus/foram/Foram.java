@@ -149,7 +149,7 @@ public class Foram extends SimpleAgent implements IForam {
 			return;
 		}
 
-		energy -= genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * shell.getChambersCount();
+		consumeStepEnergy();
 
 		try {
 			if (shouldDie()) {
@@ -162,13 +162,29 @@ public class Foram extends SimpleAgent implements IForam {
 			if (canCreateChamber()) {
 				createChamber();
 			}
-
-			tryMigrate();
+			if (canMigrate()) {
+				tryMigrate();
+			}
 
 			age += stepDurationInHours;
 		} catch (AgentDiedException e) {
 			logger.debug("Foram died: {}", getAddress());
 		}
+	}
+
+	private boolean isInHibernationState() {
+		return energy <= genotype.get(Genome.HIBERNATION_ENERGY_LEVEL).getValue();
+	}
+
+	private void consumeStepEnergy() {
+		double consumption;
+		if (isInHibernationState()) {
+			consumption = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION).getValue();
+		} else {
+			consumption = genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * shell.getChambersCount();
+		}
+
+		energy -= consumption;
 	}
 
 	private boolean couldForamPerformStep() {
@@ -252,7 +268,7 @@ public class Foram extends SimpleAgent implements IForam {
 		boolean oldEnough = age >= genotype.get(Genome.MIN_ADULT_AGE).getValue();
 		boolean energyEnough = energy > config.energyNeededToReproduce(envState, foramState, currentTime);
 		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability(envState, foramState, currentTime);
-		return oldEnough && energyEnough && reproductionProbable;
+		return oldEnough && energyEnough && reproductionProbable && !isInHibernationState();
 	}
 
 	private void reproduce() throws AgentDiedException {
@@ -272,12 +288,17 @@ public class Foram extends SimpleAgent implements IForam {
 		double growthProbability = config.growthProbability(envState, foramState, currentTime);
 		return energy > energyNeededForGrowth
 				&& shell.getChambersCount() < chambersLimit
-				&& random.nextDouble() > growthProbability;
+				&& random.nextDouble() > growthProbability
+				&& !isInHibernationState();
 	}
 
 	private void createChamber() {
 		energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
 		shell = shellFactory.createShellWithNewChamber(this);
+	}
+
+	private boolean canMigrate() {
+		return !(type.isBenthic() && isInHibernationState()); // benthic forams cannot move when in hibernation
 	}
 
 	private void tryMigrate() {

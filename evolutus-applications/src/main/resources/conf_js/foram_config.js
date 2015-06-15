@@ -160,6 +160,14 @@ function initialGenome(position) {
       {
          name: "minMetabolicEffectiveness",
          value: 0.0
+      },
+      {
+         name: "hibernationEnergyLevel",
+         value: 1
+      },
+      {
+         name: "hibernationEnergyConsumption",
+         value: 0.01
       }
    ]
 }
