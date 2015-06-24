@@ -132,7 +132,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void updateForamState() {
-		foramState = new ForamState(genotype, energy, age, shell);
+		foramState = new ForamState(type.isBenthic(), genotype, energy, age, shell);
 	}
 
 	private void updateCurrentStep() {
@@ -152,17 +152,17 @@ public class Foram extends SimpleAgent implements IForam {
 		consumeStepEnergy();
 
 		try {
-			if (shouldDie()) {
+			if (config.shouldDie(envState, foramState, currentTime)) {
 				die();
 			}
 			eat();
-			if (canReproduce()) {
+			if (config.canReproduce(envState, foramState, currentTime)) {
 				reproduce();
 			}
-			if (canCreateChamber()) {
+			if (config.canCreateChamber(envState, foramState, currentTime)) {
 				createChamber();
 			}
-			if (canMigrate()) {
+			if (config.canMigrate(envState, foramState, currentTime)) {
 				tryMigrate();
 			}
 
@@ -172,13 +172,9 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 	}
 
-	private boolean isInHibernationState() {
-		return energy <= genotype.get(Genome.HIBERNATION_ENERGY_LEVEL).getValue();
-	}
-
 	private void consumeStepEnergy() {
 		double consumption;
-		if (isInHibernationState()) {
+		if (config.isInHibernationState(envState, foramState, currentTime)) {
 			consumption = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION).getValue();
 		} else {
 			consumption = genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * shell.getChambersCount();
@@ -202,10 +198,6 @@ public class Foram extends SimpleAgent implements IForam {
 	@Override
 	public boolean isAlive() {
 		return alive;
-	}
-
-	private boolean shouldDie() {
-		return energy <= genotype.get(Genome.MIN_ENERGY).getValue();
 	}
 
 	private void die() throws AgentDiedException {
@@ -264,13 +256,6 @@ public class Foram extends SimpleAgent implements IForam {
 		return lastParentReference;
 	}
 
-	private boolean canReproduce() {
-		boolean oldEnough = age >= genotype.get(Genome.MIN_ADULT_AGE).getValue();
-		boolean energyEnough = energy > config.energyNeededToReproduce(envState, foramState, currentTime);
-		boolean reproductionProbable = random.nextDouble() > config.reproductionProbability(envState, foramState, currentTime);
-		return oldEnough && energyEnough && reproductionProbable && !isInHibernationState();
-	}
-
 	private void reproduce() throws AgentDiedException {
 		int gametesProduction = config.gametesProduction(envState, foramState, currentTime);
 		List<Genome> gametes = genotype
@@ -282,23 +267,9 @@ public class Foram extends SimpleAgent implements IForam {
 		die();
 	}
 
-	private boolean canCreateChamber() {
-		double energyNeededForGrowth = config.energyNeededForGrowth(envState, foramState, currentTime);
-		int chambersLimit = config.chambersLimit(envState, foramState, currentTime);
-		double growthProbability = config.growthProbability(envState, foramState, currentTime);
-		return energy > energyNeededForGrowth
-				&& shell.getChambersCount() < chambersLimit
-				&& random.nextDouble() > growthProbability
-				&& !isInHibernationState();
-	}
-
 	private void createChamber() {
 		energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
 		shell = shellFactory.createShellWithNewChamber(this);
-	}
-
-	private boolean canMigrate() {
-		return !(type.isBenthic() && isInHibernationState()); // benthic forams cannot move when in hibernation
 	}
 
 	private void tryMigrate() {

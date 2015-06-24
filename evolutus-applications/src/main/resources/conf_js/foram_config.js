@@ -1,5 +1,9 @@
 // ---- FORAM ----
 
+function rand() {
+   return Math.random();
+}
+
 function initialEnergy() {
    return 5.0;
 }
@@ -24,6 +28,7 @@ function initialEnergy() {
      deviationAngle: double[3],
      ...
    },
+   isBenthic,
    energy,
    age,
    shell: {
@@ -74,6 +79,39 @@ function crossingOverOperator(envState, foramState, time) {
 function globalMutationProbability(envState, foramState, time) {
    return 0.0;
 }
+
+// -------------------------------------------------------------------------
+
+function shouldDie(envState, foramState, time) {
+   return foramState.energy < foramState.genotype.minEnergy[0];
+}
+
+function isInHibernationState(envState, foramState, time) {
+   return foramState.energy < foramState.genotype.hibernationEnergyLevel[0];
+}
+
+function canReproduce(envState, foramState, time) {
+   var oldEnough              = foramState.age >= foramState.genotype.minAdultAge[0];
+   var energyEnough           = foramState.energy > energyNeededToReproduce(envState, foramState, time);
+   var reproductionProbable   = rand() > reproductionProbability(envState, foramState, time);
+
+   return oldEnough && energyEnough && reproductionProbable && !isInHibernationState(envState, foramState, time);
+}
+
+function canCreateChamber(envState, foramState, time) {
+   var energyEnough        = foramState.energy > energyNeededForGrowth(envState, foramState, time);
+   var notTooManyChambers  = foramState.shell.chambersCount <= chambersLimit(envState, foramState, time);
+   var growthProbable      = rand() > growthProbability(envState, foramState, time);
+
+   return energyEnough && notTooManyChambers && growthProbable && !isInHibernationState(envState, foramState, time);
+}
+
+function canMigrate(envState, foramState, time) {
+   // benthic forams cannot move when in hibernation
+   return !(foramState.isBenthic && isInHibernationState(envState, foramState, time));
+}
+
+// -------------------------------------------------------------------------
 
 /**
  * position {  x, y, z }  - position in meters
