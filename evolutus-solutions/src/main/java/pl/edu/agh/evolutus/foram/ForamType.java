@@ -10,7 +10,9 @@ public enum ForamType {
 	private final boolean isDiploid;
 
 	ForamType(boolean isBenthic, boolean isDiploid) {
-		this.isBenthic = isBenthic;
+		this.isBenthic = isBenthic; //remove
+		//this.isActiveMoving = false/true;
+		//this.reproductionType = sexual | asexual/sexual
 		this.isDiploid = isDiploid;
 	}
 
