@@ -20,16 +20,21 @@ public abstract class Genotype {
 
 	public abstract Map<String, Double[]> toFossilizationMap();
 
+	public abstract String getFirstParentId();
+
+	public abstract String getSecondParentId();
+
 	public abstract boolean isDiploid();
 
 	public List<Genome> createGametes(int number, double globalMutationProbability, double gametesSievingCoefficient,
 			CrossingOverOperator crossingOverOperator) {
+
+		number = Double.valueOf(number * (1.0 - gametesSievingCoefficient)).intValue();
 		if (number % 2 != 0) {
-			throw new IllegalArgumentException("Number of gametes to create has to be even. Given: " + number);
+			number++;
 		}
 		return createGameteStream(number, crossingOverOperator)
 				.map(gamete -> gamete.mutate(globalMutationProbability))
-				.filter(gamete -> rand.nextDouble() > gametesSievingCoefficient)
 				.collect(Collectors.toList());
 	}
 

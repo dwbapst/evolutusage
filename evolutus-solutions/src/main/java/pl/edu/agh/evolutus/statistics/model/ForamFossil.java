@@ -9,6 +9,10 @@ public class ForamFossil extends Statistics {
 
 	private static final long serialVersionUID = 1L;
 
+	private String foramId;
+	private String firstParentId;
+	private String secondParentId;
+
 	private Long deathStepNo;
 	private Double age;
 	private boolean isDiploid;
@@ -23,6 +27,7 @@ public class ForamFossil extends Statistics {
 	}
 
 	public ForamFossil(
+			String foramId,
 			Simulation simulation,
 			Long deathStepNo,
 			Double age,
@@ -33,6 +38,10 @@ public class ForamFossil extends Statistics {
 			Long z
 	) {
 		super(simulation.getSimulationStart());
+		this.foramId = foramId;
+		this.firstParentId = genotype.getFirstParentId();
+		this.secondParentId = genotype.getSecondParentId();
+
 		this.deathStepNo = deathStepNo;
 		this.age = age;
 		this.isDiploid = genotype.isDiploid();
@@ -41,6 +50,18 @@ public class ForamFossil extends Statistics {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	public String getForamId() {
+		return foramId;
+	}
+
+	public String getFirstParentId() {
+		return firstParentId;
+	}
+
+	public String getSecondParentId() {
+		return secondParentId;
 	}
 
 	public Long getDeathStepNo() {

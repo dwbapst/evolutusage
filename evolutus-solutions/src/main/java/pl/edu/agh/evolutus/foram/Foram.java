@@ -220,7 +220,9 @@ public class Foram extends SimpleAgent implements IForam {
 		try {
 			IOceanFragment oceanFragment = getOceanFragment();
 			VectorL position = oceanFragment.getPosition();
+			String id = (getAddress() == null) ? "" : getAddress().toQualifiedString();
 			ForamFossil fossil = new ForamFossil(
+					id,
 					statisticsService.getSimulation(),
 					oceanFragment.currentStep(),
 					age,

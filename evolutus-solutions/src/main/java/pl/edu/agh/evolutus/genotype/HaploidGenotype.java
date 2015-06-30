@@ -11,9 +11,11 @@ import pl.edu.agh.evolutus.genotype.operator.CrossingOverOperator;
 
 public class HaploidGenotype extends Genotype {
 
+	private final String parentId;
 	private final Genome genome;
 
 	public HaploidGenotype(Genome genome, AgentAddress agentAddress) {
+		this.parentId = genome.getForamIdentifier();
 		this.genome = Genome.forGenome(genome, agentAddress.toQualifiedString());
 	}
 
@@ -33,6 +35,16 @@ public class HaploidGenotype extends Genotype {
 						Gene::getName,
 						gene -> new Double[] { gene.getValue(), null, null }
 				));
+	}
+
+	@Override
+	public String getFirstParentId() {
+		return parentId;
+	}
+
+	@Override
+	public String getSecondParentId() {
+		return null;
 	}
 
 	@Override
