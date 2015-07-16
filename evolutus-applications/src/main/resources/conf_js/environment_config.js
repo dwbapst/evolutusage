@@ -1,6 +1,6 @@
 // ---- ENVIRONMENT ----
 
-function rand(maxValue) {
+function randInt(maxValue) {
    return Math.round((Math.random() * maxValue))
 }
 
@@ -11,7 +11,7 @@ function oceanSize() {
 }
 
 function initialForamsCount(x, y, z) {
-   var count = rand(10);
+   var count = randInt(10);
    return count;
 }
 

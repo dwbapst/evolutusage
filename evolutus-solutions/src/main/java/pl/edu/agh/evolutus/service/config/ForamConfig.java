@@ -44,4 +44,24 @@ public class ForamConfig extends Config {
 	public double globalMutationProbability(EnvState envState, ForamState foramState, double time) {
 		return configJS.globalMutationProbability(envState, foramState, time);
 	}
+
+	public boolean shouldDie(EnvState envState, ForamState foramState, double time) {
+		return configJS.shouldDie(envState, foramState, time);
+	}
+
+	public 	boolean isInHibernationState(EnvState envState, ForamState foramState, double time) {
+		return configJS.isInHibernationState(envState, foramState, time);
+	}
+
+	public boolean canReproduce(EnvState envState, ForamState foramState, double time) {
+		return configJS.canReproduce(envState, foramState, time);
+	}
+
+	public boolean canCreateChamber(EnvState envState, ForamState foramState, double time) {
+		return configJS.canCreateChamber(envState, foramState, time);
+	}
+
+	public boolean canMigrate(EnvState envState, ForamState foramState, double time) {
+		return configJS.canMigrate(envState, foramState, time);
+	}
 }

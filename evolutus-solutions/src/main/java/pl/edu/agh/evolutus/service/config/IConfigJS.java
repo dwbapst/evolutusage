@@ -52,6 +52,16 @@ public interface IConfigJS {
 
 	double globalMutationProbability(EnvState envState, ForamState foramState, double time);
 
+	boolean shouldDie(EnvState envState, ForamState foramState, double time);
+
+	boolean isInHibernationState(EnvState envState, ForamState foramState, double time);
+
+	boolean canReproduce(EnvState envState, ForamState foramState, double time);
+
+	boolean canCreateChamber(EnvState envState, ForamState foramState, double time);
+
+	boolean canMigrate(EnvState envState, ForamState foramState, double time);
+
 	NativeArray initialGenome(VectorD position);
 
 	/*-********************

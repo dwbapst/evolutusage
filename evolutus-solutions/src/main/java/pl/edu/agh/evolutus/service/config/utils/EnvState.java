@@ -25,5 +25,6 @@ public class EnvState {
 		this.algaeGrowth = algaeGrowth;
 		this.algaeAvailability = algaeAvailability;
 		this.currentDirection = currentDirection;
+		//tlen, zasolenie, temperatura, ph
 	}
 }

@@ -22,7 +22,7 @@ function generateCSV() {
 }
 
 function generateHTML() {
-   return false;
+   return true;
 }
 
 function simulationDuration() {
