@@ -1,10 +1,9 @@
 package pl.edu.agh.evolutus.service;
 
-import static java.lang.Math.*;
-
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.foram.Shell;
 import pl.edu.agh.evolutus.genotype.Genome;
+import pl.edu.agh.evolutus.utils.Geometry;
 
 public class ShellFactory {
 
@@ -13,7 +12,7 @@ public class ShellFactory {
 				foram.getGenotype().get(Genome.DIPLOID_FIRST_CHAMBER_RADIUS).getValue() :
 				foram.getGenotype().get(Genome.HAPLOID_FIRST_CHAMBER_RADIUS).getValue();
 
-		return new Shell(radius, radius, 1, sphereVolume(radius));
+		return new Shell(radius, radius, 1, Geometry.sphereVolume(radius));
 	}
 
 	public Shell createShellWithNewChamber(IForam foram) {
@@ -21,12 +20,8 @@ public class ShellFactory {
 
 		Shell currentShell = foram.getShell();
 		double newRadius = currentShell.getLastChamberRadius() * growthFactor;
-		double newVolume = currentShell.getVolume() + sphereVolume(newRadius);
+		double newVolume = currentShell.getVolume() + Geometry.sphereVolume(newRadius);
 		return new Shell(currentShell.getFirstChamberRadius(), newRadius, currentShell.getChambersCount() + 1, newVolume);
-	}
-
-	private double sphereVolume(double radius) {
-		return 4.0 / 3.0 * PI * pow(radius, 3.0);
 	}
 
 }

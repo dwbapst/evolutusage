@@ -5,7 +5,7 @@ function rand() {
 }
 
 function initialEnergy() {
-   return 5.0;
+   return 1.0;
 }
 
 /**
@@ -43,7 +43,7 @@ function initialEnergy() {
  */
 
 function energyNeededForGrowth(envState, foramState, time) {
-   return 10.0;
+   return 40.0;
 }
 
 function growthProbability(envState, foramState, time) {
@@ -55,7 +55,7 @@ function chambersLimit(envState, foramState, time) {
 }
 
 function energyNeededToReproduce(envState, foramState, time) {
-   return 10.0;
+   return 300.0;
 }
 
 function reproductionProbability(envState, foramState, time) {
@@ -67,7 +67,11 @@ function gametesProduction(envState, foramState, time) {
 }
 
 function gametesSievingCoefficient(envState, foramState, time) {
-   return 0.99;
+   return 0.9999;
+}
+
+function raduisOfFoodCollecting(envState, foramState, time) {
+   return 0.02; // 2 cm
 }
 
 function crossingOverOperator(envState, foramState, time) {
@@ -92,16 +96,16 @@ function isInHibernationState(envState, foramState, time) {
 
 function canReproduce(envState, foramState, time) {
    var oldEnough              = foramState.age >= foramState.genotype.minAdultAge[0];
-   var energyEnough           = foramState.energy > energyNeededToReproduce(envState, foramState, time);
-   var reproductionProbable   = rand() > reproductionProbability(envState, foramState, time);
+   var energyEnough           = foramState.energy >= energyNeededToReproduce(envState, foramState, time);
+   var reproductionProbable   = rand() < reproductionProbability(envState, foramState, time);
 
    return oldEnough && energyEnough && reproductionProbable && !isInHibernationState(envState, foramState, time);
 }
 
 function canCreateChamber(envState, foramState, time) {
-   var energyEnough        = foramState.energy > energyNeededForGrowth(envState, foramState, time);
+   var energyEnough        = foramState.energy >= energyNeededForGrowth(envState, foramState, time);
    var notTooManyChambers  = foramState.shell.chambersCount <= chambersLimit(envState, foramState, time);
-   var growthProbable      = rand() > growthProbability(envState, foramState, time);
+   var growthProbable      = rand() < growthProbability(envState, foramState, time);
 
    return energyEnough && notTooManyChambers && growthProbable && !isInHibernationState(envState, foramState, time);
 }
@@ -169,19 +173,15 @@ function initialGenome(position) {
       },
       {
          name: "maxEnergyPerChamber",
-         value: 1,
-         mutationProbability: 0.5,
-         mutationRate: 0.5,
-         minValue: 0.2,
-         maxValue: 10
+         value: 60.0
       },
       {
-         name: "energyDemandPerChamber",
-         value: 0.2,
-         mutationProbability: 0.5,
-         mutationRate: 0.5,
-         minValue: 0.05,
-         maxValue: 5
+         name: "maxEnergyCollectingPerChamberPerHour",
+         value: 0.5
+      },
+      {
+         name: "energyDemandPerChamberPerHour",
+         value: 0.2
       },
       {
          name: "minEnergy",
@@ -204,7 +204,7 @@ function initialGenome(position) {
          value: 1
       },
       {
-         name: "hibernationEnergyConsumption",
+         name: "hibernationEnergyConsumptionPerHour",
          value: 0.01
       }
    ]

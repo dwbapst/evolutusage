@@ -172,15 +172,21 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 	}
 
-	private void consumeStepEnergy() {
-		double consumption;
-		if (config.isInHibernationState(envState, foramState, currentTime)) {
-			consumption = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION).getValue();
-		} else {
-			consumption = genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER).getValue() * shell.getChambersCount();
-		}
+	private Double consumptionPerStep;
 
-		energy -= consumption;
+	private void consumeStepEnergy() {
+		if(consumptionPerStep == null) {
+			double consumptionPerHour;
+			if (config.isInHibernationState(envState, foramState, currentTime)) {
+				consumptionPerHour = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR).getValue();
+			} else {
+				consumptionPerHour =
+						genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER_PER_HOUR).getValue() * shell.getChambersCount();
+			}
+
+			consumptionPerStep = consumptionPerHour * config.stepDurationInHours();
+		}
+		energy -= consumptionPerStep;
 	}
 
 	private boolean couldForamPerformStep() {
@@ -229,8 +235,11 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void eat() {
-		double capacity = genotype.get(Genome.MAX_ENERGY_PER_CHAMBER).getValue() * shell.getChambersCount();
-		energy += getOceanFragment().takeAlgae(capacity);
+		double maxEnergy = genotype.get(Genome.MAX_ENERGY_PER_CHAMBER).getValue() * shell.getChambersCount();
+		double energyDemand = genotype.get(Genome.MAX_ENERGY_COLLECTING_PER_CHAMBER_PER_HOUR).getValue() *
+				shell.getChambersCount() * config.stepDurationInHours();
+		double radiusOfCollectingInMeters = config.raduisOfFoodCollecting(envState, foramState, currentTime);
+		energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 	}
 
 	private AgentAddress lastParentAddress = null;

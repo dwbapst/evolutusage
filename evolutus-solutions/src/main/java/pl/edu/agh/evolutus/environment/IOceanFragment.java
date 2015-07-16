@@ -29,7 +29,7 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	void initialize(Position position);
 
-	double takeAlgae(double demand);
+	double takeAlgae(double demand, double radiusOfCollectingInMeters);
 
 	int foramsAlive();
 

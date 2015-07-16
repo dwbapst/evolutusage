@@ -16,7 +16,7 @@ function initialForamsCount(x, y, z) {
 }
 
 function initialAlgaeAvailability(x, y, z) {
-   return 5.0;
+   return 5400000000.0;
 }
 
 function boundaryConditions() {
