@@ -1,47 +1,54 @@
 package pl.edu.agh.evolutus.service;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-
-import org.jage.platform.component.IStatefulComponent;
-import org.jage.platform.component.exception.ComponentException;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
-
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
+import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.distribution.Version.Main;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
+import org.jage.platform.component.IStatefulComponent;
+import org.jage.platform.component.exception.ComponentException;
 import pl.edu.agh.evolutus.service.config.SystemConfig;
+
+import javax.inject.Inject;
+import java.io.IOException;
+
 
 public class MongoProvider implements IStatefulComponent {
 
 	private final String host;
 	private final int port;
 	private final boolean inMemory;
+	private final String dbpath;
 
 	@Inject
 	public MongoProvider(SystemConfig systemConfig) {
 		this.inMemory = systemConfig.isDatabaseInMemory();
 		this.host = inMemory ? "localhost" : systemConfig.getDatabaseHost();
 		this.port = systemConfig.getDatabasePort();
+		this.dbpath = systemConfig.getDatabasePath();
 	}
 
 	@Override
 	public void init() throws ComponentException {
 		if (inMemory) {
+			Storage replication = new Storage(this.dbpath, null, 0);
 			try {
-				IMongodConfig config = new MongodConfigBuilder()
-						.version(Main.V3_1)
-						.net(new Net(port, false))
-						.build();
-
+				IMongodConfig config;
+				if(this.dbpath != "undefined") {
+					config = new MongodConfigBuilder()
+							.version(Main.V3_1)
+							.replication(replication)
+							.net(new Net(port, false))
+							.build();
+				}
+				else {
+					config = new MongodConfigBuilder()
+							.version(Main.V3_1)
+							.net(new Net(port, false))
+							.build();
+				}
 				IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
 						.defaults(Command.MongoD)
 						.daemonProcess(true)

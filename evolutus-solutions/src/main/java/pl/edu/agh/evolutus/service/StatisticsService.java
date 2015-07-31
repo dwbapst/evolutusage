@@ -1,22 +1,12 @@
 package pl.edu.agh.evolutus.service;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
 import org.jage.platform.component.provider.IComponentInstanceProvider;
 import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-
 import pl.edu.agh.evolutus.service.config.ConfigFactory;
 import pl.edu.agh.evolutus.service.config.SimulationConfig;
 import pl.edu.agh.evolutus.service.output.ChartsGenerator;
@@ -31,6 +21,13 @@ import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.statistics.model.Simulation;
 import pl.edu.agh.evolutus.utils.Utils;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class StatisticsService implements IStatefulComponent, IComponentInstanceProviderAware {
 
@@ -108,7 +105,7 @@ public class StatisticsService implements IStatefulComponent, IComponentInstance
 			throw new StatisticsServiceException("Exception thrown while rendering results.", e);
 		}
 
-		logger.info("{} finished.", StatisticsService.class.getSimpleName());
+		logger.info("{} saving data finished.", StatisticsService.class.getSimpleName());
 		return false;
 	}
 

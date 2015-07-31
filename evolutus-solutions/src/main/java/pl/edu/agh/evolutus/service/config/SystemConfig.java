@@ -18,5 +18,8 @@ public class SystemConfig extends Config {
 		ScriptObject parameters = configJS.databaseParameters();
 		return (boolean) parameters.get("inMemory");
 	}
-
+    public String getDatabasePath() {
+		ScriptObject parameters = configJS.databaseParameters();
+		return parameters.get("dbpath").toString();
+	}
 }
