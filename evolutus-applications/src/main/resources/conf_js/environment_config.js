@@ -68,15 +68,15 @@ function algaeGrowth(time, envStates) {
 }
 
 function oxygen(time, envStates) {
-   return 0.0; // TODO: set some proper default value
+   return 0.0; // TODO: return proper value
 }
 
 function temperature(time, envStates) {
-   return 0.0; // TODO: set some proper default value
+   return 0.0; // TODO: return proper value
 }
 
 function salinity(time, envStates) {
-   return 0.0; // TODO: set some proper default value
+   return 0.0; // TODO: return proper value
 }
 
 function insolation(time, envStates) {
@@ -86,7 +86,7 @@ function insolation(time, envStates) {
 }
 
 function ph(time, envStates) {
-   return 0.0; // TODO: set some proper default value
+   return 0.0; // TODO: return proper value
 }
 
 function currentDirection(time, envStates) {
