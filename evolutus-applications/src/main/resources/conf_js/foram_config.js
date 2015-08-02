@@ -21,11 +21,15 @@ function initialEnergy() {
  Each kernel gets three parameters:
 
  envState {
-   position: { x, y, z },
+   oxygen,
+   temperature,
+   salinity,
+   algaeAvailability,
    insolation,
+   ph,
+   position: { x, y, z },
    algaeEnergy,
    algaeGrowth,
-   algaeAvailability,
    currentDirection: { x, y, z }
  }
 

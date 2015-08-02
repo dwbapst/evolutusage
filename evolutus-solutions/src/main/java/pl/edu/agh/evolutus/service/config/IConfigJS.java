@@ -24,7 +24,15 @@ public interface IConfigJS {
 
 	double algaeGrowth(double time, EnvState[] envStates);
 
+	double oxygen(double time, EnvState[] envStates);
+
+	double temperature(double time, EnvState[] envStates);
+
+	double salinity(double time, EnvState[] envStates);
+
 	double insolation(double time, EnvState[] envStates);
+
+	double ph(double time, EnvState[] envStates);
 
 	ScriptObject currentDirection(double time, EnvState[] envStates);
 

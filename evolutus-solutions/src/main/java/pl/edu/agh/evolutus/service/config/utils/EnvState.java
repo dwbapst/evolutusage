@@ -5,26 +5,35 @@ import pl.edu.agh.evolutus.utils.VectorD;
 
 public class EnvState {
 
-	public final VectorD position;
+	public final double oxygen;
+	public final double temperature;
+	public final double salinity;
+	public final double algaeAvailability;
 	public final double insolation;
+	public final double ph;
+
+	public final VectorD position;
 	public final double algaeEnergy;
 	public final double algaeGrowth;
-	public final double algaeAvailability;
 	public final CurrentDirection currentDirection;
 
 	public EnvState(EnvState envState, double algaeAvailability) {
-		this(envState.position, envState.insolation, envState.algaeEnergy, envState.algaeGrowth, algaeAvailability,
-				envState.currentDirection);
+		this(envState.oxygen, envState.temperature, envState.salinity, algaeAvailability, envState.insolation,
+				envState.ph, envState.position, envState.algaeEnergy, envState.algaeGrowth, envState.currentDirection);
 	}
 
-	public EnvState(VectorD position, double insolation, double algaeEnergy, double algaeGrowth, double algaeAvailability,
-			CurrentDirection currentDirection) {
-		this.position = position;
+	public EnvState(double oxygen, double temperature, double salinity, double algaeAvailability, double insolation, double ph,
+			VectorD position, double algaeEnergy, double algaeGrowth, CurrentDirection currentDirection) {
+		this.oxygen = oxygen;
+		this.temperature = temperature;
+		this.salinity = salinity;
+		this.algaeAvailability = algaeAvailability;
 		this.insolation = insolation;
+		this.ph = ph;
+
+		this.position = position;
 		this.algaeEnergy = algaeEnergy;
 		this.algaeGrowth = algaeGrowth;
-		this.algaeAvailability = algaeAvailability;
 		this.currentDirection = currentDirection;
-		//tlen, zasolenie, temperatura, ph
 	}
 }

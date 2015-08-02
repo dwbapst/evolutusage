@@ -120,8 +120,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	public void initialize(Position position) {
 		this.position = position;
 
-		EnvState initialEnvState = new EnvState(unitsConverter.unitsToMeters(position), 0.0, 0.0, 0.0,
-				config.initialAlgaeAvailability(position), null);
+		EnvState initialEnvState = new EnvState(0.0, 0.0, 0.0, config.initialAlgaeAvailability(position), 0.0, 0.0,
+				unitsConverter.unitsToMeters(position), 0.0, 0.0, null);
 		setEnvState(initialEnvState);
 		setPrevEnvState(initialEnvState);
 
@@ -162,11 +162,15 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 		EnvState prevEnvState = getPrevEnvState();
 		EnvState newEnvState = new EnvState(
-				unitsConverter.unitsToMeters(position),
+				config.oxygen(steps, envStates),
+				config.temperature(steps, envStates),
+				config.salinity(steps, envStates),
+				prevEnvState.algaeAvailability,
 				config.insolation(steps, envStates),
+				config.ph(steps, envStates),
+				unitsConverter.unitsToMeters(position),
 				config.algaeEnergy(steps, envStates),
 				config.algaeGrowth(steps, envStates),
-				prevEnvState.algaeAvailability,
 				config.currentDirection(steps, envStates)
 		);
 		setEnvState(newEnvState);

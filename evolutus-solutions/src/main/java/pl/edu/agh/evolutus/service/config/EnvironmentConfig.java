@@ -56,8 +56,24 @@ public class EnvironmentConfig extends Config {
 		return configJS.algaeGrowth(unitsConverter.stepsToHours(steps), envStates);
 	}
 
+	public double oxygen(long steps, EnvState[] envStates) {
+		return configJS.oxygen(unitsConverter.stepsToHours(steps), envStates);
+	}
+
+	public double temperature(long steps, EnvState[] envStates) {
+		return configJS.temperature(unitsConverter.stepsToHours(steps), envStates);
+	}
+
+	public double salinity(long steps, EnvState[] envStates) {
+		return configJS.salinity(unitsConverter.stepsToHours(steps), envStates);
+	}
+
 	public double insolation(long steps, EnvState[] envStates) {
 		return configJS.insolation(unitsConverter.stepsToHours(steps), envStates);
+	}
+
+	public double ph(long steps, EnvState[] envStates) {
+		return configJS.ph(unitsConverter.stepsToHours(steps), envStates);
 	}
 
 	public CurrentDirection currentDirection(long steps, EnvState[] envStates) {

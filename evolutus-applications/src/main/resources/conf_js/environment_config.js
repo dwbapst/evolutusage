@@ -47,11 +47,15 @@ function boundaryConditions() {
  each element of envStates[] array has following structure:
 
  envState {                        - mind you that in time = 0, some fields may not be initialized (insolation, algaeEnergy etc.)
-   position: { x, y, z },
+   oxygen,
+   temperature,
+   salinity,
+   algaeAvailability,
    insolation,
+   ph,
+   position: { x, y, z },
    algaeEnergy,
    algaeGrowth,
-   algaeAvailability,
    currentDirection: { x, y, z }
  }
  */
@@ -63,10 +67,26 @@ function algaeGrowth(time, envStates) {
    return 1.0 * insolation(time, envStates);
 }
 
+function oxygen(time, envStates) {
+   return 0.0; // TODO: set some proper default value
+}
+
+function temperature(time, envStates) {
+   return 0.0; // TODO: set some proper default value
+}
+
+function salinity(time, envStates) {
+   return 0.0; // TODO: set some proper default value
+}
+
 function insolation(time, envStates) {
    var surfaceInsolation = 1.0;
    var insolation = surfaceInsolation - 0.01 * envStates[0].position.z;
    return Math.max(0.0, insolation);
+}
+
+function ph(time, envStates) {
+   return 0.0; // TODO: set some proper default value
 }
 
 function currentDirection(time, envStates) {
