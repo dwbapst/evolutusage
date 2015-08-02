@@ -1,9 +1,18 @@
 package pl.edu.agh.evolutus.service.config;
 
+import pl.edu.agh.evolutus.foram.ForamType.ReproductionType;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
 
 public class ForamConfig extends Config {
+
+	public ReproductionType reproductionType() {
+		return ReproductionType.fromString(configJS.reproductionType());
+	}
+
+	public boolean foramActiveMotion() {
+		return configJS.foramActiveMotion();
+	}
 
 	public double initialEnergy() {
 		return configJS.initialEnergy();
@@ -49,7 +58,7 @@ public class ForamConfig extends Config {
 		return configJS.shouldDie(envState, foramState, time);
 	}
 
-	public 	boolean isInHibernationState(EnvState envState, ForamState foramState, double time) {
+	public boolean isInHibernationState(EnvState envState, ForamState foramState, double time) {
 		return configJS.isInHibernationState(envState, foramState, time);
 	}
 

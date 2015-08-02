@@ -32,6 +32,10 @@ public interface IConfigJS {
 	 *       FORAM        *
 	 **********************/
 
+	String reproductionType();
+
+	boolean foramActiveMotion();
+
 	double initialEnergy();
 
 	double energyNeededForGrowth(EnvState envState, ForamState foramState, double time);

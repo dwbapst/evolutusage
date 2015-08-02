@@ -132,7 +132,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void updateForamState() {
-		foramState = new ForamState(type.isBenthic(), genotype, energy, age, shell);
+		foramState = new ForamState(type, genotype, energy, age, shell);
 	}
 
 	private void updateCurrentStep() {
@@ -277,8 +277,8 @@ public class Foram extends SimpleAgent implements IForam {
 	private void tryMigrate() {
 
 		AgentAddress migrationTarget;
-		if (type.isBenthic()) {
-			migrationTarget = getOceanFragment().getBenthicMigrationTarget();
+		if (config.foramActiveMotion()) {
+			migrationTarget = getOceanFragment().getActiveMigrationTarget();
 		} else {
 			migrationTarget = tryFlowWithCurrent();
 		}

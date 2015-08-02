@@ -37,7 +37,7 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	AgentAddress getPlanktonicMigrationTarget();
 
-	AgentAddress getBenthicMigrationTarget();
+	AgentAddress getActiveMigrationTarget();
 
 	long currentStep();
 }

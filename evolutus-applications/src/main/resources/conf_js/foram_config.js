@@ -4,6 +4,15 @@ function rand() {
    return Math.random();
 }
 
+function reproductionType() {
+   return "sexual";
+   //return "sexual/asexual";
+}
+
+function foramActiveMotion() {
+   return true;
+}
+
 function initialEnergy() {
    return 5.0;
 }

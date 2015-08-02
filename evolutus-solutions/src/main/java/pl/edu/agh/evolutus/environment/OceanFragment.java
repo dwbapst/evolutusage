@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 import pl.edu.agh.evolutus.foram.ForamType;
+import pl.edu.agh.evolutus.foram.ForamType.Ploidy;
+import pl.edu.agh.evolutus.foram.ForamType.ReproductionType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.ForamFactory;
@@ -28,6 +30,7 @@ import pl.edu.agh.evolutus.service.ReproductionService;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
+import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
@@ -51,6 +54,9 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Inject
 	private EnvironmentConfig config;
+
+	@Inject
+	private ForamConfig foramConfig;
 
 	@Inject
 	private UnitsConverter unitsConverter;
@@ -135,18 +141,16 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private IForam createInitialForam() {
 		Genome initialGenome = config.initialGenome(position);
 
-		if (config.oceanSize().z - 1 == position.z) {
-			// benthos
-			if (random.nextBoolean()) {
-				// haploid
-				return foramFactory.createForam(ForamType.HAPLOID_BENTHIC, initialGenome);
-			} else {
-				// diploid
-				return foramFactory.createForam(ForamType.DIPLOID_BENTHIC, initialGenome, initialGenome);
-			}
+		ReproductionType reproductionType = foramConfig.reproductionType();
+		Ploidy ploidy = (reproductionType == ReproductionType.SEXUAL) ? Ploidy.DIPLOID : Ploidy.random();
+		ForamType foramType = new ForamType(reproductionType, ploidy);
+
+		if (ploidy == Ploidy.HAPLOID) {
+			// haploid
+			return foramFactory.createForam(foramType, initialGenome);
 		} else {
-			// plankton
-			return foramFactory.createForam(ForamType.PLANKTONIC, initialGenome, initialGenome);
+			// diploid
+			return foramFactory.createForam(foramType, initialGenome, initialGenome);
 		}
 	}
 
@@ -260,7 +264,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public AgentAddress getBenthicMigrationTarget() {
+	public AgentAddress getActiveMigrationTarget() {
 		List<Position> neighborhood = position.getTheSameLevelNeighborhood(config.oceanSize(), config.boundaryConditions());
 
 		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);

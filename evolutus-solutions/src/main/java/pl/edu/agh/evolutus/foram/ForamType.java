@@ -1,26 +1,81 @@
 package pl.edu.agh.evolutus.foram;
 
-public enum ForamType {
+import java.util.Random;
 
-	PLANKTONIC(false, true),
-	HAPLOID_BENTHIC(true, false),
-	DIPLOID_BENTHIC(true, true);
+public class ForamType {
 
-	private final boolean isBenthic;
-	private final boolean isDiploid;
+	public static final ForamType SEXUAL_DIPLOID = new ForamType(ReproductionType.SEXUAL, Ploidy.DIPLOID);
+	public static final ForamType SEXUAL_HAPLOID = new ForamType(ReproductionType.SEXUAL, Ploidy.HAPLOID);
+	public static final ForamType SEXUAL_ASEXUAL_DIPLOID = new ForamType(ReproductionType.SEXUAL_ASEXUAL, Ploidy.DIPLOID);
+	public static final ForamType SEXUAL_ASEXUAL_HAPLOID = new ForamType(ReproductionType.SEXUAL_ASEXUAL, Ploidy.HAPLOID);
 
-	ForamType(boolean isBenthic, boolean isDiploid) {
-		this.isBenthic = isBenthic; //remove
-		//this.isActiveMoving = false/true;
-		//this.reproductionType = sexual | asexual/sexual
-		this.isDiploid = isDiploid;
+	private ReproductionType reproductionType;
+	private Ploidy ploidy;
+
+	private ForamType() {
+		// for morphia
 	}
 
-	public boolean isBenthic() {
-		return isBenthic;
+	public ForamType(ReproductionType reproductionType, Ploidy ploidy) {
+		this.reproductionType = reproductionType;
+		this.ploidy = ploidy;
 	}
 
-	public boolean isDiploid() {
-		return isDiploid;
+	public ReproductionType getReproductionType() {
+		return reproductionType;
+	}
+
+	public Ploidy getPloidy() {
+		return ploidy;
+	}
+
+	@Override
+	public String toString() {
+		return reproductionType + "_" + ploidy;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		ForamType foramType = (ForamType) o;
+
+		return reproductionType == foramType.reproductionType && ploidy == foramType.ploidy;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = reproductionType != null ? reproductionType.hashCode() : 0;
+		result = 31 * result + (ploidy != null ? ploidy.hashCode() : 0);
+		return result;
+	}
+
+	/*-***********
+	 *   ENUMS   *
+	 *************/
+
+	public enum ReproductionType {
+		SEXUAL, SEXUAL_ASEXUAL;
+
+		public static ReproductionType fromString(String string) {
+			string = string.toUpperCase().trim();
+			return ReproductionType.valueOf(string);
+		}
+	}
+
+	public enum Ploidy {
+		HAPLOID, DIPLOID;
+
+		private static Random random = new Random();
+
+		public static Ploidy random() {
+			return random.nextBoolean() ? HAPLOID : DIPLOID;
+		}
 	}
 }

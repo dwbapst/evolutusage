@@ -17,19 +17,15 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
-import org.jage.platform.component.provider.IComponentInstanceProvider;
-import org.jage.platform.component.provider.IComponentInstanceProviderAware;
 
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 
-public class ReproductionService implements IStatefulComponent, IComponentInstanceProviderAware {
+public class ReproductionService implements IStatefulComponent {
 
 	private static final int MAX_GAMETE_AGE_IN_HOURS = 48;
-
-	private IComponentInstanceProvider instanceProvider;
 
 	@Inject
 	private ForamFactory foramFactory;
@@ -38,11 +34,6 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 	private UnitsConverter unitsConverter;
 
 	private long maxGameteAgeInSteps;
-
-	@Override
-	public void setInstanceProvider(IComponentInstanceProvider iComponentInstanceProvider) {
-		this.instanceProvider = iComponentInstanceProvider;
-	}
 
 	@Override
 	public void init() throws ComponentException {
@@ -59,17 +50,23 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 		updateAgeAndRemoveTooOld(gametesMap);
 		List<IForam> foramsToAdd = new ArrayList<>();
 
-		list(gametesMap, ForamType.DIPLOID_BENTHIC)
+		// asexual reproduction
+
+		list(gametesMap, ForamType.SEXUAL_ASEXUAL_DIPLOID)
 				.stream()
 				.filter(Genome::isValid)
 				.forEach(gamete -> {
 					gametesMap.remove(gamete);
-					foramsToAdd.add(foramFactory.createForam(ForamType.HAPLOID_BENTHIC, gamete));
+					foramsToAdd.add(foramFactory.createForam(ForamType.SEXUAL_ASEXUAL_HAPLOID, gamete));
 				});
 
-		processGametes(gametesMap, ForamType.HAPLOID_BENTHIC, ForamType.DIPLOID_BENTHIC, foramsToAdd);
+		// sexual reproduction of haploid forams
 
-		processGametes(gametesMap, ForamType.PLANKTONIC, ForamType.PLANKTONIC, foramsToAdd);
+		processGametes(gametesMap, ForamType.SEXUAL_ASEXUAL_HAPLOID, ForamType.SEXUAL_ASEXUAL_DIPLOID, foramsToAdd);
+
+		// sexual reproduction of diploid forams
+
+		processGametes(gametesMap, ForamType.SEXUAL_DIPLOID, ForamType.SEXUAL_DIPLOID, foramsToAdd);
 
 		return foramsToAdd;
 	}
@@ -104,7 +101,7 @@ public class ReproductionService implements IStatefulComponent, IComponentInstan
 	private List<Genome> list(Map<Genome, Pair<ForamType, Integer>> gametesMap, ForamType foramType) {
 		return gametesMap.entrySet()
 				.stream()
-				.filter(entry -> entry.getValue().getLeft() == foramType)
+				.filter(entry -> entry.getValue().getLeft().equals(foramType))
 				.map(Entry::getKey)
 				.collect(Collectors.toList());
 	}

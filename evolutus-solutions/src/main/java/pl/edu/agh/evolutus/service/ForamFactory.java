@@ -36,7 +36,7 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 	}
 
 	public IForam createForam(ForamType foramType, Genome genome) {
-		assertType(foramType, ForamType.HAPLOID_BENTHIC);
+		assertType(foramType, ForamType.SEXUAL_HAPLOID, ForamType.SEXUAL_ASEXUAL_HAPLOID);
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new HaploidGenotype(genome, foram.getAddress()));
 		foram.setShell(shellFactory.createInitialShell(foram));
@@ -44,7 +44,7 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 	}
 
 	public IForam createForam(ForamType foramType, Genome genomeA, Genome genomeB) {
-		assertType(foramType, ForamType.PLANKTONIC, ForamType.DIPLOID_BENTHIC);
+		assertType(foramType, ForamType.SEXUAL_DIPLOID, ForamType.SEXUAL_ASEXUAL_DIPLOID);
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new DiploidGenotype(genomeA, genomeB, foram.getAddress()));
 		foram.setShell(shellFactory.createInitialShell(foram));
@@ -53,7 +53,7 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 
 	private void assertType(ForamType actual, ForamType... expecteds) {
 		for (ForamType expected : expecteds) {
-			if (expected == actual) {
+			if (expected.equals(actual)) {
 				return;
 			}
 		}

@@ -2,6 +2,7 @@ package pl.edu.agh.evolutus.service;
 
 import static java.lang.Math.*;
 
+import pl.edu.agh.evolutus.foram.ForamType.Ploidy;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.foram.Shell;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -9,7 +10,7 @@ import pl.edu.agh.evolutus.genotype.Genome;
 public class ShellFactory {
 
 	public Shell createInitialShell(IForam foram) {
-		double radius = foram.getType().isDiploid() ?
+		double radius = (foram.getType().getPloidy() == Ploidy.DIPLOID) ?
 				foram.getGenotype().get(Genome.DIPLOID_FIRST_CHAMBER_RADIUS).getValue() :
 				foram.getGenotype().get(Genome.HAPLOID_FIRST_CHAMBER_RADIUS).getValue();
 
