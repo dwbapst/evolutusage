@@ -34,6 +34,7 @@ import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.utils.Geometry;
 import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.QueuedMap;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -209,12 +210,23 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public double takeAlgae(double energyDemand) {
+	public double takeAlgae(double energyDemand, double radiusOfCollectingInMeters) {
 		double algaeNeeded = energyDemand / getEnvState().algaeEnergy;
-		double availableAlgae = getEnvState().algaeAvailability;
+		double availableAlgae = getEnvState().algaeAvailability *
+				Geometry.sphereVolume(radiusOfCollectingInMeters) / oceanFragmentVolumeInMeters();
 		double takenAlgae = Math.min(availableAlgae, algaeNeeded);
 		changeAlgaeAvailability(-takenAlgae);
 		return takenAlgae * getEnvState().algaeEnergy;
+	}
+
+	private Double oceanFragmentVolumeInMeters;
+
+	private Double oceanFragmentVolumeInMeters() {
+		if (oceanFragmentVolumeInMeters == null) {
+			double oceanFragmentLength = unitsConverter.unitLengthInMeters();
+			oceanFragmentVolumeInMeters = Geometry.cuboidVolume(oceanFragmentLength, oceanFragmentLength, oceanFragmentLength);
+		}
+		return oceanFragmentVolumeInMeters;
 	}
 
 	@Override

@@ -31,13 +31,14 @@ public class Genome implements Iterable<Gene> {
 	public static final String DIPLOID_JUVENILE_VOLUME_FACTOR = "diploidJuvenileVolumeFactor";
 
 	public static final String MAX_ENERGY_PER_CHAMBER = "maxEnergyPerChamber";
-	public static final String ENERGY_DEMAND_PER_CHAMBER = "energyDemandPerChamber";
+	public static final String MAX_ENERGY_COLLECTING_PER_CHAMBER_PER_HOUR = "maxEnergyCollectingPerChamberPerHour";
+	public static final String ENERGY_DEMAND_PER_CHAMBER_PER_HOUR = "energyDemandPerChamberPerHour";
 	public static final String MIN_ENERGY = "minEnergy";
 	public static final String CHAMBER_GROWTH_COST_FACTOR = "chamberGrowthCostFactor";
 	public static final String METABOLIC_EFFECTIVENESS = "metabolicEffectiveness";
 	public static final String MIN_METABOLIC_EFFECTIVENESS = "minMetabolicEffectiveness";
 	public static final String HIBERNATION_ENERGY_LEVEL = "hibernationEnergyLevel";
-	public static final String HIBERNATION_ENERGY_CONSUMPTION = "hibernationEnergyConsumption";
+	public static final String HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR = "hibernationEnergyConsumptionPerHour";
 
 	public static Genome forGenome(Genome genome, String foramIdentifier) {
 		return forGenes(genome.genes, foramIdentifier);

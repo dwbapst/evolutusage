@@ -14,7 +14,7 @@ function foramActiveMotion() {
 }
 
 function initialEnergy() {
-   return 5.0;
+   return 1.0;
 }
 
 /**
@@ -41,7 +41,7 @@ function initialEnergy() {
      deviationAngle: double[3],
      ...
    },
-   isBenthic,
+   foramActiveMotion,
    energy,
    age,
    shell: {
@@ -56,7 +56,7 @@ function initialEnergy() {
  */
 
 function energyNeededForGrowth(envState, foramState, time) {
-   return 10.0;
+   return 40.0;
 }
 
 function growthProbability(envState, foramState, time) {
@@ -68,7 +68,7 @@ function chambersLimit(envState, foramState, time) {
 }
 
 function energyNeededToReproduce(envState, foramState, time) {
-   return 10.0;
+   return 300.0;
 }
 
 function reproductionProbability(envState, foramState, time) {
@@ -80,7 +80,11 @@ function gametesProduction(envState, foramState, time) {
 }
 
 function gametesSievingCoefficient(envState, foramState, time) {
-   return 0.99;
+   return 0.9999;
+}
+
+function raduisOfFoodCollecting(envState, foramState, time) {
+   return 0.02; // 2 cm
 }
 
 function crossingOverOperator(envState, foramState, time) {
@@ -121,7 +125,7 @@ function canCreateChamber(envState, foramState, time) {
 
 function canMigrate(envState, foramState, time) {
    // benthic forams cannot move when in hibernation
-   return !(foramState.isBenthic && isInHibernationState(envState, foramState, time));
+   return !(foramState.foramActiveMotion && isInHibernationState(envState, foramState, time));
 }
 
 // -------------------------------------------------------------------------
@@ -182,19 +186,15 @@ function initialGenome(position) {
       },
       {
          name: "maxEnergyPerChamber",
-         value: 1,
-         mutationProbability: 0.5,
-         mutationRate: 0.5,
-         minValue: 0.2,
-         maxValue: 10
+         value: 60.0
       },
       {
-         name: "energyDemandPerChamber",
-         value: 0.2,
-         mutationProbability: 0.5,
-         mutationRate: 0.5,
-         minValue: 0.05,
-         maxValue: 5
+         name: "maxEnergyCollectingPerChamberPerHour",
+         value: 0.5
+      },
+      {
+         name: "energyDemandPerChamberPerHour",
+         value: 0.2
       },
       {
          name: "minEnergy",
@@ -217,7 +217,7 @@ function initialGenome(position) {
          value: 1
       },
       {
-         name: "hibernationEnergyConsumption",
+         name: "hibernationEnergyConsumptionPerHour",
          value: 0.01
       }
    ]
