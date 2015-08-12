@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8">
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript"
+            src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
+
+    <script type="text/javascript">
+      google.setOnLoadCallback(prepareCharts);
+
+      function prepareCharts() {
+
+        var array = [
+          ['Step', 'Forams count', 'Dead forams', 'New born forams', 'Average Energy'],
+          #foreach($stat in $stats)
+            [$stat.stepNo, $stat.foramsCount, $stat.deadForamsCount, $stat.bornForamsCount, $stat.averageEnergy],
+          #end
+        ];
+
+        var maxForam = -1, maxEnergy = -1;
+        array.forEach(function (stat) {
+          if(stat[1] > maxForam){
+            maxForam = stat[1];
+          }
+          if(stat[4] > maxEnergy){
+            maxEnergy = stat[4];
+          }
+        });
+
+        var lineChartData = google.visualization.arrayToDataTable(array);
+
+        var lineChartOptions = {
+          title: 'Total forams count, born and dead, average energy',
+          colors: ['rgb(0, 113, 182)', 'grey', 'green', 'red'],
+          series: {
+            0: {targetAxisIndex: 0},
+            1: {targetAxisIndex: 0},
+            2: {targetAxisIndex: 0},
+            3: {targetAxisIndex: 1},
+
+          },
+          vAxes: {
+            0: {
+              title: 'Forams count',
+              viewWindowMode: 'pretty',
+              viewWindow: {
+                max: maxForam,
+                min: 0
+              }
+            },
+            1: {
+              title: 'Average Energy',
+              viewWindow: {
+                max: maxEnergy,
+                min: 0
+              }
+            }
+          },
+          hAxis: {title: 'Step'},
+          explorer: {
+            axis: 'horizontal'
+          },
+        };
+
+        var lineChart = new google.visualization.LineChart($('#line_chart').get(0));
+        lineChart.draw(lineChartData, lineChartOptions);
+
+        function resizeChart() {
+          lineChart.draw(lineChartData, lineChartOptions);
+        }
+
+        if (document.addEventListener) {
+          window.addEventListener('resize', resizeChart);
+        }
+        else if (document.attachEvent) {
+          window.attachEvent('onresize', resizeChart);
+        }
+        else {
+          window.resize = resizeChart;
+        }
+      }
+    </script>
+
+    <style type="text/css">
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="line_chart" style="width: 95%; height: 95%;"></div>
+  </body>
+</html>

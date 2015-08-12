@@ -6,7 +6,7 @@ function rand() {
 
 function reproductionType() {
    return "sexual";
-   //return "sexual/asexual";
+   //return "sexual_asexual";
 }
 
 function foramActiveMotion() {
@@ -30,6 +30,7 @@ function initialEnergy() {
    position: { x, y, z },
    algaeEnergy,
    algaeGrowth,
+   algaeAvailability,
    currentDirection: { x, y, z }
  }
 

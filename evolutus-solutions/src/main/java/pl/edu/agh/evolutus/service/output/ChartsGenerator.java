@@ -1,23 +1,21 @@
 package pl.edu.agh.evolutus.service.output;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.edu.agh.evolutus.service.config.SimulationConfig;
+import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
+import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+import pl.edu.agh.evolutus.statistics.model.Simulation;
+import pl.edu.agh.evolutus.utils.Utils;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import pl.edu.agh.evolutus.service.config.SimulationConfig;
-import pl.edu.agh.evolutus.statistics.dao.ForamFossilDao;
-import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
-import pl.edu.agh.evolutus.statistics.model.Simulation;
-import pl.edu.agh.evolutus.utils.Utils;
 
 public class ChartsGenerator extends OutputFileGenerator {
 
@@ -41,8 +39,14 @@ public class ChartsGenerator extends OutputFileGenerator {
 		String simulationStartString = Utils.getTimestampAsString(simulation.getSimulationStart());
 
 		List<Stats> statsList = infoMapToStatsList(infoMap);
-		File htmlFile = new File(outputDirectory, getHtmlFileName("populationChart", simulationStartString));
-		templateRenderer.render("templates/populationChart.vm", htmlFile, Utils.immutableMap("stats", statsList));
+		File htmlFile_populationChart = new File(outputDirectory, getHtmlFileName("populationChart", simulationStartString));
+		templateRenderer.render("templates/populationChart.vm", htmlFile_populationChart, Utils.immutableMap("stats", statsList));
+
+		File htmlFile_borndeadChart = new File(outputDirectory, getHtmlFileName("borndeadChart", simulationStartString));
+		templateRenderer.render("templates/borndeadChart.vm", htmlFile_borndeadChart, Utils.immutableMap("stats", statsList));
+
+		File htmlFile_energyChart = new File(outputDirectory, getHtmlFileName("energyChart", simulationStartString));
+		templateRenderer.render("templates/energyChart.vm", htmlFile_energyChart, Utils.immutableMap("stats", statsList));
 
 		if (simulationConfig.virtualFossilizationEnabled()) {
 			generateGeneEvolutionCharts(simulation, outputDirectory);

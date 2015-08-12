@@ -67,22 +67,23 @@ function algaeGrowth(time, envStates) {
    return 100.0 * insolation(time, envStates);
 }
 
-function oxygen(time, envStates) {
-   return 0.0; // TODO: return proper value
-}
-
-function temperature(time, envStates) {
-   return 0.0; // TODO: return proper value
-}
-
-function salinity(time, envStates) {
-   return 0.0; // TODO: return proper value
-}
 
 function insolation(time, envStates) {
    var surfaceInsolation = 1.0;
    var insolation = surfaceInsolation - 0.01 * envStates[0].position.z;
    return Math.max(0.0, insolation);
+}
+
+function oxygen(time, envStates) {
+    return 0.0; // TODO: return proper value
+}
+
+function temperature(time, envStates) {
+    return 0.0; // TODO: return proper value
+}
+
+function salinity(time, envStates) {
+    return 0.0; // TODO: return proper value
 }
 
 function ph(time, envStates) {

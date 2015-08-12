@@ -11,9 +11,13 @@ public class OceanFragmentInfo extends Statistics {
 	private Long y;
 	private Long z;
 	private Integer foramsCount;
+	private Integer foramsHaploCount;
+	private Integer foramsDiploCount;
 	private Double algaeAvailability;
 	private Double totalEnergy;
 	private Double insolation;
+	private Integer deathCount;
+	private Integer birthCount;
 
 	private OceanFragmentInfo() {
 		// for morphia
@@ -24,9 +28,13 @@ public class OceanFragmentInfo extends Statistics {
 			Long stepNo,
 			VectorL position,
 			Integer foramsCount,
+			Integer foramsHaploidCount,
+			Integer foramsDiploidCount,
 			Double algaeAvailability,
 			Double totalEnergy,
-			Double insolation
+			Double insolation,
+			Integer deathCount,
+			Integer birthCount
 	) {
 		super(simulation.getSimulationStart());
 		this.stepNo = stepNo;
@@ -34,9 +42,13 @@ public class OceanFragmentInfo extends Statistics {
 		this.y = position.y;
 		this.z = position.z;
 		this.foramsCount = foramsCount;
+		this.foramsHaploCount = foramsHaploidCount;
+		this.foramsDiploCount = foramsDiploidCount;
 		this.algaeAvailability = algaeAvailability;
 		this.totalEnergy = totalEnergy;
 		this.insolation = insolation;
+		this.deathCount = deathCount;
+		this.birthCount = birthCount;
 	}
 
 	public Long getStepNo() {
@@ -59,6 +71,14 @@ public class OceanFragmentInfo extends Statistics {
 		return this.foramsCount;
 	}
 
+	public Integer getHaploidForamsCount() {
+		return this.foramsHaploCount;
+	}
+
+	public Integer getDiploidForamsCount() {
+		return this.foramsDiploCount;
+	}
+
 	public Double getAlgaeAvailability() {
 		return this.algaeAvailability;
 	}
@@ -70,4 +90,8 @@ public class OceanFragmentInfo extends Statistics {
 	public Double getInsolation() {
 		return this.insolation;
 	}
+
+	public Integer getDeathCount() { return this.deathCount; }
+
+	public Integer getBirthCount() { return this.birthCount; }
 }

@@ -2,7 +2,6 @@ package pl.edu.agh.evolutus.foram;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -27,7 +26,6 @@ import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
 import pl.edu.agh.evolutus.service.ShellFactory;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
-import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
@@ -212,6 +210,7 @@ public class Foram extends SimpleAgent implements IForam {
 		energy = 0.0;
 		alive = false;
 		addStats();
+		getOceanFragment().onForamDied();
 		doAction(AgentActions.death(this));
 		throw new AgentDiedException();
 	}

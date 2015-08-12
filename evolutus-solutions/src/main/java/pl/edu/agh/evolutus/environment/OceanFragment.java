@@ -42,6 +42,8 @@ import pl.edu.agh.evolutus.utils.VelocityVector;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
+	private int deadForamsCounter=0;
+	private int bornForamsCounter=0;
 	private static final Logger logger = LoggerFactory.getLogger(OceanFragment.class);
 	private final Random random = new Random();
 
@@ -192,6 +194,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		changeAlgaeAvailability(getEnvState().algaeGrowth); // regenerate algae
 
 		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesMap);
+		onForamBirth(foramsToAdd.size());
 		addAll(foramsToAdd);
 
 		super.step(); // call forams' step() methods
@@ -199,12 +202,27 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		steps++;
 		updateEnvState();
 	}
+	@Override
+	public void onForamDied()
+	{
+		deadForamsCounter++;
+	}
+
+	@Override
+	public void onForamBirth(int newForams)
+	{
+		bornForamsCounter+=newForams;
+	}
 
 	private void addStats() {
 		try {
-			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(), steps, position, foramsAlive(),
-					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation);
+			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(),
+					steps, position,
+					foramsAlive(), foramsHaploid(),  foramsDiploid(),
+					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation, deadForamsCounter, bornForamsCounter);
 			statisticsService.add(info);
+			deadForamsCounter=0;
+			bornForamsCounter=0;
 		} catch (StatisticsServiceException e) {
 			logger.debug(e.getMessage(), e);
 		}
@@ -235,6 +253,15 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		return (int) getAgents().stream().filter(agent -> ((IForam) agent).isAlive()).count();
 	}
 
+	@Override
+	public int foramsHaploid() {
+		return (int) getAgents().stream().filter(agent -> ((IForam) agent).getType().getPloidy() == Ploidy.HAPLOID).count();
+	}
+
+	@Override
+	public int foramsDiploid() {
+		return (int) getAgents().stream().filter(agent -> ((IForam) agent).getType().getPloidy() == Ploidy.DIPLOID).count();
+	}
 	private Pair<VelocityVector, Map<OceanFragment, Double>> migrationTargetsWithProbabilityCache = null;
 
 	private Map<OceanFragment, Double> getPassiveMigrationTargetsWithProbability() {
@@ -269,6 +296,16 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.filter(IForam::isAlive)
 				.mapToDouble(IForam::getEnergy)
 				.sum();
+	}
+
+	@Override
+	public double averageEnergy() {
+		return getAgents()
+				.stream()
+				.map(agent -> (IForam) agent)
+				.filter(IForam::isAlive)
+				.mapToDouble(IForam::getEnergy)
+				.average().orElse(0.0);
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jage.address.agent.AgentAddress;
 import org.jage.agent.ISimpleAggregate;
-
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
@@ -33,7 +32,17 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	int foramsAlive();
 
+	int foramsHaploid();
+
+	int foramsDiploid();
+
+	void onForamDied();
+
+	void onForamBirth(int newForams);
+
 	double totalEnergy();
+
+	double averageEnergy();
 
 	Pair<AgentAddress, VectorL> getPassiveMigrationTarget();
 
