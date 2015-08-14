@@ -1,5 +1,7 @@
 package pl.edu.agh.evolutus.utils;
 
+import static java.lang.Math.*;
+
 import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class VectorD {
@@ -30,6 +32,14 @@ public class VectorD {
 
 	public VectorD div(double divisor) {
 		return mul(1.0 / divisor);
+	}
+
+	public double dotProduct(VectorD vector) {
+		return x * vector.x + y * vector.y + z * vector.z;
+	}
+
+	public double length() {
+		return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 	}
 
 	public VectorL toLong() {

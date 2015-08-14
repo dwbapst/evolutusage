@@ -3,6 +3,7 @@ package pl.edu.agh.evolutus.environment;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jage.address.agent.AgentAddress;
 import org.jage.agent.ISimpleAggregate;
 
@@ -10,7 +11,6 @@ import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
-import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public interface IOceanFragment extends ISimpleAggregate {
@@ -19,7 +19,7 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	EnvState getPrevEnvState();
 
-	Position getPosition();
+	VectorL getPosition();
 
 	double getAlgaeAvailability();
 
@@ -27,7 +27,7 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	void addGametes(List<Genome> gametes, ForamType foramType);
 
-	void initialize(Position position);
+	void initialize(VectorL position);
 
 	double takeAlgae(double demand, double radiusOfCollectingInMeters);
 
@@ -35,9 +35,9 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	double totalEnergy();
 
-	AgentAddress getPlanktonicMigrationTarget();
+	Pair<AgentAddress, VectorL> getPassiveMigrationTarget();
 
-	AgentAddress getActiveMigrationTarget();
+	Pair<AgentAddress, VectorL> getActiveMigrationTarget();
 
 	long currentStep();
 }

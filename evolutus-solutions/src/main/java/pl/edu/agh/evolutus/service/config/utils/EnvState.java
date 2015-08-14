@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.service.config.utils;
 
-import pl.edu.agh.evolutus.utils.CurrentDirection;
+import pl.edu.agh.evolutus.utils.VelocityVector;
 import pl.edu.agh.evolutus.utils.VectorD;
 
 public class EnvState {
@@ -15,7 +15,7 @@ public class EnvState {
 	public final VectorD position;
 	public final double algaeEnergy;
 	public final double algaeGrowth;
-	public final CurrentDirection currentDirection;
+	public final VelocityVector currentDirection;
 
 	public EnvState(EnvState envState, double algaeAvailability) {
 		this(envState.oxygen, envState.temperature, envState.salinity, algaeAvailability, envState.insolation,
@@ -23,7 +23,7 @@ public class EnvState {
 	}
 
 	public EnvState(double oxygen, double temperature, double salinity, double algaeAvailability, double insolation, double ph,
-			VectorD position, double algaeEnergy, double algaeGrowth, CurrentDirection currentDirection) {
+			VectorD position, double algaeEnergy, double algaeGrowth, VelocityVector currentDirection) {
 		this.oxygen = oxygen;
 		this.temperature = temperature;
 		this.salinity = salinity;

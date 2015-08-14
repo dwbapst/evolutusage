@@ -16,7 +16,7 @@ function initialForamsCount(x, y, z) {
 }
 
 function initialAlgaeAvailability(x, y, z) {
-   return 5400000000.0;
+   return 1000.0;
 }
 
 function boundaryConditions() {
@@ -64,7 +64,7 @@ function algaeEnergy(time, envStates) {
 }
 
 function algaeGrowth(time, envStates) {
-   return 1.0 * insolation(time, envStates);
+   return 100.0 * insolation(time, envStates);
 }
 
 function oxygen(time, envStates) {
@@ -90,6 +90,6 @@ function ph(time, envStates) {
 }
 
 function currentDirection(time, envStates) {
-   return {x: 50, y: 50, z: 0};
+   return {x: 0.001, y: 0.001, z: 0};
 }
 

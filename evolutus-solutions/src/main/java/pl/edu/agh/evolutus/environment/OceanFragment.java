@@ -35,9 +35,9 @@ import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Geometry;
-import pl.edu.agh.evolutus.utils.Position;
 import pl.edu.agh.evolutus.utils.QueuedMap;
 import pl.edu.agh.evolutus.utils.VectorL;
+import pl.edu.agh.evolutus.utils.VelocityVector;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
@@ -68,7 +68,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	private long steps = 0;
-	private Position position;
+	private VectorL position;
 	private List<OceanFragment> neighbors;
 
 	private QueuedMap<Long, EnvState> envStatesCache = new QueuedMap<>(3);
@@ -95,7 +95,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public Position getPosition() {
+	public VectorL getPosition() {
 		return position;
 	}
 
@@ -118,7 +118,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public void initialize(Position position) {
+	public void initialize(VectorL position) {
 		this.position = position;
 
 		EnvState initialEnvState = new EnvState(0.0, 0.0, 0.0, config.initialAlgaeAvailability(position), 0.0, 0.0,
@@ -234,25 +234,30 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		return (int) getAgents().stream().filter(agent -> ((IForam) agent).isAlive()).count();
 	}
 
-	private Map<AgentAddress, Double> migrationTargetsWithProbability = null;
+	private Pair<VelocityVector, Map<OceanFragment, Double>> migrationTargetsWithProbabilityCache = null;
 
-	private Map<AgentAddress, Double> getMigrationTargetsWithProbability() {
-		if (migrationTargetsWithProbability == null) {
+	private Map<OceanFragment, Double> getPassiveMigrationTargetsWithProbability() {
+		if (migrationTargetsWithProbabilityCache == null
+				|| !migrationTargetsWithProbabilityCache.getLeft().equals(getEnvState().currentDirection)) {
+
 			final Map<VectorL, Double> targetCoordinateProbabilities = getEnvState().currentDirection
 					.getTargetCoordinateProbabilities(position, config.oceanSize(), config.boundaryConditions());
 
 			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
-			migrationTargetsWithProbability = queryParent(
-					query.matching(
-							oceanFragment -> targetCoordinateProbabilities.containsKey(oceanFragment.getPosition())
-					))
-					.stream()
-					.collect(Collectors.toMap(
-									OceanFragment::getAddress,
-									oceanFragment -> targetCoordinateProbabilities.get(oceanFragment.getPosition()))
-					);
+			migrationTargetsWithProbabilityCache = Pair.of(
+					getEnvState().currentDirection,
+					queryParent(
+							query.matching(
+									oceanFragment -> targetCoordinateProbabilities.containsKey(oceanFragment.getPosition())
+							))
+							.stream()
+							.collect(Collectors.toMap(
+											oceanFragment -> oceanFragment,
+											oceanFragment -> targetCoordinateProbabilities.get(oceanFragment.getPosition()))
+							)
+			);
 		}
-		return migrationTargetsWithProbability;
+		return migrationTargetsWithProbabilityCache.getRight();
 	}
 
 	@Override
@@ -266,36 +271,28 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	@Override
-	public AgentAddress getPlanktonicMigrationTarget() {
-		Map<AgentAddress, Double> migrationTargetsWithProbability = getMigrationTargetsWithProbability();
+	public Pair<AgentAddress, VectorL> getPassiveMigrationTarget() {
+		Map<OceanFragment, Double> migrationTargetsWithProbability = getPassiveMigrationTargetsWithProbability();
 		double rand = random.nextDouble();
 		double probability = 0.0;
-		for (AgentAddress migrationTarget : migrationTargetsWithProbability.keySet()) {
-			probability += migrationTargetsWithProbability.get(migrationTarget);
+		for (OceanFragment target : migrationTargetsWithProbability.keySet()) {
+			probability += migrationTargetsWithProbability.get(target);
 			if (rand <= probability) {
-				return migrationTarget;
+				return Pair.of(target.getAddress(), target.getPosition().sub(this.getPosition()));
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public AgentAddress getActiveMigrationTarget() {
-		List<Position> neighborhood = position.getTheSameLevelNeighborhood(config.oceanSize(), config.boundaryConditions());
-
-		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
-		Collection<OceanFragment> neighbors = queryParent(
-				query.matching(
-						oceanFragment -> neighborhood.contains(oceanFragment.getPosition())
-				));
-
+	public Pair<AgentAddress, VectorL> getActiveMigrationTarget() {
 		OceanFragment target = this;
 		for (OceanFragment neighbor : neighbors) {
-			if (neighbor.getAlgaeAvailability() > target.getAlgaeAvailability()) {
+			if (neighbor != null && neighbor.getAlgaeAvailability() > target.getAlgaeAvailability()) {
 				target = neighbor;
 			}
 		}
-		return target.getAddress();
+		return Pair.of(target.getAddress(), target.getPosition().sub(this.getPosition()));
 	}
 
 	@Override
@@ -304,10 +301,10 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 	private List<OceanFragment> getNeighbors() {
-		ArrayList<Position> neighborPositions = getNeighborPositions();
+		ArrayList<VectorL> neighborPositions = getNeighborPositions();
 		AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
 
-		Map<Position, OceanFragment> neighbors = queryParent(
+		Map<VectorL, OceanFragment> neighbors = queryParent(
 				query.matching(oceanFragment -> neighborPositions.contains(oceanFragment.getPosition())))
 				.stream()
 				.collect(Collectors.toMap(
@@ -321,14 +318,14 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.collect(Collectors.toList());
 	}
 
-	private ArrayList<Position> getNeighborPositions() {
+	private ArrayList<VectorL> getNeighborPositions() {
 		return Lists.newArrayList(
-				new Position(position.x + 1, position.y, position.z),
-				new Position(position.x, position.y + 1, position.z),
-				new Position(position.x, position.y, position.z + 1),
-				new Position(position.x - 1, position.y, position.z),
-				new Position(position.x, position.y - 1, position.z),
-				new Position(position.x, position.y, position.z - 1)
+				new VectorL(position.x + 1, position.y, position.z),
+				new VectorL(position.x, position.y + 1, position.z),
+				new VectorL(position.x, position.y, position.z + 1),
+				new VectorL(position.x - 1, position.y, position.z),
+				new VectorL(position.x, position.y - 1, position.z),
+				new VectorL(position.x, position.y, position.z - 1)
 		);
 	}
 

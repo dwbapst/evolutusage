@@ -7,21 +7,18 @@ import java.util.Map;
 
 import pl.edu.agh.evolutus.environment.BoundaryConditions;
 
-public class CurrentDirection extends VectorD {
+public class VelocityVector extends VectorD {
 
 	private final Map<VectorL, Double> vectorComponents = new LinkedHashMap<>();
 
-	private final double strength; // vector length
-
-	public CurrentDirection(VectorD vector) {
+	public VelocityVector(VectorD vector) {
 		this(vector.x, vector.y, vector.z);
 	}
 
-	public CurrentDirection(double x, double y, double z) {
+	public VelocityVector(double x, double y, double z) {
 		super(x, y, z);
 
 		computeVectorComponents(x, y, z);
-		strength = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 	}
 
 	private void computeVectorComponents(double x, double y, double z) {
@@ -45,13 +42,6 @@ public class CurrentDirection extends VectorD {
 			vectorComponents.put(new VectorL(0, -1, 0), 1.0 / 6.0);
 			vectorComponents.put(new VectorL(0, 0, -1), 1.0 / 6.0);
 		}
-	}
-
-	/**
-	 * @return the distance that current 'travels' within one step
-	 */
-	public double getStrength() {
-		return strength;
 	}
 
 	public Map<VectorL, Double> getTargetCoordinateProbabilities(VectorL sourceCoordinates, VectorL oceanSize,

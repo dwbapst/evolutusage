@@ -5,18 +5,17 @@ import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.environment.BoundaryConditions;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
-import pl.edu.agh.evolutus.utils.CurrentDirection;
-import pl.edu.agh.evolutus.utils.Position;
+import pl.edu.agh.evolutus.utils.VelocityVector;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 
 public class EnvironmentConfig extends Config {
 
-	double unitLengthInMeters() {
+	public double unitLengthInMeters() {
 		return configJS.unitLengthInMeters();
 	}
 
-	double stepDurationInHours() {
+	public double stepDurationInHours() {
 		return configJS.stepDurationInHours();
 	}
 
@@ -76,12 +75,12 @@ public class EnvironmentConfig extends Config {
 		return configJS.ph(unitsConverter.stepsToHours(steps), envStates);
 	}
 
-	public CurrentDirection currentDirection(long steps, EnvState[] envStates) {
+	public VelocityVector currentDirection(long steps, EnvState[] envStates) {
 		ScriptObject currentDirection = configJS.currentDirection(unitsConverter.stepsToHours(steps), envStates);
-		return new CurrentDirection(VectorD.fromScriptObject(currentDirection));
+		return new VelocityVector(VectorD.fromScriptObject(currentDirection));
 	}
 
-	public Genome initialGenome(Position position) {
+	public Genome initialGenome(VectorL position) {
 		NativeArray initialGenome = configJS.initialGenome(unitsConverter.unitsToMeters(position));
 		return Genome.fromScriptObject(initialGenome);
 	}

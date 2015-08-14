@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jage.action.AgentActions;
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
@@ -26,12 +27,14 @@ import pl.edu.agh.evolutus.genotype.operator.UniformCrossingOverOperator;
 import pl.edu.agh.evolutus.service.ShellFactory;
 import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
+import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.utils.VectorL;
+import pl.edu.agh.evolutus.utils.VelocityVector;
 
 public class Foram extends SimpleAgent implements IForam {
 
@@ -50,6 +53,9 @@ public class Foram extends SimpleAgent implements IForam {
 
 	@Inject
 	private ForamConfig config;
+
+	@Inject
+	private EnvironmentConfig environmentConfig;
 
 	@Inject
 	private UnitsConverter unitsConverter;
@@ -247,16 +253,6 @@ public class Foram extends SimpleAgent implements IForam {
 	private AgentAddress lastParentAddress = null;
 	private OceanFragment lastParentReference = null;
 
-	/**
-	 * @return the distance in units that ocean current 'travels' within one step.
-	 * It could be also interpreted as a probability that foram will migrate to another ocean fragment.
-	 * If current 'travels' one unit per step (one ocean fragment per step) then the probability of migration is 100%.
-	 */
-	private double getCurrentStrength() {
-		double distance = getOceanFragment().getEnvState().currentDirection.getStrength();
-		return unitsConverter.metersToUnits(distance);
-	}
-
 	private IOceanFragment getOceanFragment() {
 		if (lastParentAddress == null || !lastParentAddress.equals(getParentAddress())) {
 			AgentEnvironmentQuery<OceanFragment, OceanFragment> query = new AgentEnvironmentQuery<>(OceanFragment.class);
@@ -285,31 +281,36 @@ public class Foram extends SimpleAgent implements IForam {
 		shell = shellFactory.createShellWithNewChamber(this);
 	}
 
+	private AgentAddress migrationTarget = null;
+	private Double timeLeftToMigrationInSeconds = null;
+
 	private void tryMigrate() {
 
-		AgentAddress migrationTarget;
-		foramActiveMotion = config.foramActiveMotion();
-		if (foramActiveMotion) {
-			migrationTarget = getOceanFragment().getActiveMigrationTarget();
-		} else {
-			migrationTarget = tryFlowWithCurrent();
+		if (timeLeftToMigrationInSeconds == null) {
+			VelocityVector migrationVelocityVector;
+			Pair<AgentAddress, VectorL> migrationTargetToMigrationDirection;
+			if (foramActiveMotion) {
+				migrationVelocityVector = config.foramActiveSpeed(envState, foramState, currentTime);
+				migrationTargetToMigrationDirection = getOceanFragment().getActiveMigrationTarget();
+			} else {
+				migrationVelocityVector = getOceanFragment().getEnvState().currentDirection;
+				migrationTargetToMigrationDirection = getOceanFragment().getPassiveMigrationTarget();
+			}
+
+			migrationTarget = migrationTargetToMigrationDirection.getLeft();
+
+			double velocity = migrationVelocityVector.dotProduct(migrationTargetToMigrationDirection.getRight().toDouble());
+			double oceanFragmentSizeInMeters = environmentConfig.unitLengthInMeters();
+			timeLeftToMigrationInSeconds = oceanFragmentSizeInMeters / velocity;
 		}
 
-		if (migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
+		timeLeftToMigrationInSeconds -= stepDurationInHours * 3600;
+
+		if (timeLeftToMigrationInSeconds <= 0.0 && migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
 			doAction(AgentActions.migrate(this, migrationTarget));
+			migrationTarget = null;
+			timeLeftToMigrationInSeconds = null;
 		}
-	}
-
-	private double migrationProbability = 0.0;
-
-	private AgentAddress tryFlowWithCurrent() {
-		migrationProbability += 0.01;
-		double currentStrength = getCurrentStrength();
-		if (random.nextDouble() < migrationProbability + currentStrength) {
-			migrationProbability = 0.0;
-			return getOceanFragment().getPlanktonicMigrationTarget();
-		}
-		return null;
 	}
 
 	private CrossingOverOperator getCrossingOverOperator() {

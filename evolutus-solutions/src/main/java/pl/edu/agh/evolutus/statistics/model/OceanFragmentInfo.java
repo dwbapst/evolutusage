@@ -1,6 +1,6 @@
 package pl.edu.agh.evolutus.statistics.model;
 
-import pl.edu.agh.evolutus.utils.Position;
+import pl.edu.agh.evolutus.utils.VectorL;
 
 public class OceanFragmentInfo extends Statistics {
 
@@ -22,7 +22,7 @@ public class OceanFragmentInfo extends Statistics {
 	public OceanFragmentInfo(
 			Simulation simulation,
 			Long stepNo,
-			Position position,
+			VectorL position,
 			Integer foramsCount,
 			Double algaeAvailability,
 			Double totalEnergy,

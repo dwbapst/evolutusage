@@ -1,8 +1,11 @@
 package pl.edu.agh.evolutus.service.config;
 
+import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.foram.ForamType.ReproductionType;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
+import pl.edu.agh.evolutus.utils.VelocityVector;
+import pl.edu.agh.evolutus.utils.VectorD;
 
 public class ForamConfig extends Config {
 
@@ -56,6 +59,11 @@ public class ForamConfig extends Config {
 
 	public double globalMutationProbability(EnvState envState, ForamState foramState, double time) {
 		return configJS.globalMutationProbability(envState, foramState, time);
+	}
+
+	public VelocityVector foramActiveSpeed(EnvState envState, ForamState foramState, double time) {
+		ScriptObject currentDirection = configJS.foramActiveSpeed(envState, foramState, time);
+		return new VelocityVector(VectorD.fromScriptObject(currentDirection));
 	}
 
 	public boolean shouldDie(EnvState envState, ForamState foramState, double time) {
