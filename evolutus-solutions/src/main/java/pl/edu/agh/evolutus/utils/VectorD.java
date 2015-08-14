@@ -34,6 +34,10 @@ public class VectorD {
 		return mul(1.0 / divisor);
 	}
 
+	public VectorD abs() {
+		return new VectorD(Math.abs(x), Math.abs(y), Math.abs(z));
+	}
+
 	public double dotProduct(VectorD vector) {
 		return x * vector.x + y * vector.y + z * vector.z;
 	}

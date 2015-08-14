@@ -84,7 +84,7 @@ function gametesSievingCoefficient(envState, foramState, time) {
 }
 
 function raduisOfFoodCollecting(envState, foramState, time) {
-   return 1.0; // 1 m
+   return 2.5; // 2.5 m
 }
 
 function crossingOverOperator(envState, foramState, time) {
@@ -99,6 +99,10 @@ function globalMutationProbability(envState, foramState, time) {
 
 function foramActiveSpeed(envState, foramState, time) {
    return {x: 0.001, y: 0.001, z: 0};
+}
+
+function activeMotionEnergyCostPerChamberPerMeter(envState, foramState, time) {
+   return {up: 0.05, down: 0.3, horizontally: 0.1};
 }
 
 // -------------------------------------------------------------------------

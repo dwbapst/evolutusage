@@ -33,6 +33,7 @@ import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
+import pl.edu.agh.evolutus.utils.MovementCostVector;
 import pl.edu.agh.evolutus.utils.VectorL;
 import pl.edu.agh.evolutus.utils.VelocityVector;
 
@@ -45,6 +46,7 @@ public class Foram extends SimpleAgent implements IForam {
 	private double energy;
 	private double age = 0;
 	private double stepDurationInHours;
+	private double stepDurationInSeconds;
 	private boolean foramActiveMotion;
 
 	private Shell shell;
@@ -121,7 +123,8 @@ public class Foram extends SimpleAgent implements IForam {
 	public void init() throws ComponentException {
 		super.init();
 		this.energy = config.initialEnergy();
-		this.stepDurationInHours = unitsConverter.stepDurationInHours();
+		this.stepDurationInHours = config.stepDurationInHours();
+		this.stepDurationInSeconds = stepDurationInHours * 3600;
 		this.foramActiveMotion = config.foramActiveMotion();
 	}
 
@@ -180,21 +183,16 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 	}
 
-	private Double consumptionPerStep;
-
 	private void consumeStepEnergy() {
-		if (consumptionPerStep == null) {
-			double consumptionPerHour;
-			if (config.isInHibernationState(envState, foramState, currentTime)) {
-				consumptionPerHour = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR).getValue();
-			} else {
-				consumptionPerHour =
-						genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER_PER_HOUR).getValue() * shell.getChambersCount();
-			}
-
-			consumptionPerStep = consumptionPerHour * config.stepDurationInHours();
+		double consumptionPerHour;
+		if (config.isInHibernationState(envState, foramState, currentTime)) {
+			consumptionPerHour = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR).getValue();
+		} else {
+			consumptionPerHour =
+					genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER_PER_HOUR).getValue() * shell.getChambersCount();
 		}
-		energy -= consumptionPerStep;
+
+		energy -= consumptionPerHour * stepDurationInHours;
 	}
 
 	private boolean couldForamPerformStep() {
@@ -282,6 +280,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private AgentAddress migrationTarget = null;
+	private Double movementCostPerStep = null;
 	private Double timeLeftToMigrationInSeconds = null;
 
 	private void tryMigrate() {
@@ -298,17 +297,26 @@ public class Foram extends SimpleAgent implements IForam {
 			}
 
 			migrationTarget = migrationTargetToMigrationDirection.getLeft();
+			VectorL migrationDirection = migrationTargetToMigrationDirection.getRight();
 
-			double velocity = migrationVelocityVector.dotProduct(migrationTargetToMigrationDirection.getRight().toDouble());
+			double velocity = migrationVelocityVector.dotProduct(migrationDirection.toDouble().abs());
 			double oceanFragmentSizeInMeters = environmentConfig.unitLengthInMeters();
 			timeLeftToMigrationInSeconds = oceanFragmentSizeInMeters / velocity;
+
+			double distancePerStep = velocity * stepDurationInSeconds;
+
+			MovementCostVector movementCost = config.activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime);
+			double movementCostPerChamberPerMeter = movementCost.getCostByMovementDirection(migrationDirection.toDouble());
+			movementCostPerStep = movementCostPerChamberPerMeter * foramState.shell.getChambersCount() * distancePerStep;
 		}
 
-		timeLeftToMigrationInSeconds -= stepDurationInHours * 3600;
+		timeLeftToMigrationInSeconds -= stepDurationInSeconds;
+		energy -= movementCostPerStep;
 
 		if (timeLeftToMigrationInSeconds <= 0.0 && migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
 			doAction(AgentActions.migrate(this, migrationTarget));
 			migrationTarget = null;
+			movementCostPerStep = null;
 			timeLeftToMigrationInSeconds = null;
 		}
 	}

@@ -68,6 +68,8 @@ public interface IConfigJS {
 
 	ScriptObject foramActiveSpeed(EnvState envState, ForamState foramState, double time);
 
+	ScriptObject activeMotionEnergyCostPerChamberPerMeter(EnvState envState, ForamState foramState, double time);
+
 	boolean shouldDie(EnvState envState, ForamState foramState, double time);
 
 	boolean isInHibernationState(EnvState envState, ForamState foramState, double time);
