@@ -30,7 +30,7 @@ function simulationDuration() {
 }
 
 function unitLengthInMeters() {
-   return 30;
+   return {x: 60, y: 60, z: 30};
 }
 
 function stepDurationInHours() {

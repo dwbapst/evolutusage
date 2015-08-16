@@ -5,19 +5,11 @@ import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.environment.BoundaryConditions;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
-import pl.edu.agh.evolutus.utils.VelocityVector;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
+import pl.edu.agh.evolutus.utils.VelocityVector;
 
 public class EnvironmentConfig extends Config {
-
-	public double unitLengthInMeters() {
-		return configJS.unitLengthInMeters();
-	}
-
-	public double stepDurationInHours() {
-		return configJS.stepDurationInHours();
-	}
 
 	private VectorL oceanSize = null;
 	private BoundaryConditions boundaryConditions = null;
@@ -84,4 +76,5 @@ public class EnvironmentConfig extends Config {
 		NativeArray initialGenome = configJS.initialGenome(unitsConverter.unitsToMeters(position));
 		return Genome.fromScriptObject(initialGenome);
 	}
+
 }

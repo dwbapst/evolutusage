@@ -7,7 +7,7 @@ function randInt(maxValue) {
 // initialization-only kernels
 
 function oceanSize() {
-   return {x: 300, y: 300, z: 100};
+   return {x: 600, y: 600, z: 100};
 }
 
 function initialForamsCount(x, y, z) {
@@ -89,6 +89,7 @@ function ph(time, envStates) {
    return 0.0; // TODO: return proper value
 }
 
+// TODO: change kernel name to currentSpeed
 function currentDirection(time, envStates) {
    return {x: 0.001, y: 0.001, z: 0};
 }

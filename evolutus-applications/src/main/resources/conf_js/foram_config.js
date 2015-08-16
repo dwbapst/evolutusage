@@ -68,7 +68,7 @@ function chambersLimit(envState, foramState, time) {
 }
 
 function energyNeededToReproduce(envState, foramState, time) {
-   return 300.0;
+   return 50.0;
 }
 
 function reproductionProbability(envState, foramState, time) {
@@ -84,7 +84,7 @@ function gametesSievingCoefficient(envState, foramState, time) {
 }
 
 function raduisOfFoodCollecting(envState, foramState, time) {
-   return 2.5; // 2.5 m
+   return 5.0; // 5.0 m
 }
 
 function crossingOverOperator(envState, foramState, time) {
@@ -98,11 +98,11 @@ function globalMutationProbability(envState, foramState, time) {
 }
 
 function foramActiveSpeed(envState, foramState, time) {
-   return {x: 0.001, y: 0.001, z: 0};
+   return {x: 0.001, y: 0.001, z: 0.001};
 }
 
 function activeMotionEnergyCostPerChamberPerMeter(envState, foramState, time) {
-   return {up: 0.05, down: 0.3, horizontally: 0.1};
+   return {up: 0.05, down: 0.1, horizontally: 0.07};
 }
 
 // -------------------------------------------------------------------------
@@ -198,7 +198,7 @@ function initialGenome(position) {
       },
       {
          name: "maxEnergyCollectingPerChamberPerHour",
-         value: 0.5
+         value: 1.5
       },
       {
          name: "energyDemandPerChamberPerHour",

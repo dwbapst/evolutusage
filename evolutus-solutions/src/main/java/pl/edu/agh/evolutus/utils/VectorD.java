@@ -6,6 +6,8 @@ import jdk.nashorn.internal.runtime.ScriptObject;
 
 public class VectorD {
 
+	public static final VectorD ZERO_VECTOR = new VectorD(0.0, 0.0, 0.0);
+
 	public final double x, y, z;
 
 	public VectorD() {

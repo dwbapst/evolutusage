@@ -34,6 +34,7 @@ import pl.edu.agh.evolutus.service.config.utils.ForamState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
 import pl.edu.agh.evolutus.utils.MovementCostVector;
+import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 import pl.edu.agh.evolutus.utils.VelocityVector;
 
@@ -297,16 +298,20 @@ public class Foram extends SimpleAgent implements IForam {
 			}
 
 			migrationTarget = migrationTargetToMigrationDirection.getLeft();
-			VectorL migrationDirection = migrationTargetToMigrationDirection.getRight();
+			VectorD migrationDirection = migrationTargetToMigrationDirection.getRight().toDouble().abs();
+			double velocity = migrationVelocityVector.dotProduct(migrationDirection);
+			double oceanFragmentSizeInMeters = unitsConverter.unitLengthInMeters().dotProduct(migrationDirection);
 
-			double velocity = migrationVelocityVector.dotProduct(migrationDirection.toDouble().abs());
-			double oceanFragmentSizeInMeters = environmentConfig.unitLengthInMeters();
+			if (VectorD.ZERO_VECTOR.equals(migrationDirection) || velocity == 0.0) {
+				return;
+			}
+
 			timeLeftToMigrationInSeconds = oceanFragmentSizeInMeters / velocity;
 
 			double distancePerStep = velocity * stepDurationInSeconds;
 
 			MovementCostVector movementCost = config.activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime);
-			double movementCostPerChamberPerMeter = movementCost.getCostByMovementDirection(migrationDirection.toDouble());
+			double movementCostPerChamberPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
 			movementCostPerStep = movementCostPerChamberPerMeter * foramState.shell.getChambersCount() * distancePerStep;
 		}
 

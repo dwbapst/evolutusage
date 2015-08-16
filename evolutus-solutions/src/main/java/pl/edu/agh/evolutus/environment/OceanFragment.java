@@ -36,6 +36,7 @@ import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 import pl.edu.agh.evolutus.utils.Geometry;
 import pl.edu.agh.evolutus.utils.QueuedMap;
+import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 import pl.edu.agh.evolutus.utils.VelocityVector;
 
@@ -223,8 +224,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	private Double oceanFragmentVolumeInMeters() {
 		if (oceanFragmentVolumeInMeters == null) {
-			double oceanFragmentLength = unitsConverter.unitLengthInMeters();
-			oceanFragmentVolumeInMeters = Geometry.cuboidVolume(oceanFragmentLength, oceanFragmentLength, oceanFragmentLength);
+			VectorD unitLength = unitsConverter.unitLengthInMeters();
+			oceanFragmentVolumeInMeters = Geometry.cuboidVolume(unitLength.x, unitLength.y, unitLength.z);
 		}
 		return oceanFragmentVolumeInMeters;
 	}

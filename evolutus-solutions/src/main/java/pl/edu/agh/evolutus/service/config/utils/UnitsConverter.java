@@ -16,20 +16,14 @@ public class UnitsConverter {
 		this.configJS = configFactory.getConfigJS();
 	}
 
-	public double unitsToMeters(long units) {
-		return units * configJS.unitLengthInMeters();
-	}
-
 	public VectorD unitsToMeters(VectorL units) {
-		return units.mul(configJS.unitLengthInMeters());
-	}
-
-	public long metersToUnits(double meters) {
-		return Math.round(meters / configJS.unitLengthInMeters());
+		VectorD unitLength = unitLengthInMeters();
+		return new VectorD(units.x * unitLength.x, units.y * unitLength.y, units.z * unitLength.z);
 	}
 
 	public VectorL metersToUnits(VectorD meters) {
-		return meters.div(configJS.unitLengthInMeters()).toLong();
+		VectorD unitLength = unitLengthInMeters();
+		return new VectorD(meters.x / unitLength.x, meters.y / unitLength.y, meters.z / unitLength.z).toLong();
 	}
 
 	public double stepsToHours(long steps) {
@@ -40,11 +34,12 @@ public class UnitsConverter {
 		return Math.round(hours / configJS.stepDurationInHours());
 	}
 
-	public double unitLengthInMeters() {
-		return configJS.unitLengthInMeters();
+	public VectorD unitLengthInMeters() {
+		return VectorD.fromScriptObject(configJS.unitLengthInMeters());
 	}
 
 	public double stepDurationInHours() {
 		return configJS.stepDurationInHours();
 	}
+
 }

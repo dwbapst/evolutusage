@@ -86,7 +86,7 @@ public interface IConfigJS {
 	 *     SIMULATION     *
 	 **********************/
 
-	double unitLengthInMeters();
+	ScriptObject unitLengthInMeters();
 
 	double stepDurationInHours();
 
