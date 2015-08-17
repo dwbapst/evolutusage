@@ -1,17 +1,17 @@
 package pl.edu.agh.evolutus.service;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jage.platform.component.provider.IComponentInstanceProvider;
 import org.jage.platform.component.provider.IComponentInstanceProviderAware;
-
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.DiploidGenotype;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.genotype.HaploidGenotype;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
+import pl.edu.agh.evolutus.utils.Geometry;
+
+import javax.inject.Inject;
 
 public class ForamFactory implements IComponentInstanceProviderAware {
 
@@ -31,7 +31,7 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 	private IForam createForam(ForamType foramType) {
 		IForam foram = instanceProvider.getInstance(IForam.class);
 		foram.setType(foramType);
-		foram.setEnergy(config.initialEnergy());
+		//foram.setEnergy(config.initialEnergy());
 		return foram;
 	}
 
@@ -40,6 +40,8 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new HaploidGenotype(genome, foram.getAddress()));
 		foram.setShell(shellFactory.createInitialShell(foram));
+		foram.setEnergy(Geometry.sphereVolume(foram.getGenotype().get(Genome.HAPLOID_FIRST_CHAMBER_RADIUS).getValue()) *
+				foram.getGenotype().get(Genome.METABOLIC_EFFECTIVENESS).getValue());
 		return foram;
 	}
 
@@ -48,6 +50,8 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new DiploidGenotype(genomeA, genomeB, foram.getAddress()));
 		foram.setShell(shellFactory.createInitialShell(foram));
+		foram.setEnergy(Geometry.sphereVolume(foram.getGenotype().get(Genome.DIPLOID_FIRST_CHAMBER_RADIUS).getValue()) *
+				foram.getGenotype().get(Genome.METABOLIC_EFFECTIVENESS).getValue());
 		return foram;
 	}
 

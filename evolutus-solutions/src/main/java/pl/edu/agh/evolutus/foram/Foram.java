@@ -31,6 +31,7 @@ import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.ForamState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.ForamFossil;
+import pl.edu.agh.evolutus.utils.Geometry;
 import pl.edu.agh.evolutus.utils.MovementCostVector;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
@@ -182,8 +183,10 @@ public class Foram extends SimpleAgent implements IForam {
 		if (config.isInHibernationState(envState, foramState, currentTime)) {
 			consumptionPerHour = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR).getValue();
 		} else {
+			//energy consumption is related to volume of cytoplams
+			double volumeCytoplasm = getEnergy()/genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue();
 			consumptionPerHour =
-					genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER_PER_HOUR).getValue() * shell.getChambersCount();
+					genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER_PER_HOUR).getValue() * volumeCytoplasm;
 		}
 
 		energy -= consumptionPerHour * stepDurationInHours;
@@ -236,9 +239,13 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void eat() {
-		double maxEnergy = genotype.get(Genome.MAX_ENERGY_PER_CHAMBER).getValue() * shell.getVolumeShell();
+		//cannot consume more then shell can contain.
+		double maxEnergy = genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell() - getEnergy();
+		//max energy that can be collected at this moment by the creature
+		//it is influenced by size of foram as well as their effectivness in food collecting.
 		double energyDemand = genotype.get(Genome.MAX_ENERGY_COLLECTING_PER_CHAMBER_PER_HOUR).getValue() *
 				shell.getVolumeShell() * config.stepDurationInHours();
+
 		double radiusOfCollectingInMeters = config.raduisOfFoodCollecting(envState, foramState, currentTime);
 		energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 	}
@@ -270,7 +277,13 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void createChamber() {
-		energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
+		//energy needed for creating new chamber should be related to size of the new chamber.
+		//size of new chamber
+		double newChamberRadius = shell.getLastChamberRadius()*shell.getGrowthFactor();
+
+		energy -= genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue() *
+				genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue()* Geometry.sphereVolume(newChamberRadius);
+		//energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
 		shell = shellFactory.createShellWithNewChamber(this);
 	}
 
