@@ -12,9 +12,9 @@
       function prepareCharts() {
 
         var array = [
-          ['Step', 'Forams count', 'Algae avaliability'],
+          ['Step', 'Forams count', 'Haploid count', 'Diploid count', 'Algae avaliability'],
           #foreach($stat in $stats)
-            [$stat.stepNo, $stat.foramsCount, $stat.algaeAvailability],
+            [$stat.stepNo, $stat.foramsCount, $stat.foramsHaploidCount, $stat.foramsDiploidCount, $stat.algaeAvailability],
           #end
         ];
 
@@ -23,19 +23,22 @@
           if(stat[1] > maxForam){
             maxForam = stat[1];
           }
-          if(stat[2] > maxAlgae){
-            maxAlgae = stat[2];
+          if(stat[4] > maxAlgae){
+            maxAlgae = stat[4];
           }
         });
 
         var lineChartData = google.visualization.arrayToDataTable(array);
 
         var lineChartOptions = {
-          title: 'Total forams count and algae availability',
-          colors: ['rgb(0, 113, 182)', 'green'],
+          title: 'Total forams (haplo and diploidal) count, born and dead, algae availability',
+          colors: ['rgb(0, 113, 182)', 'rgb(0, 63, 102)', 'rgb(0, 163, 242)', 'green'],
           series: {
             0: {targetAxisIndex: 0},
-            1: {targetAxisIndex: 1}
+            1: {targetAxisIndex: 0},
+            2: {targetAxisIndex: 0},
+            3: {targetAxisIndex: 1},
+
           },
           vAxes: {
             0: {
@@ -47,7 +50,7 @@
               }
             },
             1: {
-              title: 'Algae avaliability',
+              title: 'Algae avalailability',
               viewWindow: {
                 max: maxAlgae,
                 min: 0
