@@ -1,11 +1,11 @@
 package pl.edu.agh.evolutus.utils;
 
-import static java.lang.Math.*;
+import pl.edu.agh.evolutus.environment.BoundaryConditions;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import pl.edu.agh.evolutus.environment.BoundaryConditions;
+import static java.lang.Math.round;
 
 public class VelocityVector extends VectorD {
 
@@ -22,7 +22,7 @@ public class VelocityVector extends VectorD {
 	}
 
 	private void computeVectorComponents(double x, double y, double z) {
-		double absX = abs(x), absY = abs(y), absZ = abs(z);
+		double absX = Math.abs(x), absY = Math.abs(y), absZ = Math.abs(z);
 		double sum = absX + absY + absZ;
 		if (sum > 0) {
 			if (absX > 0) {
