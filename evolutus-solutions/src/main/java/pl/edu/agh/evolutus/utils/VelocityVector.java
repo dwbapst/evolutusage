@@ -1,11 +1,9 @@
 package pl.edu.agh.evolutus.utils;
 
-import pl.edu.agh.evolutus.environment.BoundaryConditions;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static java.lang.Math.round;
+import pl.edu.agh.evolutus.environment.BoundaryConditions;
 
 public class VelocityVector extends VectorD {
 
@@ -26,13 +24,13 @@ public class VelocityVector extends VectorD {
 		double sum = absX + absY + absZ;
 		if (sum > 0) {
 			if (absX > 0) {
-				vectorComponents.put(new VectorL(round(x / absX), 0, 0), absX / sum);
+				vectorComponents.put(new VectorL(Math.round(x / absX), 0, 0), absX / sum);
 			}
 			if (absY > 0) {
-				vectorComponents.put(new VectorL(0, round(y / absY), 0), absY / sum);
+				vectorComponents.put(new VectorL(0, Math.round(y / absY), 0), absY / sum);
 			}
 			if (absZ > 0) {
-				vectorComponents.put(new VectorL(0, 0, round(z / absZ)), absZ / sum);
+				vectorComponents.put(new VectorL(0, 0, Math.round(z / absZ)), absZ / sum);
 			}
 		} else {
 			vectorComponents.put(new VectorL(1, 0, 0), 1.0 / 6.0);

@@ -1,0 +1,48 @@
+@startuml
+
+abstract class Genotype
+abstract class CrossingOverOperator
+
+class Gene
+class Genome
+class RecombinationOperator
+class ForamConfig
+class HaploidGenotype
+class DiploidGenotype
+class ForamFactory
+class ReproductionService
+class OceanFragment
+class Foram
+class UniformCrossingOverOperator
+class TwoPointCrossingOverOperator
+class OnePointCrossingOverOperator
+
+Genotype <|-- HaploidGenotype
+Genotype <|-- DiploidGenotype
+
+CrossingOverOperator <|-- UniformCrossingOverOperator
+CrossingOverOperator <|-- TwoPointCrossingOverOperator
+CrossingOverOperator <|-- OnePointCrossingOverOperator
+
+Gene --o Genome
+
+Genome --o HaploidGenotype
+Genome --o DiploidGenotype
+RecombinationOperator --o DiploidGenotype
+CrossingOverOperator -- DiploidGenotype
+
+ForamConfig --o ForamFactory
+HaploidGenotype --o ForamFactory
+DiploidGenotype --o ForamFactory
+
+ForamFactory --o ReproductionService
+
+ForamConfig --o OceanFragment
+ForamFactory --o OceanFragment
+ReproductionService --o OceanFragment
+
+ForamConfig --o Foram
+Genotype --o Foram
+OceanFragment --o Foram
+
+@enduml

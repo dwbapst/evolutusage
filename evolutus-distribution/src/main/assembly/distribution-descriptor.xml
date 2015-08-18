@@ -35,5 +35,13 @@
         <include>**/*</include>
       </includes>
     </fileSet>
+
+    <fileSet>
+      <directory>../evolutus-solutions/target/plantuml/src/main/resources/diagrams</directory>
+      <outputDirectory>/uml</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

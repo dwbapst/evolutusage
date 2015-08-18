@@ -13,6 +13,18 @@ import pl.edu.agh.evolutus.utils.VectorL;
 
 public class Script {
 
+	public interface Interface {
+		double foramsInitialCount(double x, double y, double z);
+	}
+
+	static class InterfaceImpl implements Interface {
+
+		@Override
+		public double foramsInitialCount(double x, double y, double z) {
+			return 101 - z;
+		}
+	}
+
 	public static void main(String[] args) {
 		ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 		ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
@@ -23,44 +35,50 @@ public class Script {
 
 		try {
 			String script = "" +
-					"function foramsInitialCount_(x,y,z){" +
+					"function foramsInitialCount(x,y,z){" +
 					"  return 101 - z" +
-					"}" +
-					"" +
-					"function config(x,y,z){\n" +
-					"  return { foramsInitialCount: foramsInitialCount_(x,y,z) }\n" +
 					"}";
 			CompiledScript compiledScript = ((Compilable) scriptEngine).compile(script);
-			ScriptObjectMirror function = (ScriptObjectMirror) compiledScript.eval();
-			ScriptObjectMirror function2 = (ScriptObjectMirror) scriptEngine.eval(script);
+			ScriptObjectMirror function = (ScriptObjectMirror) scriptEngine.eval(script);
+			ScriptObjectMirror compiledFunction = (ScriptObjectMirror) compiledScript.eval();
+			Interface interfaceInstance = ((Invocable) scriptEngine).getInterface(Interface.class);
+			Interface interfaceImplInstance = new InterfaceImpl();
 
-			System.out.println(function2.hasMember("config"));
-			System.out.println(function2.hasMember("foramsInitialCount"));
-			try {
-				System.out.println(((Invocable) scriptEngine).invokeFunction("foramsInitialCount_", 1, 2, 3));
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			}
+			System.out.println("\n\n");
 
 			double d = 0.0;
 			long beg = System.currentTimeMillis();
-			for (int i = 0; i < 1000000; i++) {
-				d += (double) ((ScriptObjectMirror) function2.call(null, 1, 2, i)).get("foramsInitialCount");
+			for (int i = 0; i < 10 * 1000 * 1000; i++) {
+				d += (double) function.call(null, 1, 2, i);
 			}
 			System.out.println(d);
 			System.out.println(System.currentTimeMillis() - beg);
 
 			d = 0.0;
 			beg = System.currentTimeMillis();
-			for (int i = 0; i < 1000000; i++) {
-				d += (double) ((ScriptObjectMirror) function.call(null, 1, 2, i)).get("foramsInitialCount");
+			for (int i = 0; i < 10 * 1000 * 1000; i++) {
+				d += (double) compiledFunction.call(null, 1, 2, i);
 			}
 			System.out.println(d);
 			System.out.println(System.currentTimeMillis() - beg);
 
-			scriptEngine.eval("print(a);print(b); print(c); print(c.x);");
-			Object c = scriptEngine.get("c");
-			System.out.println(c);
+			d = 0.0;
+			beg = System.currentTimeMillis();
+			for (int i = 0; i < 10 * 1000 * 1000; i++) {
+				d += interfaceInstance.foramsInitialCount(1, 2, i);
+			}
+			System.out.println(d);
+			System.out.println(System.currentTimeMillis() - beg);
+
+			d = 0.0;
+			beg = System.currentTimeMillis();
+			for (int i = 0; i < 10 * 1000 * 1000; i++) {
+				d += interfaceImplInstance.foramsInitialCount(1, 2, i);
+			}
+			System.out.println(d);
+			System.out.println(System.currentTimeMillis() - beg);
+
+			System.out.println("\n\n");
 		} catch (ScriptException e) {
 			e.printStackTrace();
 		}

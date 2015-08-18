@@ -1,0 +1,48 @@
+@startuml
+
+interface IConfigJs
+
+abstract class Config
+
+class ForamConfig
+class EnvironmentConfig
+class SimulationConfig
+class SystemConfig
+class ConfigFactory
+class StatisticsService
+class ForamFactory
+class MongoProvider
+class OceanFragmentContainer
+class OceanFragment
+class Foram
+
+Config <|-- ForamConfig
+Config <|-- EnvironmentConfig
+Config <|-- SimulationConfig
+Config <|-- SystemConfig
+
+IConfigJs --o Config
+IConfigJs --o ConfigFactory
+Config --o ConfigFactory
+
+ConfigFactory --o StatisticsService
+SimulationConfig --o StatisticsService
+
+ForamConfig --o ForamFactory
+
+SystemConfig --o MongoProvider
+
+SimulationConfig --o OceanFragmentContainer
+EnvironmentConfig --o OceanFragmentContainer
+
+StatisticsService --o OceanFragment
+EnvironmentConfig --o OceanFragment
+ForamConfig --o OceanFragment
+ForamFactory --o OceanFragment
+
+StatisticsService --o Foram
+EnvironmentConfig --o Foram
+ForamConfig --o Foram
+OceanFragment --o Foram
+
+@enduml

@@ -58,15 +58,10 @@ public class Foram extends SimpleAgent implements IForam {
 	private ForamConfig config;
 
 	@Inject
-	private EnvironmentConfig environmentConfig;
-
-	@Inject
 	private UnitsConverter unitsConverter;
 
 	@Inject
 	private ShellFactory shellFactory;
-
-	private Random random = new Random();
 
 	@Inject
 	private StatisticsService statisticsService;

@@ -1,0 +1,26 @@
+@startuml
+
+
+OceanFragment --o OceanFragmentContainer
+SimulationConfig --o OceanFragmentContainer
+EnvironmentConfig --o OceanFragmentContainer
+
+Foram --o OceanFragment
+EnvironmentConfig --o OceanFragment
+ForamConfig --o OceanFragment
+ForamFactory --o OceanFragment
+ReproductionService --o OceanFragment
+StatisticsService --o OceanFragment
+
+'ForamType --o Foram
+'ForamState --o Foram
+'Shell --o Foram
+'Genotype --o Foram
+ForamConfig --o Foram
+ShellFactory --o Foram
+StatisticsService --o Foram
+OceanFragment --o Foram
+
+
+
+@enduml

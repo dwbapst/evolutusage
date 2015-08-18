@@ -14,6 +14,8 @@ import pl.edu.agh.evolutus.genotype.operator.RecombinationOperator;
 
 public class DiploidGenotype extends Genotype {
 
+	private static final RecombinationOperator RECOMBINATION_OPERATOR = new RecombinationOperator();
+
 	private final String firstParentId;
 	private final String secondParentId;
 
@@ -26,7 +28,7 @@ public class DiploidGenotype extends Genotype {
 		this.secondParentId = genomeB.getForamIdentifier();
 		this.genomeA = Genome.forGenome(genomeA, agentAddress.toQualifiedString());
 		this.genomeB = Genome.forGenome(genomeB, agentAddress.toQualifiedString());
-		this.effectiveGenome = new RecombinationOperator().apply(this.genomeA, this.genomeB);
+		this.effectiveGenome = RECOMBINATION_OPERATOR.apply(this.genomeA, this.genomeB);
 	}
 
 	@Override
