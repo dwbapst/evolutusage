@@ -37,6 +37,11 @@ import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
 import pl.edu.agh.evolutus.utils.VelocityVector;
 
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+
 public class Foram extends SimpleAgent implements IForam {
 
 	private static final Logger logger = LoggerFactory.getLogger(Foram.class);
@@ -240,11 +245,10 @@ public class Foram extends SimpleAgent implements IForam {
 
 	private void eat() {
 		//cannot consume more then shell can contain.
-		double maxEnergy = genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell() - getEnergy();
+		double maxEnergy = (genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell()) - getEnergy();
 		//max energy that can be collected at this moment by the creature
 		//it is influenced by size of foram as well as their effectivness in food collecting.
-		double energyDemand = genotype.get(Genome.MAX_ENERGY_COLLECTING_PER_CHAMBER_PER_HOUR).getValue() *
-				shell.getVolumeShell() * config.stepDurationInHours();
+		double energyDemand = genotype.get(Genome.FOOD_COLLECTING_RATE).getValue() * (0.1*shell.getVolumeShell())* config.stepDurationInHours();
 
 		double radiusOfCollectingInMeters = config.raduisOfFoodCollecting(envState, foramState, currentTime);
 		energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);

@@ -40,8 +40,7 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new HaploidGenotype(genome, foram.getAddress()));
 		foram.setShell(shellFactory.createInitialShell(foram));
-		foram.setEnergy(Geometry.sphereVolume(foram.getGenotype().get(Genome.HAPLOID_FIRST_CHAMBER_RADIUS).getValue()) *
-				foram.getGenotype().get(Genome.METABOLIC_EFFECTIVENESS).getValue());
+		foram.setEnergy(foram.getShell().getVolumeShell() * foram.getGenotype().get(Genome.METABOLIC_EFFECTIVENESS).getValue());
 		return foram;
 	}
 
@@ -50,8 +49,7 @@ public class ForamFactory implements IComponentInstanceProviderAware {
 		IForam foram = createForam(foramType);
 		foram.setGenotype(new DiploidGenotype(genomeA, genomeB, foram.getAddress()));
 		foram.setShell(shellFactory.createInitialShell(foram));
-		foram.setEnergy(Geometry.sphereVolume(foram.getGenotype().get(Genome.DIPLOID_FIRST_CHAMBER_RADIUS).getValue()) *
-				foram.getGenotype().get(Genome.METABOLIC_EFFECTIVENESS).getValue());
+		foram.setEnergy(foram.getShell().getVolumeShell() * foram.getGenotype().get(Genome.METABOLIC_EFFECTIVENESS).getValue());
 		return foram;
 	}
 
