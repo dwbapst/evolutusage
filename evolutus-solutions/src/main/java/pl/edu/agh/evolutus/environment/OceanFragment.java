@@ -194,7 +194,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		changeAlgaeAvailability(getEnvState().algaeGrowth); // regenerate algae
 
 		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesMap);
-		onForamBirth(foramsToAdd.size());
+		bornForamsCounter += foramsToAdd.size();
 		addAll(foramsToAdd);
 
 		super.step(); // call forams' step() methods
@@ -202,16 +202,10 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		steps++;
 		updateEnvState();
 	}
-	@Override
-	public void onForamDied()
-	{
-		deadForamsCounter++;
-	}
 
 	@Override
-	public void onForamBirth(int newForams)
-	{
-		bornForamsCounter+=newForams;
+	public void onForamDied() {
+		deadForamsCounter++;
 	}
 
 	private void addStats() {

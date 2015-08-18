@@ -38,8 +38,6 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	void onForamDied();
 
-	void onForamBirth(int newForams);
-
 	double totalEnergy();
 
 	double averageEnergy();

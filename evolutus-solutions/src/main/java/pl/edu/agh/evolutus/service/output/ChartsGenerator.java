@@ -1,5 +1,6 @@
 package pl.edu.agh.evolutus.service.output;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import pl.edu.agh.evolutus.utils.Utils;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +38,8 @@ public class ChartsGenerator extends OutputFileGenerator {
 	protected void generateInner(Simulation simulation, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
 			throws IOException, FileGeneratorException {
 
+		copyLibrariesIfNotCopiedYet(outputDirectory);
+
 		String simulationStartString = Utils.getTimestampAsString(simulation.getSimulationStart());
 
 		List<Stats> statsList = infoMapToStatsList(infoMap);
@@ -57,6 +61,15 @@ public class ChartsGenerator extends OutputFileGenerator {
 
 	private String getHtmlFileName(String name, String timePart) {
 		return name + "-" + timePart + ".html";
+	}
+
+	private void copyLibrariesIfNotCopiedYet(File outputDirectory) throws IOException {
+		File libraryDir = new File(outputDirectory, "js");
+		if (!libraryDir.exists()) {
+			for (String lib : Arrays.asList("jquery-1.11.2.min.js", "jsapi-visualization-1.1.min.js")) {
+				FileUtils.copyInputStreamToFile(Utils.getResourceAsStream("js/" + lib), new File(libraryDir, lib));
+			}
+		}
 	}
 
 	private void generateGeneEvolutionCharts(Simulation simulation, File outputDirectory) throws IOException {

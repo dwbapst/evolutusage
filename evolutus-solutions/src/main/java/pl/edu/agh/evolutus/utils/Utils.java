@@ -1,5 +1,6 @@
 package pl.edu.agh.evolutus.utils;
 
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -22,9 +23,12 @@ public class Utils {
 		return Collections.unmodifiableMap(map);
 	}
 
-
 	public static String getTimestampAsString(Timestamp timestamp) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		return format.format(new Date(timestamp.getTime()));
+	}
+
+	public static InputStream getResourceAsStream(String resourceName) {
+		return Utils.class.getClassLoader().getResourceAsStream(resourceName);
 	}
 }

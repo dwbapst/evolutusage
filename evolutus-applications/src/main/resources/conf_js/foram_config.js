@@ -30,7 +30,6 @@ function initialEnergy() {
    position: { x, y, z },
    algaeEnergy,
    algaeGrowth,
-   algaeAvailability,
    currentDirection: { x, y, z }
  }
 

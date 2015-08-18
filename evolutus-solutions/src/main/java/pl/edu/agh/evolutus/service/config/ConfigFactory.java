@@ -22,6 +22,8 @@ import org.jage.platform.component.exception.ComponentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.evolutus.utils.Utils;
+
 public class ConfigFactory implements IStatefulComponent {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFactory.class);
@@ -96,7 +98,7 @@ public class ConfigFactory implements IStatefulComponent {
 	public List<Reader> getClasspathConfigReaders() throws ConfigServiceException {
 		List<Reader> readers = new ArrayList<>();
 		for (String configFile : CLASSPATH_CONFIG_FILES) {
-			InputStream configStream = getClass().getClassLoader().getResourceAsStream(configFile);
+			InputStream configStream = Utils.getResourceAsStream(configFile);
 			if (configStream == null) {
 				throw new ConfigServiceException("Cannot find " + configFile + " file in the classpath root directory.");
 			}
