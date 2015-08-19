@@ -31,7 +31,7 @@
 
         var lineChartOptions = {
           title: 'Total forams count, born and dead, average energy',
-          colors: ['rgb(0, 113, 182)', 'grey', 'green', 'red'],
+          colors: ['rgb(0, 113, 182)', 'grey', 'red', 'orange'],
           series: {
             0: {targetAxisIndex: 0},
             1: {targetAxisIndex: 0},

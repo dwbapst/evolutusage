@@ -34,7 +34,7 @@
 
             var lineChartOptions = {
                 title: 'Total forams (haplo and diploidal) count, born and dead forams',
-                colors: ['rgb(0, 113, 182)', 'rgb(0, 63, 102)', 'rgb(0, 163, 242)', 'red', 'yellow'],
+                colors: ['rgb(0, 113, 182)', 'rgb(0, 63, 102)', 'rgb(0, 163, 242)', 'grey', 'red'],
                 series: {
                     0: {targetAxisIndex: 0},
                     1: {targetAxisIndex: 0},
