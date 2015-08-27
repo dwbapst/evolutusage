@@ -26,11 +26,11 @@ function generateHTML() {
 }
 
 function simulationDuration() {
-   return 400 * 24;
+   return 500 * 24;
 }
 
 function unitLengthInMeters() {
-   return {x: 60, y: 60, z: 30};
+   return {x: 20, y: 20, z: 10};
 }
 
 function stepDurationInHours() {

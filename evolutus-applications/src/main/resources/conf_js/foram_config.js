@@ -10,11 +10,11 @@ function reproductionType() {
 }
 
 function foramActiveMotion() {
-   return true;
+   return false;
 }
 
 function initialEnergy() {
-   return 1.0;
+   return 10.0;
 }
 
 /**
@@ -56,7 +56,7 @@ function initialEnergy() {
  */
 
 function energyNeededForGrowth(envState, foramState, time) {
-   return 40.0;
+   return 1000.0;
 }
 
 function growthProbability(envState, foramState, time) {
@@ -64,19 +64,19 @@ function growthProbability(envState, foramState, time) {
 }
 
 function chambersLimit(envState, foramState, time) {
-   return 20;
+   return 10;
 }
 
 function energyNeededToReproduce(envState, foramState, time) {
-   return 50.0;
+   return 2000;
 }
 
 function reproductionProbability(envState, foramState, time) {
-   return 0.8;
+   return 0.9;
 }
 
 function gametesProduction(envState, foramState, time) {
-   return 1000 * foramState.shell.chambersCount;
+   return 0.4 * foramState.shell.volumeShell;
 }
 
 function gametesSievingCoefficient(envState, foramState, time) {
@@ -84,7 +84,7 @@ function gametesSievingCoefficient(envState, foramState, time) {
 }
 
 function raduisOfFoodCollecting(envState, foramState, time) {
-   return 5.0; // 5.0 m
+   return 0.5; // 20 cm
 }
 
 function crossingOverOperator(envState, foramState, time) {
@@ -145,36 +145,60 @@ function initialGenome(position) {
    return [
       {
          name: "translationFactor",
-         value: 0.0,
-         //mutationProbability: 0,
-         //mutationRate: 0,
-         //minValue: 0,
-         //maxValue: 0,
+         value: 0.15,
+         mutationProbability: 0.7,
+         mutationRate: 0.1,
+         minValue: -1.0,
+         maxValue: 1.0
       },
       {
          name: "growthFactor",
-         value: 0.0
+         value: 1.1,
+         mutationProbability: 0.7,
+         mutationRate: 0.1,
+         minValue: 1.0,
+         maxValue: 2.0
       },
       {
          name: "rotationAngle",
-         value: 0.0
+         value: 0.0,
+         mutationProbability: 0.7,
+         mutationRate: 0.5,
+         minValue: -180.0,
+         maxValue: 180.0
       },
       {
          name: "deviationAngle",
-         value: 0.0
+         value: 0.0,
+         mutationProbability: 0.7,
+         mutationRate: 0.5,
+         minValue: -180.0,
+         maxValue: 180.0
       },
 
       {
          name: "haploidFirstChamberRadius",
-         value: 0.0
+         value: 40.0,
+         mutationProbability: 0.7,
+         mutationRate: 0.05,
+         minValue: 30.0,
+         maxValue: 100.0
       },
       {
          name: "diploidFirstChamberRadius",
-         value: 0.0
+         value: 10.0,
+         mutationProbability: 0.7,
+         mutationRate: 0.05,
+         minValue: 5.0,
+         maxValue: 30.0
       },
       {
          name: "wallThicknessFactor",
-         value: 0.0
+         value: 0.1,
+         mutationProbability: 0.7,
+         mutationRate: 0.01,
+         minValue: 0.01,
+         maxValue: 0.5
       },
       {
          name: "minAdultAge",
@@ -197,12 +221,20 @@ function initialGenome(position) {
          value: 60.0
       },
       {
-         name: "maxEnergyCollectingPerChamberPerHour",
-         value: 1.5
+         name: "foodCollectingRate",
+         value: 0.01,
+         mutationProbability: 0.2,
+         mutationRate: 0.001,
+         minValue: 0.001,
+         maxValue: 0.1
       },
       {
          name: "energyDemandPerChamberPerHour",
-         value: 0.2
+         value: 0.02,
+         mutationProbability: 0.2,
+         mutationRate: 0.1,
+         minValue: 0.001,
+         maxValue: 0.9
       },
       {
          name: "minEnergy",
@@ -210,19 +242,27 @@ function initialGenome(position) {
       },
       {
          name: "chamberGrowthCostFactor",
-         value: 0.5
+         value: 0.01,
+         mutationProbability: 0.2,
+         mutationRate: 0.1,
+         minValue: 0.001,
+         maxValue: 0.9
       },
       {
          name: "metabolicEffectiveness",
-         value: 0.0
+         value: 0.8,
+         mutationProbability: 0.2,
+         mutationRate: 0.001,
+         minValue: 0.1,
+         maxValue: 0.9
       },
       {
          name: "minMetabolicEffectiveness",
-         value: 0.0
+         value: 0.01
       },
       {
          name: "hibernationEnergyLevel",
-         value: 1
+         value: 5
       },
       {
          name: "hibernationEnergyConsumptionPerHour",

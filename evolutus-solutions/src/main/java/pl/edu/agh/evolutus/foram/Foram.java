@@ -122,7 +122,6 @@ public class Foram extends SimpleAgent implements IForam {
 	@Override
 	public void init() throws ComponentException {
 		super.init();
-		this.energy = config.initialEnergy();
 		this.stepDurationInHours = config.stepDurationInHours();
 		this.stepDurationInSeconds = stepDurationInHours * 3600;
 		this.foramActiveMotion = config.foramActiveMotion();
@@ -244,12 +243,12 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void eat() {
-		//cannot consume more then shell can contain.
-		double maxEnergy = (genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell()) - getEnergy();
-		//max energy that can be collected at this moment by the creature
-		//it is influenced by size of foram as well as their effectivness in food collecting.
-		double energyDemand = genotype.get(Genome.FOOD_COLLECTING_RATE).getValue() * (0.1*shell.getVolumeShell())* config.stepDurationInHours();
-
+		double foodCollectingRate= genotype.get(Genome.FOOD_COLLECTING_RATE).getValue();
+		double shellVolume = shell.getVolumeShell();
+		double stepInHours = config.stepDurationInHours();
+		double energyDemand = foodCollectingRate * shellVolume * stepInHours;
+		double currentEnergy = getEnergy();
+		double maxEnergy = (genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell()) - currentEnergy;
 		double radiusOfCollectingInMeters = config.raduisOfFoodCollecting(envState, foramState, currentTime);
 		energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 	}
@@ -281,13 +280,7 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void createChamber() {
-		//energy needed for creating new chamber should be related to size of the new chamber.
-		//size of new chamber
-		double newChamberRadius = shell.getLastChamberRadius()*shell.getGrowthFactor();
-
-		energy -= genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue() *
-				genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue()* Geometry.sphereVolume(newChamberRadius);
-		//energy -= energy * genotype.get(Genome.CHAMBER_GROWTH_COST_FACTOR).getValue();
+		energy -= config.energyNeededForGrowth(envState, foramState, currentTime);
 		shell = shellFactory.createShellWithNewChamber(this);
 	}
 

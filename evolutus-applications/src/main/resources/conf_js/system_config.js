@@ -8,7 +8,6 @@ function databaseParameters() {
       //inMemory: false
       host: "localhost",
       port: 65432,
-      inMemory: true,
-      dbpath: "/tmp/mongodb"
+      inMemory: true
    };
 }

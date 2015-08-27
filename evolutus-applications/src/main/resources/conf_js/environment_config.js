@@ -7,7 +7,7 @@ function randInt(maxValue) {
 // initialization-only kernels
 
 function oceanSize() {
-   return {x: 600, y: 600, z: 100};
+   return {x: 200, y: 200, z: 50};
 }
 
 function initialForamsCount(x, y, z) {
@@ -16,7 +16,7 @@ function initialForamsCount(x, y, z) {
 }
 
 function initialAlgaeAvailability(x, y, z) {
-   return 1000.0;
+   return 500000.0;
 }
 
 function boundaryConditions() {
@@ -60,7 +60,7 @@ function boundaryConditions() {
  }
  */
 function algaeEnergy(time, envStates) {
-   return 1.0;
+   return 10.0;
 }
 
 function algaeGrowth(time, envStates) {
