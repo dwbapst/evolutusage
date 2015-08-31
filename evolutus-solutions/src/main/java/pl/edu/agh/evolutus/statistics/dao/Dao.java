@@ -2,6 +2,7 @@ package pl.edu.agh.evolutus.statistics.dao;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -43,9 +44,19 @@ public abstract class Dao<T extends Statistics> implements IStatefulComponent {
 
 	protected abstract Class<T> getReturnType();
 
+	protected Query<T> createQuery() {
+		return ds.createQuery(getReturnType());
+	}
+
 	protected Query<T> createQuery(Simulation simulation) {
-		return ds.createQuery(getReturnType())
+		return createQuery()
 				.field("simulationStart").equal(simulation.getSimulationStart().getTime());
+	}
+
+	protected Optional<T> optionalResult(Query<T> query) {
+		return query.asList()
+				.stream()
+				.findFirst();
 	}
 }
 

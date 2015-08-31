@@ -30,7 +30,6 @@ public class ConfigFactory implements IStatefulComponent {
 
 	public static final String CONFIG_PROPERTY = "evolutus.config";
 	public static final String[] CLASSPATH_CONFIG_FILES = {
-			"conf_js/system_config.js",
 			"conf_js/simulation_config.js",
 			"conf_js/environment_config.js",
 			"conf_js/foram_config.js"

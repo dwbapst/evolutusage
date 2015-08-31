@@ -96,18 +96,4 @@ public interface IConfigJS {
 
 	String simulationDescription();
 
-	boolean virtualFossilizationEnabled();
-
-	boolean generatePSI();
-
-	boolean generateCSV();
-
-	boolean generateHTML();
-
-	/*-********************
-	 *       SYSTEM       *
-	 **********************/
-
-	ScriptObject databaseParameters();
-
 }

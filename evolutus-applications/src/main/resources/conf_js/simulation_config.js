@@ -9,22 +9,6 @@ function simulationDescription() {
    return "sample simulation description";
 }
 
-function virtualFossilizationEnabled() {
-   return true;
-}
-
-function generatePSI() {
-   return false;
-}
-
-function generateCSV() {
-   return false;
-}
-
-function generateHTML() {
-   return true;
-}
-
 function simulationDuration() {
    return 400 * 24;
 }

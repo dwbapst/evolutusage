@@ -31,10 +31,15 @@
 			<version>${jage.version}</version>
 		</dependency>
 
-		<!-- Solution Module -->
+		<!-- Evolutus Modules -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>evolutus-solutions</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>evolutus-cmd</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

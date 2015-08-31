@@ -58,5 +58,6 @@
     <module>evolutus-solutions</module>
     <module>evolutus-applications</module>
     <module>evolutus-distribution</module>
+    <module>evolutus-cmd</module>
   </modules>
 </project>
