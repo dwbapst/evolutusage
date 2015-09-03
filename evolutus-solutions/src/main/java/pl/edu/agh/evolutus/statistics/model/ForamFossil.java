@@ -13,7 +13,7 @@ public class ForamFossil extends Statistics {
 	private String firstParentId;
 	private String secondParentId;
 
-	private Long deathStepNo;
+	private Double deathHour;
 	private Double age;
 	private boolean isDiploid;
 	private ForamType foramType;
@@ -29,7 +29,7 @@ public class ForamFossil extends Statistics {
 	public ForamFossil(
 			String foramId,
 			Simulation simulation,
-			Long deathStepNo,
+			Double deathHour,
 			Double age,
 			ForamType foramType,
 			Genotype genotype,
@@ -42,7 +42,7 @@ public class ForamFossil extends Statistics {
 		this.firstParentId = genotype.getFirstParentId();
 		this.secondParentId = genotype.getSecondParentId();
 
-		this.deathStepNo = deathStepNo;
+		this.deathHour = deathHour;
 		this.age = age;
 		this.isDiploid = genotype.isDiploid();
 		this.foramType = foramType;
@@ -64,8 +64,8 @@ public class ForamFossil extends Statistics {
 		return secondParentId;
 	}
 
-	public Long getDeathStepNo() {
-		return deathStepNo;
+	public Double getDeathHour() {
+		return deathHour;
 	}
 
 	public Double getAge() {

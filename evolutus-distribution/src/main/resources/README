@@ -1,4 +1,45 @@
+
+*****************************
+*     Application usage     *
+*****************************
+
+evolutus.sh (simulation|sim)  <db_properties_file>  [config_files]                                          - start simulation
+evolutus.sh  list             <db_properties_file>                                                          - list simulations
+evolutus.sh (generate|gen)    population-chart      <db_properties_file> <out_dir> [simulation]             - generate population chart
+evolutus.sh (generate|gen)    energy-chart          <db_properties_file> <out_dir> [simulation]             - enerate energy chart
+evolutus.sh (generate|gen)    born-dead-chart       <db_properties_file> <out_dir> [simulation]             - generate born-dead chart
+evolutus.sh (generate|gen)    psi                   <db_properties_file> <out_dir> [simulation]             - generate Amira PSI files
+evolutus.sh (generate|gen)    csv                   <db_properties_file> <out_dir> [simulation]             - generate CSV files
+evolutus.sh (generate|gen)    config                <db_properties_file> <out_dir> [simulation]             - dump simulation config
+evolutus.sh (generate|gen)    genes-evolution       <db_properties_file> <out_dir> [simulation]  [gene]...  - generate evolution charts for given genes
+
+
+*****************************
+*          Examples         *
+*****************************
+
 In ./conf directory, there are example config files.
 
 Start simulation by executing:
-./evolutus.sh <output-directory> conf/*
+./evolutus.sh simulation db.properties conf/*
+
+Or with shorter mode name:
+./evolutus.sh sim db.properties conf/*
+
+Or to use default configuration:
+./evolutus.sh sim db.properties
+
+To list all available simulations:
+./evolutus.sh list db.properties
+
+To generate population chart for simulation 1440955505672 and save it to /tmp/evolutus/out:
+./evolutus.sh gen population-chart db /tmp/evolutus/out 1440955505672
+
+To generate population chart for latest simulation and save it to /tmp/evolutus/out:
+./evolutus.sh gen population-chart db /tmp/evolutus/out
+
+To generate evolution charts for genes gene1 and gene2 for simulation 1440955505672 and save them to /tmp/evolutus/out:
+./evolutus.sh gen genes-evolution db /tmp/evolutus/out 1440955505672 gene1 gene2
+
+To generate evolution charts for genes gene1 and gene2 for latest simulation and save them to /tmp/evolutus/out:
+./evolutus.sh gen genes-evolution db /tmp/evolutus/out gene1 gene2

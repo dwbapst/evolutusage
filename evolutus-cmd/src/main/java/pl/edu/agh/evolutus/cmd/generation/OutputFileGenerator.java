@@ -1,15 +1,13 @@
-package pl.edu.agh.evolutus.service.output;
+package pl.edu.agh.evolutus.cmd.generation;
 
-import pl.edu.agh.evolutus.service.TemplateRenderer;
-import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
-import pl.edu.agh.evolutus.statistics.model.Simulation;
-
-import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
+
+import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 
 public abstract class OutputFileGenerator {
 
@@ -18,27 +16,18 @@ public abstract class OutputFileGenerator {
 
 	protected abstract String outputDirectoryName();
 
-	protected abstract void generateInner(Simulation simulation, File outputDirectory,
-			Map<Long, List<OceanFragmentInfo>> infoMap) throws IOException, FileGeneratorException;
-
-	public void generate(Simulation simulation, File outputDirectory, Map<Long, List<OceanFragmentInfo>> infoMap)
-			throws FileGeneratorException {
-		outputDirectory = new File(outputDirectory, outputDirectoryName());
+	protected File getOutputDirectory(File baseOutputDirectory) {
+		File outputDirectory = new File(baseOutputDirectory, outputDirectoryName());
 		outputDirectory.mkdirs();
-
-		try {
-			generateInner(simulation, outputDirectory, infoMap);
-		} catch (IOException e) {
-			throw new FileGeneratorException(e);
-		}
+		return outputDirectory;
 	}
 
 	protected List<Stats> infoMapToStatsList(Map<Long, List<OceanFragmentInfo>> infoMap) {
 		List<Stats> statsList = new ArrayList<>();
 		for (Long stepNo : infoMap.keySet()) {
 			long foramsCount = 0;
-			long foramsHaploidCount =0;
-			long foramsDiploidCount =0;
+			long foramsHaploidCount = 0;
+			long foramsDiploidCount = 0;
 			double algaeAvailability = 0.0;
 			long deadForamsCount = 0;
 			long bornForamsCount = 0;
@@ -47,21 +36,31 @@ public abstract class OutputFileGenerator {
 			for (OceanFragmentInfo info : infoMap.get(stepNo)) {
 				foramsCount += info.getForamsCount();
 				foramsHaploidCount += info.getHaploidForamsCount();
-				foramsDiploidCount +=info.getDiploidForamsCount();
+				foramsDiploidCount += info.getDiploidForamsCount();
 				algaeAvailability += info.getAlgaeAvailability();
 				deadForamsCount += info.getDeathCount();
 				bornForamsCount += info.getBirthCount();
 				averageEnergy += info.getTotalEnergy();
 			}
-			averageEnergy = averageEnergy/foramsCount;
-			statsList.add(new Stats(stepNo, foramsCount, foramsHaploidCount, foramsDiploidCount, deadForamsCount, bornForamsCount, algaeAvailability, averageEnergy));
+			averageEnergy = averageEnergy / foramsCount;
+			statsList.add(new Stats(stepNo, foramsCount, foramsHaploidCount, foramsDiploidCount, deadForamsCount,
+					bornForamsCount,
+					algaeAvailability, averageEnergy));
 		}
 		return statsList;
 	}
 
 	public static class FileGeneratorException extends Exception {
+		public FileGeneratorException(String message) {
+			super(message);
+		}
+
 		public FileGeneratorException(Throwable cause) {
 			super(cause.getMessage(), cause);
+		}
+
+		public FileGeneratorException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 
@@ -76,7 +75,7 @@ public abstract class OutputFileGenerator {
 		public final double averageEnergy;
 
 		private Stats(Long stepNo, Long foramsCount, Long foramsHaploidCount, Long foramsDiploidCount,
-					  Long deadForamsCount, Long bornForamsCount, Double algaeAvailability, Double averageEnergy) {
+				Long deadForamsCount, Long bornForamsCount, Double algaeAvailability, Double averageEnergy) {
 			this.stepNo = stepNo;
 			this.foramsCount = foramsCount;
 			this.foramsHaploidCount = foramsHaploidCount;
@@ -95,19 +94,29 @@ public abstract class OutputFileGenerator {
 			return foramsCount;
 		}
 
-		public long getForamsHaploidCount() { return foramsHaploidCount; }
+		public long getForamsHaploidCount() {
+			return foramsHaploidCount;
+		}
 
-		public long getForamsDiploidCount() { return foramsDiploidCount; }
+		public long getForamsDiploidCount() {
+			return foramsDiploidCount;
+		}
 
 		public double getAlgaeAvailability() {
 			return algaeAvailability;
 		}
 
-		public long getDeadForamsCount() { return deadForamsCount; }
+		public long getDeadForamsCount() {
+			return deadForamsCount;
+		}
 
-		public long getBornForamsCount() { return bornForamsCount; }
+		public long getBornForamsCount() {
+			return bornForamsCount;
+		}
 
-		public double getAverageEnergy() { return averageEnergy; }
+		public double getAverageEnergy() {
+			return averageEnergy;
+		}
 	}
 
 }

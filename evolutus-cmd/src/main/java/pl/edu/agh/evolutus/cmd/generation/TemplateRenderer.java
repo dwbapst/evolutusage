@@ -1,4 +1,4 @@
-package pl.edu.agh.evolutus.service;
+package pl.edu.agh.evolutus.cmd.generation;
 
 import java.io.File;
 import java.io.FileWriter;

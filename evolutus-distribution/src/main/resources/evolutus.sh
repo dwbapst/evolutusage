@@ -2,4 +2,4 @@
 
 SCRIPTPATH="$(dirname "$(readlink -f "$0")")"
 
-java -classpath "$SCRIPTPATH/lib/*" pl.edu.agh.evolutus.Application $@
+java -classpath "$SCRIPTPATH/lib/*" pl.edu.agh.evolutus.cmd.Application $@
