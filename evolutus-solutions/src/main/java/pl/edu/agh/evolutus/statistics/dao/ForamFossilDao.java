@@ -17,7 +17,7 @@ public class ForamFossilDao extends Dao<ForamFossil> {
 		return ForamFossil.class;
 	}
 
-	public Map<Long, double[]> getAvgGeneValuesByStep(Simulation simulation, String... genes) {
+	public Map<Double, double[]> getAvgGeneValuesByDeathHour(Simulation simulation, String... genes) {
 		return createQuery(simulation)
 				.asList()
 				.stream()
@@ -26,7 +26,7 @@ public class ForamFossilDao extends Dao<ForamFossil> {
 					for (int i = 0; i < genes.length; i++) {
 						values[i] = fossil.getGenotype().get(genes[i])[0];
 					}
-					return Pair.of(fossil.getDeathStepNo(), values);
+					return Pair.of(fossil.getDeathHour(), values);
 				})
 				.collect(Collectors.groupingBy(Pair::getLeft))
 				.entrySet()
@@ -35,7 +35,7 @@ public class ForamFossilDao extends Dao<ForamFossil> {
 						Entry::getKey,
 						entry -> {
 							double[] avgValues = new double[genes.length];
-							for (Pair<Long, double[]> pair : entry.getValue()) {
+							for (Pair<Double, double[]> pair : entry.getValue()) {
 								for (int i = 0; i < avgValues.length; i++) {
 									avgValues[i] += pair.getRight()[i];
 								}

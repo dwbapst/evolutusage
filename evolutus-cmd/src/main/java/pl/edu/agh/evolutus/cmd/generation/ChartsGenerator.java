@@ -109,8 +109,8 @@ public class ChartsGenerator extends OutputFileGenerator {
 	}
 
 	private void generateGeneEvolutionChart(String geneName, Simulation simulation, File outputDirectory) {
-		List<Pair<Long, Double>> fossilStats = foramFossilDao
-				.getAvgGeneValuesByStep(simulation, geneName)
+		List<Pair<Double, Double>> fossilStats = foramFossilDao
+				.getAvgGeneValuesByDeathHour(simulation, geneName)
 				.entrySet()
 				.stream()
 				.map(entry -> Pair.of(entry.getKey(), entry.getValue()[0]))

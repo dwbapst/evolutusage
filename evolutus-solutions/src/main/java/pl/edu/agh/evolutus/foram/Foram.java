@@ -220,10 +220,11 @@ public class Foram extends SimpleAgent implements IForam {
 			IOceanFragment oceanFragment = getOceanFragment();
 			VectorL position = oceanFragment.getPosition();
 			String id = (getAddress() == null) ? "" : getAddress().toQualifiedString();
+			Double deathHour = unitsConverter.stepsToHours(oceanFragment.currentStep());
 			ForamFossil fossil = new ForamFossil(
 					id,
 					statisticsService.getSimulation(),
-					oceanFragment.currentStep(),
+					deathHour,
 					age,
 					type,
 					genotype,

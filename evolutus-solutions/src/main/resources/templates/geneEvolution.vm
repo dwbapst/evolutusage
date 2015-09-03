@@ -22,7 +22,7 @@
         var lineChartOptions = {
           title: 'Avg. \'$gene\' gene values',
           colors: ['rgb(0, 113, 182)'],
-          hAxis: {title: 'Step'},
+          hAxis: {title: 'Hour'},
           vAxis: {title: '$gene'},
           explorer: {
             axis: 'horizontal'
