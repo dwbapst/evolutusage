@@ -15,8 +15,8 @@ function initialForamsCount(x, y, z) {
    return count;
 }
 
-function initialAlgaeAvailability(x, y, z) {
-   return 500000.0;
+function initialAlgaeDensity(x, y, z) {
+   return 15.0;
 }
 
 function boundaryConditions() {
@@ -91,6 +91,11 @@ function ph(time, envStates) {
 }
 
 // TODO: change kernel name to currentSpeed
+//this is sea current expressed in m/s
+//by default is very slow about 1 mm/s.
+// be carefull with speed - 1m per second is very fast!!!
+//according to wikipedia average speed can be 0,1 m/s but 1 m/s is also possible
+//deep sea ocean current around Antarctica is the fastest 0.2 m/s
 function currentDirection(time, envStates) {
    return {x: 0.001, y: 0.001, z: 0};
 }

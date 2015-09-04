@@ -29,7 +29,10 @@ public class EnvironmentConfig extends Config {
 
 	public double initialAlgaeAvailability(VectorL positionUnits) {
 		VectorD positionMeters = unitsConverter.unitsToMeters(positionUnits);
-		return configJS.initialAlgaeAvailability(positionMeters.x, positionMeters.y, positionMeters.z);
+		double algaeDensity = configJS.initialAlgaeDensity(positionMeters.x, positionMeters.y, positionMeters.z);
+		VectorD cellSize = VectorD.fromScriptObject(configJS.unitLengthInMeters());
+		double cellVolume = cellSize.x*cellSize.y*cellSize.z;
+		return algaeDensity * cellVolume;
 	}
 
 	public BoundaryConditions boundaryConditions() {
