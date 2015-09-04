@@ -16,7 +16,7 @@ public interface IConfigJS {
 
 	long initialForamsCount(double x, double y, double z);
 
-	double initialAlgaeAvailability(double x, double y, double z);
+	double initialAlgaeDensity(double x, double y, double z);
 
 	String boundaryConditions();
 
