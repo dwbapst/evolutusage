@@ -10,7 +10,7 @@ function simulationDescription() {
 }
 
 function simulationDuration() {
-   return 500 * 24;
+   return 300 * 24;
 }
 
 function unitLengthInMeters() {

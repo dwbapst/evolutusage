@@ -318,6 +318,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public Pair<AgentAddress, VectorL> getActiveMigrationTarget() {
+		//move to higher value of food!!!
 		OceanFragment target = this;
 		for (OceanFragment neighbor : neighbors) {
 			if (neighbor != null && neighbor.getAlgaeAvailability() > target.getAlgaeAvailability()) {

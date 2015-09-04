@@ -97,10 +97,14 @@ function globalMutationProbability(envState, foramState, time) {
    return 0.0;
 }
 
+//planktic foraminifera can move actively only in z direction
+//bentic foraminfera can move in any direction
 function foramActiveSpeed(envState, foramState, time) {
    return {x: 0.001, y: 0.001, z: 0.001};
 }
 
+//for planktic foraminifera motion energy is always 0
+//bentic foraminifera always need energy to move
 function activeMotionEnergyCostPerChamberPerMeter(envState, foramState, time) {
    return {up: 0.05, down: 0.1, horizontally: 0.07};
 }
