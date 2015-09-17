@@ -1,19 +1,14 @@
 package pl.edu.agh.evolutus.genotype;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.common.collect.ImmutableSet;
-
 import jdk.nashorn.internal.objects.NativeArray;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import pl.edu.agh.evolutus.genotype.Gene.GeneValidationException;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Genome implements Iterable<Gene> {
 
@@ -32,7 +27,7 @@ public class Genome implements Iterable<Gene> {
 
 	public static final String MAX_ENERGY_PER_CHAMBER = "maxEnergyPerChamber";
 	public static final String FOOD_COLLECTING_RATE = "foodCollectingRate";
-	public static final String ENERGY_DEMAND_PER_CHAMBER_PER_HOUR = "energyDemandPerChamberPerHour";
+	public static final String ENERGY_DEMAND_PER_VOLUME_PER_HOUR = "energyDemandPerVolumePerHour";
 	public static final String MIN_ENERGY = "minEnergy";
 	public static final String CHAMBER_GROWTH_COST_FACTOR = "chamberGrowthCostFactor";
 	public static final String METABOLIC_EFFECTIVENESS = "metabolicEffectiveness";
