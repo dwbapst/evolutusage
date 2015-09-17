@@ -87,7 +87,10 @@ public class Foram extends SimpleAgent implements IForam {
 		return energy;
 	}
 
-	
+	@Override
+	public double getShellVolume() {
+		return shell.getVolumeShell();
+	}
 
 	@Override
 	public void setGenotype(Genotype genotype) {

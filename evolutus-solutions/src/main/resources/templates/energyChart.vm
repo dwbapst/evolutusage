@@ -11,9 +11,9 @@
       function prepareCharts() {
 
         var array = [
-          ['Step', 'Forams count', 'Dead forams', 'New born forams', 'Average Energy'],
+          ['Step', 'Forams count', 'Dead forams', 'New born forams', 'Average Energy', 'Average shell volume'],
           #foreach($stat in $stats)
-            [$stat.stepNo, $stat.foramsCount, $stat.deadForamsCount, $stat.bornForamsCount, $stat.averageEnergy],
+            [$stat.stepNo, $stat.foramsCount, $stat.deadForamsCount, $stat.bornForamsCount, $stat.averageEnergy, $stat.averageShellVolume],
           #end
         ];
 
@@ -25,19 +25,22 @@
           if(stat[4] > maxEnergy){
             maxEnergy = stat[4];
           }
+          if(stat[5] > maxEnergy) {
+            maxEnergy = stat[5];
+          }
         });
 
         var lineChartData = google.visualization.arrayToDataTable(array);
 
         var lineChartOptions = {
-          title: 'Total forams count, born and dead, average energy',
-          colors: ['rgb(0, 113, 182)', 'grey', 'red', 'orange'],
+          title: 'Total forams count, born and dead, average energy, average shell volume',
+          colors: ['rgb(0, 113, 182)', 'grey', 'red', 'orange', 'blue'],
           series: {
             0: {targetAxisIndex: 0},
             1: {targetAxisIndex: 0},
             2: {targetAxisIndex: 0},
             3: {targetAxisIndex: 1},
-
+            4: {targetAxisIndex: 1},
           },
           vAxes: {
             0: {
@@ -49,7 +52,7 @@
               }
             },
             1: {
-              title: 'Average Energy',
+              title: 'Average Energy, Average shell volume',
               viewWindow: {
                 max: maxEnergy,
                 min: 0

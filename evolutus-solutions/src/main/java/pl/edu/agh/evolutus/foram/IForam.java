@@ -13,6 +13,8 @@ public interface IForam extends ISimpleAgent {
 
 	double getEnergy();
 
+	double getShellVolume();
+
 	void setGenotype(Genotype genotype);
 
 	Genotype getGenotype();

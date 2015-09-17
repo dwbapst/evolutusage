@@ -18,6 +18,7 @@ public class OceanFragmentInfo extends Statistics {
 	private Double insolation;
 	private Integer deathCount;
 	private Integer birthCount;
+	private Double averageShellVolume;
 
 	private OceanFragmentInfo() {
 		// for morphia
@@ -34,7 +35,8 @@ public class OceanFragmentInfo extends Statistics {
 			Double totalEnergy,
 			Double insolation,
 			Integer deathCount,
-			Integer birthCount
+			Integer birthCount,
+			Double averageShellVolume
 	) {
 		super(simulation.getSimulationStart());
 		this.stepNo = stepNo;
@@ -49,6 +51,7 @@ public class OceanFragmentInfo extends Statistics {
 		this.insolation = insolation;
 		this.deathCount = deathCount;
 		this.birthCount = birthCount;
+		this.averageShellVolume = averageShellVolume;
 	}
 
 	public Long getStepNo() {
@@ -94,4 +97,6 @@ public class OceanFragmentInfo extends Statistics {
 	public Integer getDeathCount() { return this.deathCount; }
 
 	public Integer getBirthCount() { return this.birthCount; }
+
+	public Double getAverageShellVolume() { return this.averageShellVolume; }
 }
