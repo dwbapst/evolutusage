@@ -48,12 +48,22 @@ function initialEnergy() {
      firstChamberRadius,
      lastChamberRadius,
      chambersCount,
-     volume
+     volumeShell
    }
  }
 
  time - time in hours from the beginning of the simulation
  */
+
+function consumptionPerHour(envState, foramState, time)
+{
+   var volumeOfCytoplasm = foramState.energy / foramState.genotype.metabolicEffectiveness[0];
+   var consumption = Math.pow(volumeOfCytoplasm, 0.2) * foramState.genotype.energyDemandPerVolumePerHour[0];
+   if(!isInHibernationState(envState, foramState, time))
+      return consumption;
+    else
+      return consumption *  foramState.genotype.hibernationEnergyConsumptionPerHour[0];
+}
 
 function energyNeededForGrowth(envState, foramState, time) {
    return 1000.0;
@@ -76,7 +86,10 @@ function reproductionProbability(envState, foramState, time) {
 }
 
 function gametesProduction(envState, foramState, time) {
-   return 0.4 * foramState.shell.volumeShell;
+   if(foramState.foramType.ploidy == foramState.foramType.ploidy.HAPLOID)
+      return 0.4 * foramState.shell.volumeShell;
+   else
+      return 0.01 * foramState.shell.volumeShell;
 }
 
 function gametesSievingCoefficient(envState, foramState, time) {
@@ -229,7 +242,7 @@ function initialGenome(position) {
          maxValue: 0.1
       },
       {
-         name: "energyDemandPerChamberPerHour",
+         name: "energyDemandPerVolumePerHour",
          value: 0.02,
          mutationProbability: 0.2,
          mutationRate: 0.1,

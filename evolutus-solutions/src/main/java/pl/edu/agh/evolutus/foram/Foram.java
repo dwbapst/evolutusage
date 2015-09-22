@@ -174,6 +174,8 @@ public class Foram extends SimpleAgent implements IForam {
 				tryMigrate();
 			}
 
+
+
 			age += stepDurationInHours;
 		} catch (AgentDiedException e) {
 			logger.debug("Foram died: {}", getAddress());
@@ -181,18 +183,9 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void consumeStepEnergy() {
-		double consumptionPerHour;
-		if (config.isInHibernationState(envState, foramState, currentTime)) {
-			consumptionPerHour = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR).getValue();
-		} else {
-			//energy consumption is related to volume of cytoplams
-			//TODO  Genome.FOOD_COLLECTING_RATE influences energy consumption!
-			double volumeCytoplasm = getEnergy()/genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue();
-			consumptionPerHour =
-					genotype.get(Genome.ENERGY_DEMAND_PER_VOLUME_PER_HOUR).getValue() * volumeCytoplasm;
-		}
-
-		energy -= consumptionPerHour * stepDurationInHours;
+		energy -= config.consumptionPerHour(envState, foramState, currentTime) * stepDurationInHours;
+		if (energy < 0.0)
+			energy = 0;
 		if(timeToBuildNewChamber !=null) {
 			timeToBuildNewChamber -= stepDurationInHours;
 			if (timeToBuildNewChamber <= 0.0)

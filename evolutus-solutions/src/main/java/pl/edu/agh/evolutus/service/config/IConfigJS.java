@@ -48,6 +48,8 @@ public interface IConfigJS {
 
 	double energyNeededForGrowth(EnvState envState, ForamState foramState, double time);
 
+	double consumptionPerHour(EnvState envState, ForamState foramState, double time);
+
 	double growthProbability(EnvState envState, ForamState foramState, double time);
 
 	int chambersLimit(EnvState envState, ForamState foramState, double time);

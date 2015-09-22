@@ -22,6 +22,10 @@ public class ForamConfig extends Config {
 		return configJS.initialEnergy();
 	}
 
+	public double consumptionPerHour(EnvState envState, ForamState foramState, double time){
+		return configJS.consumptionPerHour(envState, foramState, time);
+	}
+
 	public double energyNeededForGrowth(EnvState envState, ForamState foramState, double time) {
 		return configJS.energyNeededForGrowth(envState, foramState, time);
 	}
