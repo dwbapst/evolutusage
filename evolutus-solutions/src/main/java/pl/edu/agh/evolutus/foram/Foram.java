@@ -248,7 +248,7 @@ public class Foram extends SimpleAgent implements IForam {
 			double energyDemand = foodCollectingRate * shellVolume * stepInHours;
 			double currentEnergy = getEnergy();
 			double maxEnergy = (genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell()) - currentEnergy;
-			double radiusOfCollectingInMeters = config.raduisOfFoodCollecting(envState, foramState, currentTime);
+			double radiusOfCollectingInMeters = genotype.get(Genome.FOOD_COLLECTING_RANGE).getValue()+0.0001*shell.getLastChamberRadius();
 			energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 		}
 	}

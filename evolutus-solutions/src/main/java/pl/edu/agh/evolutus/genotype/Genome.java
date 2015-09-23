@@ -16,24 +16,28 @@ public class Genome implements Iterable<Gene> {
 	public static final String GROWTH_FACTOR = "growthFactor";
 	public static final String ROTATION_ANGLE = "rotationAngle";
 	public static final String DEVIATION_ANGLE = "deviationAngle";
-
 	public static final String HAPLOID_FIRST_CHAMBER_RADIUS = "haploidFirstChamberRadius";
 	public static final String DIPLOID_FIRST_CHAMBER_RADIUS = "diploidFirstChamberRadius";
 	public static final String WALL_THICKNESS_FACTOR = "wallThicknessFactor";
-	public static final String MIN_ADULT_AGE = "minAdultAge";
-	public static final String MIN_ADULT_VOLUME = "minAdultVolume";
-	public static final String HAPLOID_JUVENILE_VOLUME_FACTOR = "haploidJuvenileVolumeFactor";
-	public static final String DIPLOID_JUVENILE_VOLUME_FACTOR = "diploidJuvenileVolumeFactor";
 
-	public static final String MAX_ENERGY_PER_CHAMBER = "maxEnergyPerChamber";
 	public static final String FOOD_COLLECTING_RATE = "foodCollectingRate";
+	public static final String FOOD_COLLECTING_RANGE = "foodCollectingRange";
 	public static final String ENERGY_DEMAND_PER_VOLUME_PER_HOUR = "energyDemandPerVolumePerHour";
-	public static final String MIN_ENERGY = "minEnergy";
 	public static final String CHAMBER_GROWTH_COST_FACTOR = "chamberGrowthCostFactor";
 	public static final String METABOLIC_EFFECTIVENESS = "metabolicEffectiveness";
-	public static final String MIN_METABOLIC_EFFECTIVENESS = "minMetabolicEffectiveness";
 	public static final String HIBERNATION_ENERGY_LEVEL = "hibernationEnergyLevel";
-	public static final String HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR = "hibernationEnergyConsumptionPerHour";
+	public static final String HIBERNATION_ENERGY_RATE = "hibernationEnergyRate";
+	public static final String MIN_ADULT_AGE = "minAdultAge";
+	public static final String MIN_ENERGY = "minEnergy";
+
+
+	/*public static final String MIN_ADULT_VOLUME = "minAdultVolume";
+	public static final String HAPLOID_JUVENILE_VOLUME_FACTOR = "haploidJuvenileVolumeFactor";
+	public static final String DIPLOID_JUVENILE_VOLUME_FACTOR = "diploidJuvenileVolumeFactor";
+	public static final String MAX_ENERGY_PER_CHAMBER = "maxEnergyPerChamber";
+
+	public static final String MIN_METABOLIC_EFFECTIVENESS = "minMetabolicEffectiveness";
+*/
 
 	public static Genome forGenome(Genome genome, String foramIdentifier) {
 		return forGenes(genome.genes, foramIdentifier);

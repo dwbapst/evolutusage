@@ -62,7 +62,7 @@ public interface IConfigJS {
 
 	double gametesSievingCoefficient(EnvState envState, ForamState foramState, double time);
 
-	double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time);
+	//double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time);
 
 	String crossingOverOperator(EnvState envState, ForamState foramState, double time);
 

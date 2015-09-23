@@ -62,7 +62,7 @@ function consumptionPerHour(envState, foramState, time)
    if(!isInHibernationState(envState, foramState, time))
       return consumption;
     else
-      return consumption *  foramState.genotype.hibernationEnergyConsumptionPerHour[0];
+      return consumption *  foramState.genotype.hibernationEnergyRate[0];
 }
 
 function energyNeededForGrowth(envState, foramState, time) {
@@ -215,23 +215,11 @@ function initialGenome(position) {
       },
       {
          name: "minAdultAge",
-         value: 30
-      },
-      {
-         name: "minAdultVolume",
-         value: 0.0
-      },
-      {
-         name: "haploidJuvenileVolumeFactor",
-         value: 0.0
-      },
-      {
-         name: "diploidJuvenileVolumeFactor",
-         value: 0.0
-      },
-      {
-         name: "maxEnergyPerChamber",
-         value: 60.0
+         value: 30,
+         mutationProbability: 0.2,
+         mutationRate: 0.1,
+         minValue: 1,
+         maxValue: 1000
       },
       {
          name: "foodCollectingRate",
@@ -239,6 +227,14 @@ function initialGenome(position) {
          mutationProbability: 0.2,
          mutationRate: 0.001,
          minValue: 0.001,
+         maxValue: 0.1
+      },
+      {
+         name: "foodCollectingRange",
+         value: 0.001,
+         mutationProbability: 0.8,
+         mutationRate: 0.000001,
+         minValue: 0.00001,
          maxValue: 0.1
       },
       {
@@ -251,7 +247,11 @@ function initialGenome(position) {
       },
       {
          name: "minEnergy",
-         value: 0.0
+         value: 0.0,
+         mutationProbability: 0.2,
+         mutationRate: 0.1,
+         minValue: 0.0,
+         maxValue: 100
       },
       {
          name: "chamberGrowthCostFactor",
@@ -270,16 +270,20 @@ function initialGenome(position) {
          maxValue: 0.9
       },
       {
-         name: "minMetabolicEffectiveness",
-         value: 0.01
-      },
-      {
          name: "hibernationEnergyLevel",
-         value: 5
+         value: 100,
+         mutationProbability: 0.2,
+         mutationRate: 0.001,
+         minValue: 0.001,
+         maxValue: 1000
       },
       {
-         name: "hibernationEnergyConsumptionPerHour",
-         value: 0.01
+         name: "hibernationEnergyRate",
+         value: 0.001,
+         mutationProbability: 0.2,
+         mutationRate: 0.001,
+         minValue: 0.0001,
+         maxValue: 100
       }
    ]
 }
