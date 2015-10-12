@@ -304,7 +304,8 @@ public class Foram extends SimpleAgent implements IForam {
 				migrationVelocityVector = getOceanFragment().getEnvState().currentDirection;
 				migrationTargetToMigrationDirection = getOceanFragment().getPassiveMigrationTarget();
 			}
-
+            if(migrationTargetToMigrationDirection == null)
+                return;
 			migrationTarget = migrationTargetToMigrationDirection.getLeft();
 			VectorD migrationDirection = migrationTargetToMigrationDirection.getRight().toDouble().abs();
 			double velocity = migrationVelocityVector.dotProduct(migrationDirection);
