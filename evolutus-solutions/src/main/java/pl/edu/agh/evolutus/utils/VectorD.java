@@ -10,7 +10,7 @@ public class VectorD {
 
 	public final double x, y, z;
 
-	public VectorD() {
+	public VectorD() { //vector with double cordinateds
 		this(0, 0, 0);
 	}
 

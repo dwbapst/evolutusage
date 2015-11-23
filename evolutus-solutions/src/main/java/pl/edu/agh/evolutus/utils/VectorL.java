@@ -2,7 +2,7 @@ package pl.edu.agh.evolutus.utils;
 
 import jdk.nashorn.internal.runtime.ScriptObject;
 
-public class VectorL {
+public class VectorL { //vector with long int cooridnates
 
 	public final long x, y, z;
 
