@@ -98,4 +98,6 @@ public interface IConfigJS {
 
 	String simulationDescription();
 
+    ScriptObject scaleGrid();
+
 }

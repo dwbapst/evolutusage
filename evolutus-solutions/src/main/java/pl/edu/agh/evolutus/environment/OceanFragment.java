@@ -199,7 +199,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private void addStats() {
 		try {
 			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(),
-					steps, position,
+					steps, getEnvState().position.mul(unitsConverter.scaleGrid()),
 					foramsAlive(), foramsHaploid(),  foramsDiploid(),
 					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation,
 					deadForamsCounter, bornForamsCounter, averageShellVolume());

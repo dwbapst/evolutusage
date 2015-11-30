@@ -1,11 +1,11 @@
 package pl.edu.agh.evolutus.service.config.utils;
 
-import javax.inject.Inject;
-
 import pl.edu.agh.evolutus.service.config.ConfigFactory;
 import pl.edu.agh.evolutus.service.config.IConfigJS;
 import pl.edu.agh.evolutus.utils.VectorD;
 import pl.edu.agh.evolutus.utils.VectorL;
+
+import javax.inject.Inject;
 
 public class UnitsConverter {
 
@@ -41,5 +41,10 @@ public class UnitsConverter {
 	public double stepDurationInHours() {
 		return configJS.stepDurationInHours();
 	}
+
+    public VectorD scaleGrid()
+    {
+        return VectorD.fromScriptObject(configJS.scaleGrid());
+    }
 
 }
