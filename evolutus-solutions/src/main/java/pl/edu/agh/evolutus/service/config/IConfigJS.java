@@ -48,6 +48,8 @@ public interface IConfigJS {
 
 	double energyNeededForGrowth(EnvState envState, ForamState foramState, double time);
 
+	double consumptionPerHour(EnvState envState, ForamState foramState, double time);
+
 	double growthProbability(EnvState envState, ForamState foramState, double time);
 
 	int chambersLimit(EnvState envState, ForamState foramState, double time);
@@ -60,7 +62,7 @@ public interface IConfigJS {
 
 	double gametesSievingCoefficient(EnvState envState, ForamState foramState, double time);
 
-	double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time);
+	//double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time);
 
 	String crossingOverOperator(EnvState envState, ForamState foramState, double time);
 
@@ -95,5 +97,7 @@ public interface IConfigJS {
 	String simulationName();
 
 	String simulationDescription();
+
+    ScriptObject scaleGrid();
 
 }

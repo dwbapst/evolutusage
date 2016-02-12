@@ -88,6 +88,11 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	@Override
+	public double getShellVolume() {
+		return shell.getVolumeShell();
+	}
+
+	@Override
 	public void setGenotype(Genotype genotype) {
 		if (this.genotype == null) {
 			this.genotype = genotype;
@@ -161,10 +166,11 @@ public class Foram extends SimpleAgent implements IForam {
 			if (config.canReproduce(envState, foramState, currentTime)) {
 				reproduce();
 			}
-			if (config.canCreateChamber(envState, foramState, currentTime)) {
+			if ((timeLeftToMigrationInSeconds == null) && config.canCreateChamber(envState, foramState, currentTime)) {
+				//cannot create chamber during motion
 				createChamber();
 			}
-			if (config.canMigrate(envState, foramState, currentTime)) {
+			if ((timeToBuildNewChamber == null) && config.canMigrate(envState, foramState, currentTime)) {
 				tryMigrate();
 			}
 
@@ -175,17 +181,14 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void consumeStepEnergy() {
-		double consumptionPerHour;
-		if (config.isInHibernationState(envState, foramState, currentTime)) {
-			consumptionPerHour = genotype.get(Genome.HIBERNATION_ENERGY_CONSUMPTION_PER_HOUR).getValue();
-		} else {
-			//energy consumption is related to volume of cytoplams
-			double volumeCytoplasm = getEnergy()/genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue();
-			consumptionPerHour =
-					genotype.get(Genome.ENERGY_DEMAND_PER_CHAMBER_PER_HOUR).getValue() * volumeCytoplasm;
+		energy -= config.consumptionPerHour(envState, foramState, currentTime) * stepDurationInHours;
+		if (energy < 0.0)
+			energy = 0;
+		if(timeToBuildNewChamber !=null) {
+			timeToBuildNewChamber -= stepDurationInHours;
+			if (timeToBuildNewChamber <= 0.0)
+				timeToBuildNewChamber = null;
 		}
-
-		energy -= consumptionPerHour * stepDurationInHours;
 	}
 
 	private boolean couldForamPerformStep() {
@@ -225,6 +228,7 @@ public class Foram extends SimpleAgent implements IForam {
 					statisticsService.getSimulation(),
 					deathHour,
 					age,
+					shell.getChambersCount(),
 					type,
 					genotype,
 					position.x, position.y, position.z
@@ -236,14 +240,19 @@ public class Foram extends SimpleAgent implements IForam {
 	}
 
 	private void eat() {
-		double foodCollectingRate= genotype.get(Genome.FOOD_COLLECTING_RATE).getValue();
-		double shellVolume = shell.getVolumeShell();
-		double stepInHours = config.stepDurationInHours();
-		double energyDemand = foodCollectingRate * shellVolume * stepInHours;
-		double currentEnergy = getEnergy();
-		double maxEnergy = (genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell()) - currentEnergy;
-		double radiusOfCollectingInMeters = config.raduisOfFoodCollecting(envState, foramState, currentTime);
-		energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
+		if(timeToBuildNewChamber == null) { //cannot eat during chamber formation
+			double foodCollectingRate = genotype.get(Genome.FOOD_COLLECTING_RATE).getValue();
+            double metabolicEffectivenes = genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue();
+			double shellVolume = shell.getVolumeShell(); //in cubic micrometers
+			double stepInHours = config.stepDurationInHours();
+            //maximum energy that foram is able to collect
+			double energyDemand = foodCollectingRate * shellVolume * metabolicEffectivenes * stepInHours;
+			double currentEnergy = getEnergy();
+            //max energy that can be stored in a given volume of cytoplasm
+			double maxEnergy = (metabolicEffectivenes * shellVolume) - currentEnergy;
+			double radiusOfCollectingInMeters = genotype.get(Genome.FOOD_COLLECTING_RANGE).getValue()+0.0001*shell.getLastChamberRadius();
+			energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
+		}
 	}
 
 	private AgentAddress lastParentAddress = null;
@@ -271,10 +280,14 @@ public class Foram extends SimpleAgent implements IForam {
 		getOceanFragment().addGametes(gametes, type);
 		die();
 	}
+	private Double timeToBuildNewChamber = null;
 
 	private void createChamber() {
-		energy -= config.energyNeededForGrowth(envState, foramState, currentTime);
-		shell = shellFactory.createShellWithNewChamber(this);
+		if (timeToBuildNewChamber == null) {
+			energy -= config.energyNeededForGrowth(envState, foramState, currentTime);
+			shell = shellFactory.createShellWithNewChamber(this);
+			timeToBuildNewChamber = 24.0; //24 hours
+		}
 	}
 
 	private AgentAddress migrationTarget = null;
@@ -286,7 +299,7 @@ public class Foram extends SimpleAgent implements IForam {
 		if (timeLeftToMigrationInSeconds == null) {
 			VelocityVector migrationVelocityVector;
 			Pair<AgentAddress, VectorL> migrationTargetToMigrationDirection;
-			if (foramActiveMotion) { //bentic - ocean currents are not included!
+			if (foramActiveMotion) {
 				migrationVelocityVector = config.foramActiveSpeed(envState, foramState, currentTime);
 				migrationTargetToMigrationDirection = getOceanFragment().getActiveMigrationTarget();
 			} else { //planktic - migration vector is a sum of ocean currents, vertical movement and random walk.
@@ -299,6 +312,8 @@ public class Foram extends SimpleAgent implements IForam {
 			//passive migration + costs set to "-1" = absolute passive movement
 			//passive migration + cost >= 0 - is able to move in that direction!
 			//-> remove passive and active migration - only check costs!!!
+            if(migrationTargetToMigrationDirection == null)
+                return;
 			migrationTarget = migrationTargetToMigrationDirection.getLeft();
 			VectorD migrationDirection = migrationTargetToMigrationDirection.getRight().toDouble().abs();
 

@@ -1,15 +1,15 @@
 package pl.edu.agh.evolutus.statistics.model;
 
-import pl.edu.agh.evolutus.utils.VectorL;
+import pl.edu.agh.evolutus.utils.VectorD;
 
 public class OceanFragmentInfo extends Statistics {
 
 	private static final long serialVersionUID = 1L;
 
 	private Long stepNo;
-	private Long x;
-	private Long y;
-	private Long z;
+	private Double x;
+	private Double y;
+	private Double z;
 	private Integer foramsCount;
 	private Integer foramsHaploCount;
 	private Integer foramsDiploCount;
@@ -18,6 +18,7 @@ public class OceanFragmentInfo extends Statistics {
 	private Double insolation;
 	private Integer deathCount;
 	private Integer birthCount;
+	private Double averageShellVolume;
 
 	private OceanFragmentInfo() {
 		// for morphia
@@ -26,7 +27,7 @@ public class OceanFragmentInfo extends Statistics {
 	public OceanFragmentInfo(
 			Simulation simulation,
 			Long stepNo,
-			VectorL position,
+			VectorD position,
 			Integer foramsCount,
 			Integer foramsHaploidCount,
 			Integer foramsDiploidCount,
@@ -34,7 +35,8 @@ public class OceanFragmentInfo extends Statistics {
 			Double totalEnergy,
 			Double insolation,
 			Integer deathCount,
-			Integer birthCount
+			Integer birthCount,
+			Double averageShellVolume
 	) {
 		super(simulation.getSimulationStart());
 		this.stepNo = stepNo;
@@ -49,21 +51,22 @@ public class OceanFragmentInfo extends Statistics {
 		this.insolation = insolation;
 		this.deathCount = deathCount;
 		this.birthCount = birthCount;
+		this.averageShellVolume = averageShellVolume;
 	}
 
 	public Long getStepNo() {
 		return this.stepNo;
 	}
 
-	public Long getX() {
+	public Double getX() {
 		return this.x;
 	}
 
-	public Long getY() {
+	public Double getY() {
 		return this.y;
 	}
 
-	public Long getZ() {
+	public Double getZ() {
 		return this.z;
 	}
 
@@ -94,4 +97,6 @@ public class OceanFragmentInfo extends Statistics {
 	public Integer getDeathCount() { return this.deathCount; }
 
 	public Integer getBirthCount() { return this.birthCount; }
+
+	public Double getAverageShellVolume() { return this.averageShellVolume; }
 }

@@ -31,7 +31,7 @@ public class EnvState {
 		this.insolation = insolation;
 		this.ph = ph;
 
-		this.position = position;
+		this.position = position; //real worls coordinates
 		this.algaeEnergy = algaeEnergy;
 		this.algaeGrowth = algaeGrowth;
 		this.currentDirection = currentDirection;

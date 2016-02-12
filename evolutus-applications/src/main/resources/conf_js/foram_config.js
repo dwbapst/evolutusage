@@ -48,12 +48,22 @@ function initialEnergy() {
      firstChamberRadius,
      lastChamberRadius,
      chambersCount,
-     volume
+     volumeShell
    }
  }
 
  time - time in hours from the beginning of the simulation
  */
+
+function consumptionPerHour(envState, foramState, time)
+{
+   var volumeOfCytoplasm = foramState.energy / foramState.genotype.metabolicEffectiveness[0];
+   var consumption = Math.pow(volumeOfCytoplasm, 0.2) * foramState.genotype.energyDemandPerVolumePerHour[0];
+   if(!isInHibernationState(envState, foramState, time))
+      return consumption;
+    else
+      return consumption *  foramState.genotype.hibernationEnergyRate[0];
+}
 
 function energyNeededForGrowth(envState, foramState, time) {
    return 1000.0;
@@ -76,7 +86,10 @@ function reproductionProbability(envState, foramState, time) {
 }
 
 function gametesProduction(envState, foramState, time) {
-   return 0.4 * foramState.shell.volumeShell;
+   if(foramState.foramType.ploidy == foramState.foramType.ploidy.HAPLOID)
+      return 0.4 * foramState.shell.volumeShell;
+   else
+      return 0.01 * foramState.shell.volumeShell;
 }
 
 function gametesSievingCoefficient(envState, foramState, time) {
@@ -206,23 +219,11 @@ function initialGenome(position) {
       },
       {
          name: "minAdultAge",
-         value: 30
-      },
-      {
-         name: "minAdultVolume",
-         value: 0.0
-      },
-      {
-         name: "haploidJuvenileVolumeFactor",
-         value: 0.0
-      },
-      {
-         name: "diploidJuvenileVolumeFactor",
-         value: 0.0
-      },
-      {
-         name: "maxEnergyPerChamber",
-         value: 60.0
+         value: 30,
+         mutationProbability: 0.2,
+         mutationRate: 0.1,
+         minValue: 1,
+         maxValue: 1000
       },
       {
          name: "foodCollectingRate",
@@ -233,7 +234,15 @@ function initialGenome(position) {
          maxValue: 0.1
       },
       {
-         name: "energyDemandPerChamberPerHour",
+         name: "foodCollectingRange",
+         value: 0.001,
+         mutationProbability: 0.8,
+         mutationRate: 0.000001,
+         minValue: 0.00001,
+         maxValue: 0.1
+      },
+      {
+         name: "energyDemandPerVolumePerHour",
          value: 0.02,
          mutationProbability: 0.2,
          mutationRate: 0.1,
@@ -242,7 +251,11 @@ function initialGenome(position) {
       },
       {
          name: "minEnergy",
-         value: 0.0
+         value: 0.0,
+         mutationProbability: 0.2,
+         mutationRate: 0.1,
+         minValue: 0.0,
+         maxValue: 100
       },
       {
          name: "chamberGrowthCostFactor",
@@ -261,16 +274,20 @@ function initialGenome(position) {
          maxValue: 0.9
       },
       {
-         name: "minMetabolicEffectiveness",
-         value: 0.01
-      },
-      {
          name: "hibernationEnergyLevel",
-         value: 5
+         value: 100,
+         mutationProbability: 0.2,
+         mutationRate: 0.001,
+         minValue: 0.001,
+         maxValue: 1000
       },
       {
-         name: "hibernationEnergyConsumptionPerHour",
-         value: 0.01
+         name: "hibernationEnergyRate",
+         value: 0.001,
+         mutationProbability: 0.2,
+         mutationRate: 0.001,
+         minValue: 0.0001,
+         maxValue: 100
       }
    ]
 }

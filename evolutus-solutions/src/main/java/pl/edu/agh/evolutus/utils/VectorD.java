@@ -1,8 +1,9 @@
 package pl.edu.agh.evolutus.utils;
 
-import static java.lang.Math.*;
-
 import jdk.nashorn.internal.runtime.ScriptObject;
+
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class VectorD {
 
@@ -10,7 +11,7 @@ public class VectorD {
 
 	public final double x, y, z;
 
-	public VectorD() {
+	public VectorD() { //vector with double cordinateds
 		this(0, 0, 0);
 	}
 
@@ -31,6 +32,10 @@ public class VectorD {
 	public VectorD mul(double factor) {
 		return new VectorD(x * factor, y * factor, z * factor);
 	}
+
+    public VectorD mul(VectorD factors) {
+        return new VectorD(x*factors.x, y*factors.y, z*factors.z);
+    }
 
 	public VectorD div(double divisor) {
 		return mul(1.0 / divisor);

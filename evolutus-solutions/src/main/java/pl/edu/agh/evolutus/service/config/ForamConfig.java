@@ -22,6 +22,10 @@ public class ForamConfig extends Config {
 		return configJS.initialEnergy();
 	}
 
+	public double consumptionPerHour(EnvState envState, ForamState foramState, double time){
+		return configJS.consumptionPerHour(envState, foramState, time);
+	}
+
 	public double energyNeededForGrowth(EnvState envState, ForamState foramState, double time) {
 		return configJS.energyNeededForGrowth(envState, foramState, time);
 	}
@@ -50,9 +54,9 @@ public class ForamConfig extends Config {
 		return configJS.gametesSievingCoefficient(envState, foramState, time);
 	}
 
-	public double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time) {
+	/*public double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time) {
 		return configJS.raduisOfFoodCollecting(envState, foramState, time);
-	}
+	}*/
 
 	public String crossingOverOperator(EnvState envState, ForamState foramState, double time) {
 		return configJS.crossingOverOperator(envState, foramState, time);

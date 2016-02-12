@@ -1,13 +1,12 @@
 package pl.edu.agh.evolutus.cmd.generation;
 
+import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
-
-import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
 
 public abstract class OutputFileGenerator {
 
@@ -31,7 +30,8 @@ public abstract class OutputFileGenerator {
 			double algaeAvailability = 0.0;
 			long deadForamsCount = 0;
 			long bornForamsCount = 0;
-			double averageEnergy = 0;
+			double averageEnergy = 0.0;
+			double averageShellVolume = 0.0;
 
 			for (OceanFragmentInfo info : infoMap.get(stepNo)) {
 				foramsCount += info.getForamsCount();
@@ -41,11 +41,13 @@ public abstract class OutputFileGenerator {
 				deadForamsCount += info.getDeathCount();
 				bornForamsCount += info.getBirthCount();
 				averageEnergy += info.getTotalEnergy();
+				averageShellVolume += info.getAverageShellVolume();
 			}
 			averageEnergy = averageEnergy / foramsCount;
+			averageShellVolume = averageShellVolume / foramsCount;
 			statsList.add(new Stats(stepNo, foramsCount, foramsHaploidCount, foramsDiploidCount, deadForamsCount,
 					bornForamsCount,
-					algaeAvailability, averageEnergy));
+					algaeAvailability, averageEnergy, averageShellVolume));
 		}
 		return statsList;
 	}
@@ -73,9 +75,10 @@ public abstract class OutputFileGenerator {
 		public final long deadForamsCount;
 		public final long bornForamsCount;
 		public final double averageEnergy;
+		public final double averageShellVolume;
 
 		private Stats(Long stepNo, Long foramsCount, Long foramsHaploidCount, Long foramsDiploidCount,
-				Long deadForamsCount, Long bornForamsCount, Double algaeAvailability, Double averageEnergy) {
+				Long deadForamsCount, Long bornForamsCount, Double algaeAvailability, Double averageEnergy, Double averageShellVolume) {
 			this.stepNo = stepNo;
 			this.foramsCount = foramsCount;
 			this.foramsHaploidCount = foramsHaploidCount;
@@ -84,6 +87,7 @@ public abstract class OutputFileGenerator {
 			this.deadForamsCount = deadForamsCount;
 			this.bornForamsCount = bornForamsCount;
 			this.averageEnergy = averageEnergy;
+			this.averageShellVolume = averageShellVolume;
 		}
 
 		public long getStepNo() {
@@ -117,6 +121,8 @@ public abstract class OutputFileGenerator {
 		public double getAverageEnergy() {
 			return averageEnergy;
 		}
+
+		public double getAverageShellVolume() { return  averageShellVolume; }
 	}
 
 }

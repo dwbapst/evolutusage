@@ -1,8 +1,5 @@
 package pl.edu.agh.evolutus.environment;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.jage.address.agent.AgentAddress;
 import org.jage.agent.ISimpleAggregate;
@@ -11,6 +8,9 @@ import pl.edu.agh.evolutus.foram.IForam;
 import pl.edu.agh.evolutus.genotype.Genome;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.utils.VectorL;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface IOceanFragment extends ISimpleAggregate {
 
@@ -41,6 +41,8 @@ public interface IOceanFragment extends ISimpleAggregate {
 	double totalEnergy();
 
 	double averageEnergy();
+
+	double averageShellVolume();
 
 	Pair<AgentAddress, VectorL> getPassiveMigrationTarget();
 

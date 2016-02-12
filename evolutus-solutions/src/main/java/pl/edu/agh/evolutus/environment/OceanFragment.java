@@ -1,15 +1,6 @@
 package pl.edu.agh.evolutus.environment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jage.address.agent.AgentAddress;
 import org.jage.address.agent.AgentAddressSupplier;
@@ -17,9 +8,6 @@ import org.jage.agent.SimpleAggregate;
 import org.jage.query.AgentEnvironmentQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-
 import pl.edu.agh.evolutus.foram.ForamType;
 import pl.edu.agh.evolutus.foram.ForamType.Ploidy;
 import pl.edu.agh.evolutus.foram.ForamType.ReproductionType;
@@ -34,11 +22,11 @@ import pl.edu.agh.evolutus.service.config.ForamConfig;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
-import pl.edu.agh.evolutus.utils.Geometry;
-import pl.edu.agh.evolutus.utils.QueuedMap;
-import pl.edu.agh.evolutus.utils.VectorD;
-import pl.edu.agh.evolutus.utils.VectorL;
-import pl.edu.agh.evolutus.utils.VelocityVector;
+import pl.edu.agh.evolutus.utils.*;
+
+import javax.inject.Inject;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
@@ -211,9 +199,11 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private void addStats() {
 		try {
 			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(),
-					steps, position,
+					steps, getEnvState().position.mul(unitsConverter.scaleGrid()),
 					foramsAlive(), foramsHaploid(),  foramsDiploid(),
-					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation, deadForamsCounter, bornForamsCounter);
+					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation,
+					deadForamsCounter, bornForamsCounter, averageShellVolume());
+
 			statisticsService.add(info);
 			deadForamsCounter=0;
 			bornForamsCounter=0;
@@ -224,12 +214,12 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public double takeAlgae(double energyDemand, double radiusOfCollectingInMeters) {
-		double algaeNeeded = energyDemand / getEnvState().algaeEnergy;
+		double algaeNeeded = energyDemand / getEnvState().algaeEnergy; //in grams
 		double availableAlgae = getEnvState().algaeAvailability *
-				Geometry.sphereVolume(radiusOfCollectingInMeters) / oceanFragmentVolumeInMeters();
+				Geometry.sphereVolume(radiusOfCollectingInMeters) / oceanFragmentVolumeInMeters(); //in grams
 		double takenAlgae = Math.min(availableAlgae, algaeNeeded);
-		changeAlgaeAvailability(-takenAlgae);
-		return takenAlgae * getEnvState().algaeEnergy;
+		changeAlgaeAvailability(-takenAlgae);  //algae removed from the system in grams
+		return takenAlgae * getEnvState().algaeEnergy; //energy of portion (in grams) of algae
 	}
 
 	private Double oceanFragmentVolumeInMeters;
@@ -300,6 +290,16 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.filter(IForam::isAlive)
 				.mapToDouble(IForam::getEnergy)
 				.average().orElse(0.0);
+	}
+	@Override
+	public double averageShellVolume() {
+		return getAgents()
+				.stream()
+				.map(agent -> (IForam) agent)
+				.filter(IForam::isAlive)
+				.mapToDouble(IForam::getShellVolume)
+				.sum();
+				//.average().orElse(0.0);
 	}
 
 	@Override
