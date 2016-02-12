@@ -244,13 +244,14 @@ public class Foram extends SimpleAgent implements IForam {
 	private void eat() {
 		if(timeToBuildNewChamber == null) { //cannot eat during chamber formation
 			double foodCollectingRate = genotype.get(Genome.FOOD_COLLECTING_RATE).getValue();
+            double metabolicEffectivenes = genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue();
 			double shellVolume = shell.getVolumeShell(); //in cubic micrometers
 			double stepInHours = config.stepDurationInHours();
             //maximum energy that foram is able to collect
-			double energyDemand = foodCollectingRate * shellVolume * stepInHours;
+			double energyDemand = foodCollectingRate * shellVolume * metabolicEffectivenes * stepInHours;
 			double currentEnergy = getEnergy();
             //max energy that can be stored in a given volume of cytoplasm
-			double maxEnergy = (genotype.get(Genome.METABOLIC_EFFECTIVENESS).getValue() * shell.getVolumeShell()) - currentEnergy;
+			double maxEnergy = (metabolicEffectivenes * shellVolume) - currentEnergy;
 			double radiusOfCollectingInMeters = genotype.get(Genome.FOOD_COLLECTING_RANGE).getValue()+0.0001*shell.getLastChamberRadius();
 			energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 		}
