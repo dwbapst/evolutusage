@@ -5,11 +5,11 @@
 # column[2] = "z"
 # column[3] = "Forams"
 # column[4] = "Algae"
-# column[5] = "Insolation"
+# column[5] = "AvgShellVol."
 # column[6] = "Total energy"
 # symbol[3] = "F"
 # symbol[4] = "A"
-# symbol[5] = "I"
+# symbol[5] = "V"
 # symbol[6] = "E"
 # type[3] = float
 # type[4] = float
@@ -22,5 +22,5 @@ $rowsCount 2694 115001
 0.00 0.00 1.00
 
 #foreach($stat in $stats)
-$stat.x $stat.y $stat.z $stat.foramsCount.doubleValue() $stat.algaeAvailability $stat.insolation $stat.totalEnergy
+$stat.x $stat.y $stat.z $stat.foramsCount.doubleValue() $stat.algaeAvailability $stat.averageShellVolume $stat.totalEnergy
 #end
