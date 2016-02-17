@@ -19,6 +19,7 @@ import pl.edu.agh.evolutus.service.StatisticsService;
 import pl.edu.agh.evolutus.service.StatisticsService.StatisticsServiceException;
 import pl.edu.agh.evolutus.service.config.EnvironmentConfig;
 import pl.edu.agh.evolutus.service.config.ForamConfig;
+import pl.edu.agh.evolutus.service.config.SimulationConfig;
 import pl.edu.agh.evolutus.service.config.utils.EnvState;
 import pl.edu.agh.evolutus.service.config.utils.UnitsConverter;
 import pl.edu.agh.evolutus.statistics.model.OceanFragmentInfo;
@@ -34,6 +35,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	private int bornForamsCounter=0;
 	private static final Logger logger = LoggerFactory.getLogger(OceanFragment.class);
 	private final Random random = new Random();
+    private int statStride=1;
 
 	@Inject
 	private StatisticsService statisticsService;
@@ -49,6 +51,9 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Inject
 	private ForamConfig foramConfig;
+
+    @Inject
+    private SimulationConfig simConfig;
 
 	@Inject
 	private UnitsConverter unitsConverter;
@@ -111,7 +116,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	@Override
 	public void initialize(VectorL position) {
 		this.position = position;
-
+        statStride = simConfig.statsStride();
 		EnvState initialEnvState = new EnvState(0.0, 0.0, 0.0, config.initialAlgaeAvailability(position), 0.0, 0.0,
 				unitsConverter.unitsToMeters(position), 0.0, 0.0, null);
 		setEnvState(initialEnvState);
@@ -186,7 +191,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		addAll(foramsToAdd);
 
 		super.step(); // call forams' step() methods
-		addStats();
+		if((steps+statStride) % statStride == 0)
+            addStats();
 		steps++;
 		updateEnvState();
 	}

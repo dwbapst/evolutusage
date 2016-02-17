@@ -13,4 +13,6 @@ public class SimulationConfig extends Config {
 	public long simulationDuration() {
 		return unitsConverter.hoursToSteps(configJS.simulationDuration());
 	}
+
+    public int statsStride() { return  configJS.statsStride(); }
 }
