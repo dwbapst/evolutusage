@@ -100,4 +100,6 @@ public interface IConfigJS {
 
     ScriptObject scaleGrid();
 
+    int statsStride();
+
 }
