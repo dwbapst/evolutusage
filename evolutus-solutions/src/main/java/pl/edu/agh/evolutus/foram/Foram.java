@@ -304,6 +304,7 @@ public class Foram extends SimpleAgent implements IForam {
 				migrationTargetToMigrationDirection = getOceanFragment().getActiveMigrationTarget();
 			} else { //planktic - migration vector is a sum of ocean currents, vertical movement and random walk.
 				VectorD VectorOceanCurrent =  getOceanFragment().getEnvState().currentDirection;
+                //VectorActiveSpeed should be zero on any directions except Z.
 				VectorD VectorActiveSpeed = config.foramActiveSpeed(envState, foramState, currentTime);
 				migrationVelocityVector = new VelocityVector(VectorActiveSpeed.add(VectorOceanCurrent));
 				migrationTargetToMigrationDirection = getOceanFragment().getPassiveMigrationTarget();
@@ -328,9 +329,9 @@ public class Foram extends SimpleAgent implements IForam {
 			timeLeftToMigrationInSeconds = oceanFragmentSizeInMeters / velocity;
 			if(foramActiveMotion) {
 				double distancePerStep = velocity * stepDurationInSeconds;
-				MovementCostVector movementCost = config.activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime);
-				double movementCostPerChamberPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
-				movementCostPerStep = movementCostPerChamberPerMeter * foramState.shell.getChambersCount() * distancePerStep;
+				MovementCostVector movementCost = config.activeMotionEnergyCostPerMeter(envState, foramState, currentTime);
+				double movementCostPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
+				movementCostPerStep = movementCostPerMeter * distancePerStep;
 			}
 		}
 
