@@ -1,8 +1,8 @@
 package pl.edu.agh.evolutus.genotype;
 
-import java.util.Random;
-
 import jdk.nashorn.internal.runtime.ScriptObject;
+
+import java.util.Random;
 
 public class Gene {
 
@@ -96,8 +96,9 @@ public class Gene {
 
 	public Gene mutate(double globalMutationProbability) {
 		if (shouldMutate(globalMutationProbability)) {
-			double mutationFactor = RAND.nextBoolean() ? (1 + mutationRate) : (1 - mutationRate);
-			double newValue = value * mutationFactor;
+			//double mutationFactor = RAND.nextBoolean() ? (1 + mutationRate) : (1 - mutationRate);
+            double mutationFactor = RAND.nextGaussian() * mutationRate;
+			double newValue = value + mutationFactor; //was *
 			return new Gene(name, newValue, minValue, maxValue, mutationRate, mutationProbability);
 		}
 		return this;
