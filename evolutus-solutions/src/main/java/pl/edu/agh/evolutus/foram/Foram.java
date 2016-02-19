@@ -92,6 +92,9 @@ public class Foram extends SimpleAgent implements IForam {
 		return shell.getVolumeShell();
 	}
 
+    @Override
+    public double getShapeFactor() { return  shell. getShapeFactor(); }
+
 	@Override
 	public void setGenotype(Genotype genotype) {
 		if (this.genotype == null) {

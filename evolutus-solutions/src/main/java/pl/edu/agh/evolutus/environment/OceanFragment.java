@@ -208,7 +208,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 					steps, getEnvState().position.mul(unitsConverter.scaleGrid()),
 					foramsAlive(), foramsHaploid(),  foramsDiploid(),
 					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation,
-					deadForamsCounter, bornForamsCounter, averageShellVolume());
+					deadForamsCounter, bornForamsCounter,
+                    averageShellVolume(), averageShapeFactor());
 
 			statisticsService.add(info);
 			deadForamsCounter=0;
@@ -308,7 +309,17 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				//.average().orElse(0.0);
 	}
 
-	@Override
+    @Override
+    public double averageShapeFactor() {
+        return getAgents()
+				.stream()
+				.map(agent -> (IForam) agent)
+				.filter(IForam::isAlive)
+				.mapToDouble(IForam::getShapeFactor)
+				.sum();
+    }
+
+
 	public Pair<AgentAddress, VectorL> getPassiveMigrationTarget() {
 		Map<OceanFragment, Double> migrationTargetsWithProbability = getPassiveMigrationTargetsWithProbability();
 		double rand = random.nextDouble();
