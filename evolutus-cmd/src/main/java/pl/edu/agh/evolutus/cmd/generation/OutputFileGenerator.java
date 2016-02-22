@@ -43,8 +43,8 @@ public abstract class OutputFileGenerator {
 				averageEnergy += info.getTotalEnergy();
 				averageShellVolume += info.getAverageShellVolume();
 			}
-			averageEnergy = averageEnergy / foramsCount;
-			averageShellVolume = averageShellVolume / foramsCount;
+            averageEnergy = (foramsCount == 0) ? 0.0 : averageEnergy / foramsCount;
+            averageShellVolume = (foramsCount == 0) ? 0.0: averageShellVolume / foramsCount;
 			statsList.add(new Stats(stepNo, foramsCount, foramsHaploidCount, foramsDiploidCount, deadForamsCount,
 					bornForamsCount,
 					algaeAvailability, averageEnergy, averageShellVolume));
@@ -77,8 +77,13 @@ public abstract class OutputFileGenerator {
 		public final double averageEnergy;
 		public final double averageShellVolume;
 
-		private Stats(Long stepNo, Long foramsCount, Long foramsHaploidCount, Long foramsDiploidCount,
-				Long deadForamsCount, Long bornForamsCount, Double algaeAvailability, Double averageEnergy, Double averageShellVolume) {
+
+		private Stats(Long stepNo, Long foramsCount,
+                      Long foramsHaploidCount, Long foramsDiploidCount,
+                      Long deadForamsCount, Long bornForamsCount,
+                      Double algaeAvailability,
+                      Double averageEnergy,
+                      Double averageShellVolume) {
 			this.stepNo = stepNo;
 			this.foramsCount = foramsCount;
 			this.foramsHaploidCount = foramsHaploidCount;
@@ -123,6 +128,8 @@ public abstract class OutputFileGenerator {
 		}
 
 		public double getAverageShellVolume() { return  averageShellVolume; }
+
+
 	}
 
 }
