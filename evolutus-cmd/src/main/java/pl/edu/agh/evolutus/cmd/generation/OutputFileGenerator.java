@@ -45,9 +45,8 @@ public abstract class OutputFileGenerator {
 				averageShellVolume += info.getAverageShellVolume();
                 averageShapeFactor += info.getAverageShapeFactor();
 			}
-			averageEnergy = averageEnergy / foramsCount;
-			averageShellVolume = averageShellVolume / foramsCount;
-            averageShapeFactor = averageShapeFactor / foramsCount;
+			averageEnergy = (foramsCount == 0) ? 0.0 : averageEnergy / foramsCount;
+			averageShellVolume = (foramsCount == 0) ? 0.0: averageShellVolume / foramsCount;
 			statsList.add(new Stats(stepNo, foramsCount, foramsHaploidCount, foramsDiploidCount, deadForamsCount,
 					bornForamsCount,
 					algaeAvailability, averageEnergy, averageShellVolume, averageShapeFactor));
