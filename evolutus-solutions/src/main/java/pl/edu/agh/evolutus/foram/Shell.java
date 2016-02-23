@@ -30,8 +30,12 @@ public class Shell {
         this.shapeFactor = getTortuosityFactor();
 	}
 
-	public Shell(double firstChamberRadius, double wallThicknessFactor, double translationFactor,
-				 double rotationAngle, double deviationAngle, double growthFactor,
+	public Shell(double firstChamberRadius,
+                 double wallThicknessFactor,
+                 double translationFactor,
+				 double rotationAngle,
+                 double deviationAngle,
+                 double growthFactor,
 				 int chambersCount) {
 		this.firstChamberRadius = firstChamberRadius;
 		this.wallThicknessFactor = wallThicknessFactor;

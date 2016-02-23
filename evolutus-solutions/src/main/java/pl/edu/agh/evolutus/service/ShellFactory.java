@@ -32,9 +32,13 @@ public class ShellFactory {
 		//double newRadius = currentShell.getLastChamberRadius() * growthFactor;
 		//double newVolume = currentShell.getVolume() + Geometry.sphereVolume(newRadius);
 		//return new Shell(currentShell.getFirstChamberRadius(), newRadius, currentShell.getChambersCount() + 1, newVolume);
-		return new Shell(currentShell.getFirstChamberRadius(), currentShell.getTranslationFactor(),
-				         currentShell.getRotationAngle(), currentShell.getDeviationAngle(),
-				         currentShell.getDeviationAngle(), currentShell.getGrowthFactor(), currentShell.getChambersCount() + 1);
+		return new Shell(currentShell.getFirstChamberRadius(),
+                         currentShell.getWallThicknessFactor(),
+                         currentShell.getTranslationFactor(),
+				         currentShell.getRotationAngle(),
+                         currentShell.getDeviationAngle(),
+                         currentShell.getGrowthFactor(),
+                         currentShell.getChambersCount() + 1);
 	}
 
 }
