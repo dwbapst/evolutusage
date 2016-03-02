@@ -41,7 +41,7 @@ public abstract class OutputFileGenerator {
 				algaeAvailability += info.getAlgaeAvailability();
 				deadForamsCount += info.getDeathCount();
 				bornForamsCount += info.getBirthCount();
-				averageEnergy += info.getTotalEnergy();
+				averageEnergy += info.getAverageEnergy();
 				averageShellVolume += info.getAverageShellVolume();
                 averageShapeFactor += info.getAverageShapeFactor();
 			}
