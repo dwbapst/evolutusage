@@ -18,7 +18,7 @@ public class EnvState {
 	public final VelocityVector currentDirection;
 
 	public EnvState(EnvState envState, double algaeAvailability) {
-		this(envState.oxygen, envState.temperature, envState.salinity, algaeAvailability, envState.insolation,
+		this(envState.oxygen, envState.temperature, envState.salinity, (envState.algaeAvailability < 0) ? 0.0: algaeAvailability, envState.insolation,
 				envState.ph, envState.position, envState.algaeEnergy, envState.algaeGrowth, envState.currentDirection);
 	}
 
