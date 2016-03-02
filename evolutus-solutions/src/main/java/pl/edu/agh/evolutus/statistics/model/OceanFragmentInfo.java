@@ -14,7 +14,7 @@ public class OceanFragmentInfo extends Statistics {
 	private Integer foramsHaploCount;
 	private Integer foramsDiploCount;
 	private Double algaeAvailability;
-	private Double totalEnergy;
+    private Double averageEnergy;
 	private Double insolation;
 	private Integer deathCount;
 	private Integer birthCount;
@@ -33,7 +33,7 @@ public class OceanFragmentInfo extends Statistics {
 			Integer foramsHaploidCount,
 			Integer foramsDiploidCount,
 			Double algaeAvailability,
-			Double totalEnergy,
+            Double averageEnergy,
 			Double insolation,
 			Integer deathCount,
 			Integer birthCount,
@@ -49,7 +49,7 @@ public class OceanFragmentInfo extends Statistics {
 		this.foramsHaploCount = foramsHaploidCount;
 		this.foramsDiploCount = foramsDiploidCount;
 		this.algaeAvailability = algaeAvailability;
-		this.totalEnergy = totalEnergy;
+        this.averageEnergy = averageEnergy;
 		this.insolation = insolation;
 		this.deathCount = deathCount;
 		this.birthCount = birthCount;
@@ -89,10 +89,10 @@ public class OceanFragmentInfo extends Statistics {
 		return this.algaeAvailability;
 	}
 
-	public Double getTotalEnergy() {
-		return this.totalEnergy;
-	}
-
+    public Double getAverageEnergy()
+    {
+        return this.averageEnergy;
+    }
 	public Double getInsolation() {
 		return this.insolation;
 	}
