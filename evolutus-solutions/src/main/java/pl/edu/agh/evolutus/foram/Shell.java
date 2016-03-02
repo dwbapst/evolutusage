@@ -84,7 +84,7 @@ public class Shell {
 	public double getTortuosityFactor(){
 		//this value indicated whether shell is mole elongated or coiled.
 		//at this moment it is only a dummy
-		return Math.abs(deviationAngle/180.0);
+		return Math.abs(Math.sin(Math.toRadians(deviationAngle)));
 	}
 
 	private double calculateShellVolume()
