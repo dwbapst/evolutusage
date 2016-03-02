@@ -207,7 +207,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(),
 					steps, getEnvState().position.mul(unitsConverter.scaleGrid()),
 					foramsAlive(), foramsHaploid(),  foramsDiploid(),
-					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation,
+					getEnvState().algaeAvailability, averageEnergy(), getEnvState().insolation,
 					deadForamsCounter, bornForamsCounter,
                     averageShellVolume(), averageShapeFactor());
 
@@ -279,6 +279,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		return migrationTargetsWithProbabilityCache.getRight();
 	}
 
+    //summarized energy of all agents inside the cell.
 	@Override
 	public double totalEnergy() {
 		return getAgents()
@@ -288,7 +289,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.mapToDouble(IForam::getEnergy)
 				.sum();
 	}
-
+    //average energy of all agents inside the cell
 	@Override
 	public double averageEnergy() {
 		return getAgents()
@@ -298,6 +299,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.mapToDouble(IForam::getEnergy)
 				.average().orElse(0.0);
 	}
+
+    //summarized/average volume of all agents inside the cell
 	@Override
 	public double averageShellVolume() {
 		return getAgents()
@@ -305,10 +308,10 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.map(agent -> (IForam) agent)
 				.filter(IForam::isAlive)
 				.mapToDouble(IForam::getShellVolume)
-				.sum();
-				//.average().orElse(0.0);
+				.average().orElse(0.0);
 	}
 
+    //average shape factor inside the cell.
     @Override
     public double averageShapeFactor() {
         return getAgents()
@@ -316,7 +319,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.map(agent -> (IForam) agent)
 				.filter(IForam::isAlive)
 				.mapToDouble(IForam::getShapeFactor)
-				.sum();
+				.average().orElse(0.0);
     }
 
 
