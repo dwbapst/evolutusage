@@ -15,7 +15,7 @@ function statsStride() {
 }
 
 function simulationDuration() {
-   return 10 * 24;
+   return 300 * 24;
 }
 
 function unitLengthInMeters() {

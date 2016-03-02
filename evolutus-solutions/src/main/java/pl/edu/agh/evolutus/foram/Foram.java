@@ -92,6 +92,9 @@ public class Foram extends SimpleAgent implements IForam {
 		return shell.getVolumeShell();
 	}
 
+    @Override
+    public double getShapeFactor() { return  shell. getShapeFactor(); }
+
 	@Override
 	public void setGenotype(Genotype genotype) {
 		if (this.genotype == null) {
@@ -173,8 +176,6 @@ public class Foram extends SimpleAgent implements IForam {
 			if ((timeToBuildNewChamber == null) && config.canMigrate(envState, foramState, currentTime)) {
 				tryMigrate();
 			}
-
-
 
 			age += stepDurationInHours;
 		} catch (AgentDiedException e) {
@@ -304,14 +305,23 @@ public class Foram extends SimpleAgent implements IForam {
 			if (foramActiveMotion) {
 				migrationVelocityVector = config.foramActiveSpeed(envState, foramState, currentTime);
 				migrationTargetToMigrationDirection = getOceanFragment().getActiveMigrationTarget();
-			} else {
-				migrationVelocityVector = getOceanFragment().getEnvState().currentDirection;
+			} else { //planktic - migration vector is a sum of ocean currents, vertical movement and random walk.
+				VectorD VectorOceanCurrent =  getOceanFragment().getEnvState().currentDirection;
+                //VectorActiveSpeed should be zero on any directions except Z.
+				VectorD VectorActiveSpeed = config.foramActiveSpeed(envState, foramState, currentTime);
+				migrationVelocityVector = new VelocityVector(VectorActiveSpeed.add(VectorOceanCurrent));
 				migrationTargetToMigrationDirection = getOceanFragment().getPassiveMigrationTarget();
 			}
+			//TODO passive migration should use activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime) function!!!
+			//passive migration + costs set to "-1" = absolute passive movement
+			//passive migration + cost >= 0 - is able to move in that direction!
+			//-> remove passive and active migration - only check costs!!!
             if(migrationTargetToMigrationDirection == null)
                 return;
 			migrationTarget = migrationTargetToMigrationDirection.getLeft();
 			VectorD migrationDirection = migrationTargetToMigrationDirection.getRight().toDouble().abs();
+
+			//TODO jakie są jednostki prędkości - powinny być metry na sekunde
 			double velocity = migrationVelocityVector.dotProduct(migrationDirection);
 			double oceanFragmentSizeInMeters = unitsConverter.unitLengthInMeters().dotProduct(migrationDirection);
 
@@ -320,16 +330,18 @@ public class Foram extends SimpleAgent implements IForam {
 			}
 
 			timeLeftToMigrationInSeconds = oceanFragmentSizeInMeters / velocity;
-
-			double distancePerStep = velocity * stepDurationInSeconds;
-
-			MovementCostVector movementCost = config.activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime);
-			double movementCostPerChamberPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
-			movementCostPerStep = movementCostPerChamberPerMeter * foramState.shell.getChambersCount() * distancePerStep;
+			if(foramActiveMotion) {
+				double distancePerStep = velocity * stepDurationInSeconds;
+				MovementCostVector movementCost = config.activeMotionEnergyCostPerMeter(envState, foramState, currentTime);
+				double movementCostPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
+				movementCostPerStep = movementCostPerMeter * distancePerStep;
+			}
 		}
 
 		timeLeftToMigrationInSeconds -= stepDurationInSeconds;
-		energy -= movementCostPerStep;
+		//TODO passive motion means no costs!!!
+		if(foramActiveMotion)
+		    energy -= movementCostPerStep;
 
 		if (timeLeftToMigrationInSeconds <= 0.0 && migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
 			doAction(AgentActions.migrate(this, migrationTarget));

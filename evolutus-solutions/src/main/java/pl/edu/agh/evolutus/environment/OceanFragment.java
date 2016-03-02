@@ -207,8 +207,9 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(),
 					steps, getEnvState().position.mul(unitsConverter.scaleGrid()),
 					foramsAlive(), foramsHaploid(),  foramsDiploid(),
-					getEnvState().algaeAvailability, totalEnergy(), getEnvState().insolation,
-					deadForamsCounter, bornForamsCounter, averageShellVolume());
+					getEnvState().algaeAvailability, averageEnergy(), getEnvState().insolation,
+					deadForamsCounter, bornForamsCounter,
+                    averageShellVolume(), averageShapeFactor());
 
 			statisticsService.add(info);
 			deadForamsCounter=0;
@@ -278,6 +279,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		return migrationTargetsWithProbabilityCache.getRight();
 	}
 
+    //summarized energy of all agents inside the cell.
 	@Override
 	public double totalEnergy() {
 		return getAgents()
@@ -287,7 +289,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.mapToDouble(IForam::getEnergy)
 				.sum();
 	}
-
+    //average energy of all agents inside the cell
 	@Override
 	public double averageEnergy() {
 		return getAgents()
@@ -297,6 +299,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.mapToDouble(IForam::getEnergy)
 				.average().orElse(0.0);
 	}
+
+    //summarized/average volume of all agents inside the cell
 	@Override
 	public double averageShellVolume() {
 		return getAgents()
@@ -304,11 +308,21 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 				.map(agent -> (IForam) agent)
 				.filter(IForam::isAlive)
 				.mapToDouble(IForam::getShellVolume)
-				.sum();
-				//.average().orElse(0.0);
+				.average().orElse(0.0);
 	}
 
-	@Override
+    //average shape factor inside the cell.
+    @Override
+    public double averageShapeFactor() {
+        return getAgents()
+				.stream()
+				.map(agent -> (IForam) agent)
+				.filter(IForam::isAlive)
+				.mapToDouble(IForam::getShapeFactor)
+				.average().orElse(0.0);
+    }
+
+
 	public Pair<AgentAddress, VectorL> getPassiveMigrationTarget() {
 		Map<OceanFragment, Double> migrationTargetsWithProbability = getPassiveMigrationTargetsWithProbability();
 		double rand = random.nextDouble();
@@ -324,6 +338,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
 	@Override
 	public Pair<AgentAddress, VectorL> getActiveMigrationTarget() {
+		//move to higher value of food!!!
 		OceanFragment target = this;
 		for (OceanFragment neighbor : neighbors) {
 			if (neighbor != null && neighbor.getAlgaeAvailability() > target.getAlgaeAvailability()) {
