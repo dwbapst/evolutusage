@@ -219,6 +219,8 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		}
 	}
 
+
+	//TODO MP This function is candidate for GPU implementation
 	@Override
 	public double takeAlgae(double energyDemand, double radiusOfCollectingInMeters) {
 		double algaeNeeded = energyDemand / getEnvState().algaeEnergy; //in grams
