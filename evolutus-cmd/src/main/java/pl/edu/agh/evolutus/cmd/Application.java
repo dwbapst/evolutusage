@@ -120,13 +120,13 @@ public class Application {
 		// @formatter:off
 		System.out.println("\tevolutus.sh (simulation|sim)  <db_properties_file>  [config_files]                                          - start simulation");
 		System.out.println("\tevolutus.sh  list             <db_properties_file>                                                          - list simulations");
-		System.out.println("\tevolutus.sh (generate|gen)    population-chart      <db_properties_file> <out_dir> [simulation]             - generate population chart");
-		System.out.println("\tevolutus.sh (generate|gen)    energy-chart          <db_properties_file> <out_dir> [simulation]             - enerate energy chart");
-		System.out.println("\tevolutus.sh (generate|gen)    born-dead-chart       <db_properties_file> <out_dir> [simulation]             - generate born-dead chart");
-		System.out.println("\tevolutus.sh (generate|gen)    psi                   <db_properties_file> <out_dir> [simulation]             - generate Amira PSI files");
-		System.out.println("\tevolutus.sh (generate|gen)    csv                   <db_properties_file> <out_dir> [simulation]             - generate CSV files");
-		System.out.println("\tevolutus.sh (generate|gen)    config                <db_properties_file> <out_dir> [simulation]             - dump simulation config");
-		System.out.println("\tevolutus.sh (generate|gen)    genes-evolution       <db_properties_file> <out_dir> [simulation]  [gene]...  - generate evolution charts for given genes");
+		System.out.println("\tevolutus.sh (generation|gen)    population-chart      <db_properties_file> <out_dir> [simulation]             - generate population chart");
+		System.out.println("\tevolutus.sh (generation|gen)    energy-chart          <db_properties_file> <out_dir> [simulation]             - enerate energy chart");
+		System.out.println("\tevolutus.sh (generation|gen)    born-dead-chart       <db_properties_file> <out_dir> [simulation]             - generate born-dead chart");
+		System.out.println("\tevolutus.sh (generation|gen)    psi                   <db_properties_file> <out_dir> [simulation]             - generate Amira PSI files");
+		System.out.println("\tevolutus.sh (generation|gen)    csv                   <db_properties_file> <out_dir> [simulation]             - generate CSV files");
+		System.out.println("\tevolutus.sh (generation|gen)    config                <db_properties_file> <out_dir> [simulation]             - dump simulation config");
+		System.out.println("\tevolutus.sh (generation|gen)    genes-evolution       <db_properties_file> <out_dir> [simulation]  [gene]...  - generate evolution charts for given genes");
 		System.exit(127);
 		// @formatter:on
 	}
