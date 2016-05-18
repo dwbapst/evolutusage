@@ -9,8 +9,13 @@ function simulationDescription() {
    return "sample simulation description";
 }
 
+
+function statsStride() {
+    return 2; //
+}
+
 function simulationDuration() {
-   return 10 * 24;
+   return 300 * 24;
 }
 
 function unitLengthInMeters() {

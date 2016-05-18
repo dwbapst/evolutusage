@@ -54,10 +54,6 @@ public class ForamConfig extends Config {
 		return configJS.gametesSievingCoefficient(envState, foramState, time);
 	}
 
-	/*public double raduisOfFoodCollecting(EnvState envState, ForamState foramState, double time) {
-		return configJS.raduisOfFoodCollecting(envState, foramState, time);
-	}*/
-
 	public String crossingOverOperator(EnvState envState, ForamState foramState, double time) {
 		return configJS.crossingOverOperator(envState, foramState, time);
 	}
@@ -71,11 +67,12 @@ public class ForamConfig extends Config {
 		return new VelocityVector(VectorD.fromScriptObject(currentDirection));
 	}
 
-	public MovementCostVector activeMotionEnergyCostPerChamberPerMeter(EnvState envState, ForamState foramState, double time) {
-		ScriptObject energyCost = configJS.activeMotionEnergyCostPerChamberPerMeter(envState, foramState, time);
+	public MovementCostVector activeMotionEnergyCostPerMeter(EnvState envState, ForamState foramState, double time) {
+		ScriptObject energyCost = configJS.activeMotionEnergyCostPerMeter(envState, foramState, time);
 		return MovementCostVector.fromScriptObject(energyCost);
 	}
 
+//TODO MP (ForamConfig::1) calculate decision - GPU (?)
 	public boolean shouldDie(EnvState envState, ForamState foramState, double time) {
 		return configJS.shouldDie(envState, foramState, time);
 	}
@@ -84,10 +81,12 @@ public class ForamConfig extends Config {
 		return configJS.isInHibernationState(envState, foramState, time);
 	}
 
+//TODO MP (ForamConfig::2) calculate decision GPU (?)
 	public boolean canReproduce(EnvState envState, ForamState foramState, double time) {
 		return configJS.canReproduce(envState, foramState, time);
 	}
 
+//TODO MP (ForamConfig::4) calculate decision GPU (?)
 	public boolean canCreateChamber(EnvState envState, ForamState foramState, double time) {
 		return configJS.canCreateChamber(envState, foramState, time);
 	}

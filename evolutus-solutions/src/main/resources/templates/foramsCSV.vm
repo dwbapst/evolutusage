@@ -1,4 +1,4 @@
-StepNo,ForamsCount,AlgaeAvailability
+StepNo,ForamsCount,HaploidCount,DiploidCount,AlgaeAvailability,DeadCount,BornCount,Energy,Shell,Shape
 #foreach($stat in $stats)
-$stat.stepNo,$stat.foramsCount,$stat.algaeAvailability
+$stat.stepNo,$stat.foramsCount,$stat.foramsHaploidCount,$stat.foramsDiploidCount,$stat.algaeAvailability,$stat.deadForamsCount,$stat.bornForamsCount,$stat.averageEnergy,$stat.averageShellVolume,$stat.averageShapeFactor
 #end

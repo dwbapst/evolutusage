@@ -12,11 +12,10 @@ public class Shell {
 	private final double rotationAngle;
 	private final double deviationAngle;
 	private final double growthFactor;
-
-
 	private final double lastChamberRadius;
 	private final int chambersCount;
 	private final double volumeShell; //volume of space inside the shell
+    private final double shapeFactor;
 
 	public Shell(double firstChamberRadius, double lastChamberRadius, int chambersCount, double volume) {
 		this.firstChamberRadius = firstChamberRadius;
@@ -28,6 +27,7 @@ public class Shell {
 		this.lastChamberRadius = lastChamberRadius;
 		this.chambersCount = chambersCount;
 		this.volumeShell = volume;
+        this.shapeFactor = getTortuosityFactor();
 	}
 
 	public Shell(double firstChamberRadius,
@@ -47,6 +47,7 @@ public class Shell {
 		this.chambersCount = chambersCount;
 		this.lastChamberRadius = pow(growthFactor, (double)chambersCount-1.0)*firstChamberRadius;
 		this.volumeShell = calculateShellVolume();
+        this.shapeFactor = getTortuosityFactor();
 	}
 
 	public double getFirstChamberRadius() {
@@ -75,10 +76,15 @@ public class Shell {
 		return volumeShell;
 	}
 
+    public double getShapeFactor()
+    {
+        return shapeFactor;
+    }
+
 	public double getTortuosityFactor(){
 		//this value indicated whether shell is mole elongated or coiled.
 		//at this moment it is only a dummy
-		return Math.abs(deviationAngle/180.0);
+		return Math.abs(Math.sin(Math.toRadians(deviationAngle)));
 	}
 
 	private double calculateShellVolume()

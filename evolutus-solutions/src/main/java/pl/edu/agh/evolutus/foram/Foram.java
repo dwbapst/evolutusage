@@ -92,6 +92,9 @@ public class Foram extends SimpleAgent implements IForam {
 		return shell.getVolumeShell();
 	}
 
+    @Override
+    public double getShapeFactor() { return  shell. getShapeFactor(); }
+
 	@Override
 	public void setGenotype(Genotype genotype) {
 		if (this.genotype == null) {
@@ -146,8 +149,10 @@ public class Foram extends SimpleAgent implements IForam {
 		currentTime = unitsConverter.stepsToHours(getOceanFragment().currentStep());
 	}
 
+//TODO MP This function is called for each agent at each timestep!
 	@Override
 	public void step() {
+		//The three functions below are used to update state values - this data are used to calculate agent's decisions
 		updateEnvState();
 		updateForamState();
 		updateCurrentStep();
@@ -156,32 +161,40 @@ public class Foram extends SimpleAgent implements IForam {
 			return;
 		}
 
+//TODO MP (1)
 		consumeStepEnergy();
 
 		try {
+//TODO MP (ForamConfig::1) calculate decision - GPU (?)
+//Maybe functions  shouldDie, 	canReproduce canCreateChamber canMigrate should be evaluated together at the begining
+//Functions sets markers that are used in proper moments to execute die(), reproduce(), createChamber() etc. 			
 			if (config.shouldDie(envState, foramState, currentTime)) {
 				die();
 			}
+
+//TODO MP (2)
 			eat();
+
+//TODO MP (ForamConfig::2) calculate decision GPU (?)
 			if (config.canReproduce(envState, foramState, currentTime)) {
 				reproduce();
 			}
+//TODO MP (ForamConfig::3)	calculate decision	GPU (?)
 			if ((timeLeftToMigrationInSeconds == null) && config.canCreateChamber(envState, foramState, currentTime)) {
 				//cannot create chamber during motion
 				createChamber();
 			}
+//TODO MP (ForamConfig::4)	calculate decision GPU (?)
 			if ((timeToBuildNewChamber == null) && config.canMigrate(envState, foramState, currentTime)) {
 				tryMigrate();
 			}
-
-
 
 			age += stepDurationInHours;
 		} catch (AgentDiedException e) {
 			logger.debug("Foram died: {}", getAddress());
 		}
 	}
-
+//TODO MP (1) This function calculates how much energy is used by agent at each timestep - it should be implemented for GPU
 	private void consumeStepEnergy() {
 		energy -= config.consumptionPerHour(envState, foramState, currentTime) * stepDurationInHours;
 		if (energy < 0.0)
@@ -241,6 +254,7 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 	}
 
+//TODO MP (2) This function calculates how much food is consumed by an agent - it should be implemented for GPU
 	private void eat() {
 		if(timeToBuildNewChamber == null) { //cannot eat during chamber formation
 			double foodCollectingRate = genotype.get(Genome.FOOD_COLLECTING_RATE).getValue();
@@ -253,6 +267,7 @@ public class Foram extends SimpleAgent implements IForam {
             //max energy that can be stored in a given volume of cytoplasm
 			double maxEnergy = (metabolicEffectivenes * shellVolume) - currentEnergy;
 			double radiusOfCollectingInMeters = genotype.get(Genome.FOOD_COLLECTING_RANGE).getValue()+0.0001*shell.getLastChamberRadius();
+//TODO MP Here is the function from OceanFragment class that deduct some food from ocean - it is not easy to implement it for GPU efficiently
 			energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 		}
 	}
@@ -304,14 +319,23 @@ public class Foram extends SimpleAgent implements IForam {
 			if (foramActiveMotion) {
 				migrationVelocityVector = config.foramActiveSpeed(envState, foramState, currentTime);
 				migrationTargetToMigrationDirection = getOceanFragment().getActiveMigrationTarget();
-			} else {
-				migrationVelocityVector = getOceanFragment().getEnvState().currentDirection;
+			} else { //planktic - migration vector is a sum of ocean currents, vertical movement and random walk.
+				VectorD VectorOceanCurrent =  getOceanFragment().getEnvState().currentDirection;
+                //VectorActiveSpeed should be zero on any directions except Z.
+				VectorD VectorActiveSpeed = config.foramActiveSpeed(envState, foramState, currentTime);
+				migrationVelocityVector = new VelocityVector(VectorActiveSpeed.add(VectorOceanCurrent));
 				migrationTargetToMigrationDirection = getOceanFragment().getPassiveMigrationTarget();
 			}
+			//TODO passive migration should use activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime) function!!!
+			//passive migration + costs set to "-1" = absolute passive movement
+			//passive migration + cost >= 0 - is able to move in that direction!
+			//-> remove passive and active migration - only check costs!!!
             if(migrationTargetToMigrationDirection == null)
                 return;
 			migrationTarget = migrationTargetToMigrationDirection.getLeft();
 			VectorD migrationDirection = migrationTargetToMigrationDirection.getRight().toDouble().abs();
+
+			//TODO jakie są jednostki prędkości - powinny być metry na sekunde
 			double velocity = migrationVelocityVector.dotProduct(migrationDirection);
 			double oceanFragmentSizeInMeters = unitsConverter.unitLengthInMeters().dotProduct(migrationDirection);
 
@@ -320,16 +344,18 @@ public class Foram extends SimpleAgent implements IForam {
 			}
 
 			timeLeftToMigrationInSeconds = oceanFragmentSizeInMeters / velocity;
-
-			double distancePerStep = velocity * stepDurationInSeconds;
-
-			MovementCostVector movementCost = config.activeMotionEnergyCostPerChamberPerMeter(envState, foramState, currentTime);
-			double movementCostPerChamberPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
-			movementCostPerStep = movementCostPerChamberPerMeter * foramState.shell.getChambersCount() * distancePerStep;
+			if(foramActiveMotion) {
+				double distancePerStep = velocity * stepDurationInSeconds;
+				MovementCostVector movementCost = config.activeMotionEnergyCostPerMeter(envState, foramState, currentTime);
+				double movementCostPerMeter = movementCost.getCostByMovementDirection(migrationDirection);
+				movementCostPerStep = movementCostPerMeter * distancePerStep;
+			}
 		}
 
 		timeLeftToMigrationInSeconds -= stepDurationInSeconds;
-		energy -= movementCostPerStep;
+		//TODO passive motion means no costs!!!
+		if(foramActiveMotion)
+		    energy -= movementCostPerStep;
 
 		if (timeLeftToMigrationInSeconds <= 0.0 && migrationTarget != null && !migrationTarget.equals(lastParentAddress)) {
 			doAction(AgentActions.migrate(this, migrationTarget));

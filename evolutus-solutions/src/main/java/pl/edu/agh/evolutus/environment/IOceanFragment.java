@@ -44,6 +44,8 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	double averageShellVolume();
 
+    double averageShapeFactor();
+
 	Pair<AgentAddress, VectorL> getPassiveMigrationTarget();
 
 	Pair<AgentAddress, VectorL> getActiveMigrationTarget();
