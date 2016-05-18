@@ -149,8 +149,10 @@ public class Foram extends SimpleAgent implements IForam {
 		currentTime = unitsConverter.stepsToHours(getOceanFragment().currentStep());
 	}
 
+//TODO MP This function is called for each agent at each timestep!
 	@Override
 	public void step() {
+		//The three functions below are used to update state values - this data are used to calculate agent's decisions
 		updateEnvState();
 		updateForamState();
 		updateCurrentStep();
@@ -159,20 +161,30 @@ public class Foram extends SimpleAgent implements IForam {
 			return;
 		}
 
+//TODO MP (1)
 		consumeStepEnergy();
 
 		try {
+//TODO MP (ForamConfig::1) calculate decision - GPU (?)
+//Maybe functions  shouldDie, 	canReproduce canCreateChamber canMigrate should be evaluated together at the begining
+//Functions sets markers that are used in proper moments to execute die(), reproduce(), createChamber() etc. 			
 			if (config.shouldDie(envState, foramState, currentTime)) {
 				die();
 			}
+
+//TODO MP (2)
 			eat();
+
+//TODO MP (ForamConfig::2) calculate decision GPU (?)
 			if (config.canReproduce(envState, foramState, currentTime)) {
 				reproduce();
 			}
+//TODO MP (ForamConfig::3)	calculate decision	GPU (?)
 			if ((timeLeftToMigrationInSeconds == null) && config.canCreateChamber(envState, foramState, currentTime)) {
 				//cannot create chamber during motion
 				createChamber();
 			}
+//TODO MP (ForamConfig::4)	calculate decision GPU (?)
 			if ((timeToBuildNewChamber == null) && config.canMigrate(envState, foramState, currentTime)) {
 				tryMigrate();
 			}
@@ -182,7 +194,7 @@ public class Foram extends SimpleAgent implements IForam {
 			logger.debug("Foram died: {}", getAddress());
 		}
 	}
-
+//TODO MP (1) This function calculates how much energy is used by agent at each timestep - it should be implemented for GPU
 	private void consumeStepEnergy() {
 		energy -= config.consumptionPerHour(envState, foramState, currentTime) * stepDurationInHours;
 		if (energy < 0.0)
@@ -242,6 +254,7 @@ public class Foram extends SimpleAgent implements IForam {
 		}
 	}
 
+//TODO MP (2) This function calculates how much food is consumed by an agent - it should be implemented for GPU
 	private void eat() {
 		if(timeToBuildNewChamber == null) { //cannot eat during chamber formation
 			double foodCollectingRate = genotype.get(Genome.FOOD_COLLECTING_RATE).getValue();
@@ -254,6 +267,7 @@ public class Foram extends SimpleAgent implements IForam {
             //max energy that can be stored in a given volume of cytoplasm
 			double maxEnergy = (metabolicEffectivenes * shellVolume) - currentEnergy;
 			double radiusOfCollectingInMeters = genotype.get(Genome.FOOD_COLLECTING_RANGE).getValue()+0.0001*shell.getLastChamberRadius();
+//TODO MP Here is the function from OceanFragment class that deduct some food from ocean - it is not easy to implement it for GPU efficiently
 			energy += getOceanFragment().takeAlgae(Math.min(energyDemand, maxEnergy), radiusOfCollectingInMeters);
 		}
 	}
