@@ -14,11 +14,12 @@ public class OceanFragmentInfo extends Statistics {
 	private Integer foramsHaploCount;
 	private Integer foramsDiploCount;
 	private Double algaeAvailability;
-	private Double totalEnergy;
+    private Double averageEnergy;
 	private Double insolation;
 	private Integer deathCount;
 	private Integer birthCount;
 	private Double averageShellVolume;
+    private Double averageShapeFactor;
 
 	private OceanFragmentInfo() {
 		// for morphia
@@ -32,11 +33,12 @@ public class OceanFragmentInfo extends Statistics {
 			Integer foramsHaploidCount,
 			Integer foramsDiploidCount,
 			Double algaeAvailability,
-			Double totalEnergy,
+            Double averageEnergy,
 			Double insolation,
 			Integer deathCount,
 			Integer birthCount,
-			Double averageShellVolume
+			Double averageShellVolume,
+            Double averageShapeFactor
 	) {
 		super(simulation.getSimulationStart());
 		this.stepNo = stepNo;
@@ -47,11 +49,12 @@ public class OceanFragmentInfo extends Statistics {
 		this.foramsHaploCount = foramsHaploidCount;
 		this.foramsDiploCount = foramsDiploidCount;
 		this.algaeAvailability = algaeAvailability;
-		this.totalEnergy = totalEnergy;
+        this.averageEnergy = averageEnergy;
 		this.insolation = insolation;
 		this.deathCount = deathCount;
 		this.birthCount = birthCount;
 		this.averageShellVolume = averageShellVolume;
+        this.averageShapeFactor = averageShapeFactor;
 	}
 
 	public Long getStepNo() {
@@ -86,10 +89,10 @@ public class OceanFragmentInfo extends Statistics {
 		return this.algaeAvailability;
 	}
 
-	public Double getTotalEnergy() {
-		return this.totalEnergy;
-	}
-
+    public Double getAverageEnergy()
+    {
+        return this.averageEnergy;
+    }
 	public Double getInsolation() {
 		return this.insolation;
 	}
@@ -99,4 +102,6 @@ public class OceanFragmentInfo extends Statistics {
 	public Integer getBirthCount() { return this.birthCount; }
 
 	public Double getAverageShellVolume() { return this.averageShellVolume; }
+
+    public Double getAverageShapeFactor() { return this.averageShapeFactor; }
 }

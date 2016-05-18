@@ -15,6 +15,8 @@ public interface IForam extends ISimpleAgent {
 
 	double getShellVolume();
 
+    double getShapeFactor();
+
 	void setGenotype(Genotype genotype);
 
 	Genotype getGenotype();
