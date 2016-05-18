@@ -164,7 +164,7 @@ function initialGenome(position) {
          name: "translationFactor",
          value: 0.15,
          mutationProbability: 0.7,
-         mutationRate: 0.1,
+         mutationVariance: 0.1,
          minValue: -1.0,
          maxValue: 1.0
       },
@@ -172,7 +172,7 @@ function initialGenome(position) {
          name: "growthFactor",
          value: 1.1,
          mutationProbability: 0.7,
-         mutationRate: 0.1,
+         mutationVariance: 0.1,
          minValue: 1.0,
          maxValue: 2.0
       },
@@ -180,7 +180,7 @@ function initialGenome(position) {
          name: "rotationAngle",
          value: 0.0,
          mutationProbability: 0.7,
-         mutationRate: 0.5,
+         mutationVariance: 0.5,
          minValue: -180.0,
          maxValue: 180.0
       },
@@ -188,7 +188,7 @@ function initialGenome(position) {
          name: "deviationAngle",
          value: 0.0,
          mutationProbability: 0.7,
-         mutationRate: 0.5,
+         mutationVariance: 0.5,
          minValue: -180.0,
          maxValue: 180.0
       },
@@ -197,7 +197,7 @@ function initialGenome(position) {
          name: "haploidFirstChamberRadius",
          value: 40.0,
          mutationProbability: 0.7,
-         mutationRate: 0.05,
+         mutationVariance: 0.05,
          minValue: 30.0,
          maxValue: 100.0
       },
@@ -205,7 +205,7 @@ function initialGenome(position) {
          name: "diploidFirstChamberRadius",
          value: 10.0,
          mutationProbability: 0.7,
-         mutationRate: 0.05,
+         mutationVariance: 0.05,
          minValue: 5.0,
          maxValue: 30.0
       },
@@ -213,7 +213,7 @@ function initialGenome(position) {
          name: "wallThicknessFactor",
          value: 0.1,
          mutationProbability: 0.7,
-         mutationRate: 0.01,
+         mutationVariance: 0.01,
          minValue: 0.01,
          maxValue: 0.5
       },
@@ -221,7 +221,7 @@ function initialGenome(position) {
          name: "minAdultAge",
          value: 30,
          mutationProbability: 0.2,
-         mutationRate: 0.1,
+         mutationVariance: 0.1,
          minValue: 1,
          maxValue: 1000
       },
@@ -229,7 +229,7 @@ function initialGenome(position) {
          name: "foodCollectingRate",
          value: 0.01,
          mutationProbability: 0.2,
-         mutationRate: 0.001,
+         mutationVariance: 0.001,
          minValue: 0.001,
          maxValue: 0.1
       },
@@ -237,7 +237,7 @@ function initialGenome(position) {
          name: "foodCollectingRange",
          value: 0.001,
          mutationProbability: 0.8,
-         mutationRate: 0.000001,
+         mutationVariance: 0.000001,
          minValue: 0.00001,
          maxValue: 0.1
       },
@@ -245,7 +245,7 @@ function initialGenome(position) {
          name: "energyDemandPerVolumePerHour",
          value: 0.02,
          mutationProbability: 0.2,
-         mutationRate: 0.1,
+         mutationVariance: 0.1,
          minValue: 0.001,
          maxValue: 0.9
       },
@@ -253,7 +253,7 @@ function initialGenome(position) {
          name: "minEnergy",
          value: 0.0,
          mutationProbability: 0.2,
-         mutationRate: 0.1,
+         mutationVariance: 0.1,
          minValue: 0.0,
          maxValue: 100
       },
@@ -261,7 +261,7 @@ function initialGenome(position) {
          name: "chamberGrowthCostFactor",
          value: 0.01,
          mutationProbability: 0.2,
-         mutationRate: 0.1,
+         mutationVariance: 0.1,
          minValue: 0.001,
          maxValue: 0.9
       },
@@ -269,7 +269,7 @@ function initialGenome(position) {
          name: "metabolicEffectiveness",
          value: 0.8,
          mutationProbability: 0.2,
-         mutationRate: 0.001,
+         mutationVariance: 0.001,
          minValue: 0.1,
          maxValue: 0.9
       },
@@ -277,7 +277,7 @@ function initialGenome(position) {
          name: "hibernationEnergyLevel",
          value: 100,
          mutationProbability: 0.2,
-         mutationRate: 0.001,
+         mutationVariance: 0.001,
          minValue: 0.001,
          maxValue: 1000
       },
@@ -285,7 +285,7 @@ function initialGenome(position) {
          name: "hibernationEnergyRate",
          value: 0.001,
          mutationProbability: 0.2,
-         mutationRate: 0.001,
+         mutationVariance: 0.001,
          minValue: 0.0001,
          maxValue: 100
       }

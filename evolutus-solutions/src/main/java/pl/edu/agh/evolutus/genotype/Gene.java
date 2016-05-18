@@ -12,17 +12,17 @@ public class Gene {
 	private final Double value;
 	private final Double minValue;
 	private final Double maxValue;
-	private final Double mutationRate;
+	private final Double mutationVariance;
 	private final Double mutationProbability;
 
 	private final boolean isDominant;
 
-	public Gene(String name, Number value, Number minValue, Number maxValue, Number mutationRate, Number mutationProbability) {
+	public Gene(String name, Number value, Number minValue, Number maxValue, Number mutationVariance, Number mutationProbability) {
 		this.name = name;
 		this.value = value.doubleValue();
 		this.minValue = minValue.doubleValue();
 		this.maxValue = maxValue.doubleValue();
-		this.mutationRate = mutationRate.doubleValue();
+		this.mutationVariance = mutationVariance.doubleValue();
 		this.mutationProbability = mutationProbability.doubleValue();
 		this.isDominant = RAND.nextBoolean();
 	}
@@ -33,7 +33,7 @@ public class Gene {
 				getValue(geneScriptObject, "value", null, true),
 				getValue(geneScriptObject, "minValue", Double.NEGATIVE_INFINITY, false),
 				getValue(geneScriptObject, "maxValue", Double.POSITIVE_INFINITY, false),
-				getValue(geneScriptObject, "mutationRate", 0.0, false),
+				getValue(geneScriptObject, "mutationVariance", 0.0, false),
 				getValue(geneScriptObject, "mutationProbability", Double.NaN, false)
 		);
 	}
@@ -65,8 +65,8 @@ public class Gene {
 		return maxValue;
 	}
 
-	public Double getMutationRate() {
-		return mutationRate;
+	public Double getMutationVariance() {
+		return mutationVariance;
 	}
 
 	public Double getMutationProbability() {
@@ -96,10 +96,9 @@ public class Gene {
 
 	public Gene mutate(double globalMutationProbability) {
 		if (shouldMutate(globalMutationProbability)) {
-			//double mutationFactor = RAND.nextBoolean() ? (1 + mutationRate) : (1 - mutationRate);
-            double mutationFactor = RAND.nextGaussian() * mutationRate;
-			double newValue = value + mutationFactor; //was *
-			return new Gene(name, newValue, minValue, maxValue, mutationRate, mutationProbability);
+			//x'=x + N(0,1)* delta
+			double newValue = value + RAND.nextGaussian() * mutationVariance;
+			return new Gene(name, newValue, minValue, maxValue, mutationVariance, mutationProbability);
 		}
 		return this;
 	}
