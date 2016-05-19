@@ -72,7 +72,7 @@ public class ForamConfig extends Config {
 		return MovementCostVector.fromScriptObject(energyCost);
 	}
 
-//TODO MP (ForamConfig::1) calculate decision - GPU (?)
+
 	public boolean shouldDie(EnvState envState, ForamState foramState, double time) {
 		return configJS.shouldDie(envState, foramState, time);
 	}
@@ -81,12 +81,12 @@ public class ForamConfig extends Config {
 		return configJS.isInHibernationState(envState, foramState, time);
 	}
 
-//TODO MP (ForamConfig::2) calculate decision GPU (?)
+
 	public boolean canReproduce(EnvState envState, ForamState foramState, double time) {
 		return configJS.canReproduce(envState, foramState, time);
 	}
 
-//TODO MP (ForamConfig::4) calculate decision GPU (?)
+
 	public boolean canCreateChamber(EnvState envState, ForamState foramState, double time) {
 		return configJS.canCreateChamber(envState, foramState, time);
 	}

@@ -151,8 +151,6 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		}
 	}
 
-	//TODO MP This function contains  code that should be run on GPU
-	//It is invoked from OceanFragment::step() function and set new values for ocean parameters
 	private synchronized void updateEnvState() {
 		EnvState[] envStates = neighbors.stream()
 				.map(neighbor -> (neighbor == null) ? null : neighbor.getPrevEnvState())
@@ -175,9 +173,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 		setEnvState(newEnvState);
 	}
 
-	//TODO MP This function contains  code that should be run on GPU
-	//It is also invoked for OceanFragment::step() and change food availability
-	//Maybe is should be combined with the previous function.
+
 	private synchronized void changeAlgaeAvailability(double amount) {
 		setEnvState(new EnvState(getEnvState(), getEnvState().algaeAvailability + amount));
 	}
@@ -188,10 +184,6 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			initNeighbors();
 			updateEnvState();
 		}
-//TODO MP This function is executed in each timestep for each OceanFragment.
-// Functions changeAlgaeAvailability(getEnvState().algaeGrowth) and updateEnvState(); modify
-// parameters that corresponds to ocean properties.
-// The code that changes this paremeters should be implemented as  GPU kernels!   		
 		changeAlgaeAvailability(getEnvState().algaeGrowth); // regenerate algae
 
 		Collection<IForam> foramsToAdd = reproductionService.processGametesAndReturnNewForams(gametesMap);
@@ -228,7 +220,6 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
 
 
-	//TODO MP This function is candidate for GPU implementation
 	@Override
 	public double takeAlgae(double energyDemand, double radiusOfCollectingInMeters) {
 		double algaeNeeded = energyDemand / getEnvState().algaeEnergy; //in grams
