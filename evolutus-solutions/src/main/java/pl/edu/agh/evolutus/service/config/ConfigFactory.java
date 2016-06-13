@@ -1,28 +1,20 @@
 package pl.edu.agh.evolutus.service.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jage.platform.component.IStatefulComponent;
 import org.jage.platform.component.exception.ComponentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pl.edu.agh.evolutus.utils.Utils;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigFactory implements IStatefulComponent {
 
@@ -67,12 +59,7 @@ public class ConfigFactory implements IStatefulComponent {
 			StringBuilder config = new StringBuilder();
 			config.append("\n"
 					+ "/*******************************\n"
-					+ " *        DEFAULT CONFIG       *\n"
-					+ " *******************************/\n");
-			append(config, getClasspathConfigReaders());
-			config.append("\n"
-					+ "/*******************************\n"
-					+ " *      OVERRIDDEN CONFIG      *\n"
+					+ " *           CONFIG            *\n"
 					+ " *******************************/\n");
 			append(config, getUserDefinedConfigReaders());
 			return config.toString();
