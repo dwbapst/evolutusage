@@ -207,9 +207,9 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 			OceanFragmentInfo info = new OceanFragmentInfo(statisticsService.getSimulation(),
 					steps, getEnvState().position.mul(unitsConverter.scaleGrid()),
 					foramsAlive(), foramsHaploid(),  foramsDiploid(),
-					getEnvState().algaeAvailability, averageEnergy(), getEnvState().insolation,
+					getEnvState().algaeAvailability, averageForamsEnergy(), getEnvState().insolation,
 					deadForamsCounter, bornForamsCounter,
-                    averageShellVolume(), averageShapeFactor());
+                    averageForamsShellVolume(), averageForamsShapeFactor());
 
 			statisticsService.add(info);
 			deadForamsCounter=0;
@@ -282,7 +282,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
     //summarized energy of all agents inside the cell.
 	@Override
-	public double totalEnergy() {
+	public double totalForamsEnergy() {
 		return getAgents()
 				.stream()
 				.map(agent -> (IForam) agent)
@@ -292,7 +292,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 	}
     //average energy of all agents inside the cell
 	@Override
-	public double averageEnergy() {
+	public double averageForamsEnergy() {
 		return getAgents()
 				.stream()
 				.map(agent -> (IForam) agent)
@@ -303,7 +303,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
     //summarized/average volume of all agents inside the cell
 	@Override
-	public double averageShellVolume() {
+	public double averageForamsShellVolume() {
 		return getAgents()
 				.stream()
 				.map(agent -> (IForam) agent)
@@ -314,7 +314,7 @@ public class OceanFragment extends SimpleAggregate implements IOceanFragment {
 
     //average shape factor inside the cell.
     @Override
-    public double averageShapeFactor() {
+    public double averageForamsShapeFactor() {
         return getAgents()
 				.stream()
 				.map(agent -> (IForam) agent)

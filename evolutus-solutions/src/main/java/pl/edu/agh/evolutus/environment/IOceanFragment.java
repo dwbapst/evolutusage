@@ -38,13 +38,13 @@ public interface IOceanFragment extends ISimpleAggregate {
 
 	void onForamDied();
 
-	double totalEnergy();
+	double totalForamsEnergy();
 
-	double averageEnergy();
+	double averageForamsEnergy();
 
-	double averageShellVolume();
+	double averageForamsShellVolume();
 
-    double averageShapeFactor();
+    double averageForamsShapeFactor();
 
 	Pair<AgentAddress, VectorL> getPassiveMigrationTarget();
 
